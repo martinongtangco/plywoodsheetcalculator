@@ -38,6 +38,6 @@ For V2 dark mode, Tailwind's `dark:` variant enables a drop-in dark theme with z
 ## Action Items
 
 - [x] Install and configure Tailwind CSS with Vite
-- [ ] Create `tailwind.config.js` with project defaults
-- [ ] Document Tailwind usage conventions in `CLAUDE.md`
-- [ ] Plan dark mode implementation for V2
+- [x] Create `tailwind.config.js` with project defaults
+- [x] Document Tailwind usage conventions in `CLAUDE.md`
+- [ ] Plan dark mode implementation for V2 (deferred — use `dark:` variant with class strategy when ready)

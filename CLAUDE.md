@@ -47,6 +47,14 @@ When implementing a feature, produce:
 - A React component in `src/components/` that calls the engine function and renders the result.
 - An update to `docs/spec/V1_FEATURE_SPEC.md` if the implementation deviates from the spec (with an explanation of why).
 
+## Tailwind CSS conventions
+
+- Use Tailwind utility classes for all styling. No custom CSS files except `src/index.css` (which only contains the `@tailwind` directives).
+- Use the built-in Tailwind palette (`gray-*`, `blue-*`, etc.) before reaching for custom colors. If a custom color is needed, add it to `tailwind.config.js` under `theme.extend.colors`.
+- Spacing: use the `p-*`/`m-*`/`gap-*` scale. Do not use arbitrary values (e.g. `p-[13px]`) unless there is no standard equivalent.
+- Dark mode: use the `dark:` variant when implementing V2 dark mode. The strategy is `class` (set in `tailwind.config.js`). Do not add dark mode classes in V1.
+- If a class combination is used in three or more places, extract it to a component — do not create a `@apply` rule.
+
 ## What to do when you are unsure
 
 - Stop. Do not guess at domain knowledge.

@@ -36,4 +36,4 @@ The trade-off is bundle size and boilerplate compared to Svelte, but for a data-
 
 - [x] Configure Vite with React plugin
 - [x] Set up `src/components/` directory structure
-- [ ] Migrate to TypeScript when the codebase is stable (not a V1 goal)
+- [ ] Migrate to TypeScript when the codebase is stable (not a V1 goal — deferred per DEFERRED.md)
