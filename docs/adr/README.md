@@ -16,6 +16,12 @@ An ADR documents a significant architectural decision: what was decided, why, an
 | [ADR-006](ADR-006-data-persistence.md) | Data Persistence and Portability | Accepted |
 | [ADR-007](ADR-007-styling.md) | Styling Approach | Accepted |
 | [ADR-008](ADR-008-kerf-edge-banding-model.md) | Kerf and Edge Banding Calculation Model | Accepted |
+| [ADR-009](ADR-009-testing-strategy.md) | Testing Strategy | Proposed |
+| [ADR-010](ADR-010-carcass-part-calculation.md) | Carcass Part Calculation Model | Proposed |
+| [ADR-011](ADR-011-drawer-part-calculation.md) | Drawer Part Calculation Model | Proposed |
+| [ADR-012](ADR-012-batch-strip-cut-layout.md) | Batch/Strip Cut Layout Strategy | Proposed |
+| [ADR-013](ADR-013-balanced-layout-strategy.md) | Balanced Layout Strategy | Proposed |
+| [ADR-014](ADR-014-project-data-model.md) | Project Data Model | Proposed |
 
 ## How to propose a new ADR
 
