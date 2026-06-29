@@ -35,7 +35,7 @@ For PDF embedding, the SVG is serialized to a string, drawn to an offscreen `<ca
 
 ## Action Items
 
-- [x] Create SVG diagram component in `src/components/`
-- [ ] Implement SVG-to-canvas rasterization utility
-- [ ] Add accessibility labels (title, desc, role) to all diagram elements
-- [ ] Test diagram rendering at various zoom levels for PDF quality
+- [x] Create SVG diagram component in `src/components/` — `SheetLayoutDiagram.jsx`
+- [x] Implement SVG-to-canvas rasterization utility — `src/utils/rasterize.js`
+- [x] Add accessibility labels (title, desc, role) to all diagram elements
+- [x] Test diagram rendering at various zoom levels for PDF quality — `tests/utils/rasterize.test.js`
