@@ -276,6 +276,263 @@ describe('calculateInternalDimensions', () => {
 });
 
 // ============================================================
+// calculateCarcassParts — Internal Shelves (ADR-010)
+// ============================================================
+
+describe('calculateCarcassParts — Internal Shelves', () => {
+  it('adds shelf parts when internalShelves array is provided', () => {
+    const parts = calculateCarcassParts(
+      standardBoxA,
+      standardThicknesses,
+      null,
+      6,
+      [{ quantity: 2 }]
+    );
+    // 4 base parts + 1 shelf entry
+    expect(parts).toHaveLength(5);
+    const shelf = parts.find(p => p.type === 'shelf');
+    expect(shelf).toBeDefined();
+    expect(shelf.quantity).toBe(2);
+  });
+
+  it('shelf dimensions match top/bottom panel dimensions (Method A)', () => {
+    const parts = calculateCarcassParts(
+      standardBoxA,
+      standardThicknesses,
+      null,
+      6,
+      [{ quantity: 1 }]
+    );
+    const top = parts.find(p => p.type === 'top');
+    const shelf = parts.find(p => p.type === 'shelf');
+    // Shelf should have same width calculation: external_W - 2*side
+    expect(shelf.cutLength).toBe(top.cutLength);
+    expect(shelf.cutWidth).toBe(top.cutWidth);
+  });
+
+  it('shelf dimensions match top/bottom panel dimensions (Method B)', () => {
+    const parts = calculateCarcassParts(
+      standardBoxB,
+      standardThicknesses,
+      null,
+      6,
+      [{ quantity: 1 }]
+    );
+    const top = parts.find(p => p.type === 'top');
+    const shelf = parts.find(p => p.type === 'shelf');
+    // Shelf width = external_W - 2*side (same as top/bottom in both methods)
+    expect(shelf.cutLength).toBe(800 - 2 * 18); // 764
+    expect(shelf.cutWidth).toBe(400 - 3);       // 397
+    // Top in Method B is full width
+    expect(top.cutLength).toBe(800);
+  });
+
+  it('shelf defaults to top thickness when thickness not specified', () => {
+    const parts = calculateCarcassParts(
+      standardBoxA,
+      standardThicknesses,
+      null,
+      6,
+      [{ quantity: 1 }]
+    );
+    const shelf = parts.find(p => p.type === 'shelf');
+    expect(shelf.materialThickness).toBe(18); // same as top
+  });
+
+  it('shelf uses custom thickness when specified', () => {
+    const parts = calculateCarcassParts(
+      standardBoxA,
+      standardThicknesses,
+      null,
+      6,
+      [{ quantity: 1, thickness: 15 }]
+    );
+    const shelf = parts.find(p => p.type === 'shelf');
+    expect(shelf.materialThickness).toBe(15);
+  });
+
+  it('supports multiple shelf entries with different quantities', () => {
+    const parts = calculateCarcassParts(
+      standardBoxA,
+      standardThicknesses,
+      null,
+      6,
+      [{ quantity: 2 }, { quantity: 1, thickness: 15 }]
+    );
+    const shelves = parts.filter(p => p.type === 'shelf');
+    expect(shelves).toHaveLength(2);
+    expect(shelves[0].quantity).toBe(2);
+    expect(shelves[1].quantity).toBe(1);
+    expect(shelves[0].materialThickness).toBe(18); // defaults to top
+    expect(shelves[1].materialThickness).toBe(15);
+  });
+
+  it('empty internalShelves array produces no shelf parts', () => {
+    const parts = calculateCarcassParts(
+      standardBoxA,
+      standardThicknesses,
+      null,
+      6,
+      []
+    );
+    expect(parts).toHaveLength(4);
+    expect(parts.find(p => p.type === 'shelf')).toBeUndefined();
+  });
+});
+
+// ============================================================
+// calculateCarcassParts — Edge Banding Subtraction (ADR-010)
+// ============================================================
+
+describe('calculateCarcassParts — Edge Banding Subtraction', () => {
+  const boxA = {
+    external_W: 800,
+    external_H: 600,
+    external_D: 400,
+    construction_method: 'A',
+  };
+
+  const thicknesses = {
+    side: 18,
+    top: 18,
+    bottom: 18,
+    back: 3,
+  };
+
+  it('edge banding on top panel length+ reduces cutLength', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      { top: ['length+'] }
+    );
+    const top = parts.find(p => p.type === 'top');
+    // Nominal: 800 - 2*18 = 764. With 2mm on length+: 762
+    expect(top.cutLength).toBe(762);
+    expect(top.cutWidth).toBe(397); // unchanged
+    expect(top.edgeBandingEdges).toContain('length+');
+  });
+
+  it('edge banding on top panel length+ and length- reduces cutLength by 2x', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      { top: ['length+', 'length-'] }
+    );
+    const top = parts.find(p => p.type === 'top');
+    // Nominal: 764. With 2mm on both length edges: 760
+    expect(top.cutLength).toBe(760);
+    expect(top.cutWidth).toBe(397);
+  });
+
+  it('edge banding on all four edges of top panel', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      { top: ['length+', 'length-', 'width+', 'width-'] }
+    );
+    const top = parts.find(p => p.type === 'top');
+    // Nominal: 764 x 397. With 2mm on all edges: 760 x 393
+    expect(top.cutLength).toBe(760);
+    expect(top.cutWidth).toBe(393);
+  });
+
+  it('edge banding on side panel width+ (visible front edge)', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      { side: ['width+'] }
+    );
+    const side = parts.find(p => p.type === 'side');
+    // Nominal: 600 x 400. With 2mm on width+: 600 x 398
+    expect(side.cutLength).toBe(600);
+    expect(side.cutWidth).toBe(398);
+  });
+
+  it('edge banding on shelf with single edge', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [{ quantity: 1 }],
+      { shelf: ['width+'] }
+    );
+    const shelf = parts.find(p => p.type === 'shelf');
+    // Nominal: 764 x 397. With 2mm on width+: 764 x 395
+    expect(shelf.cutLength).toBe(764);
+    expect(shelf.cutWidth).toBe(395);
+    expect(shelf.edgeBandingEdges).toContain('width+');
+  });
+
+  it('Method B edge banding on side panel', () => {
+    const boxB = {
+      ...boxA,
+      construction_method: 'B',
+    };
+    const parts = calculateCarcassParts(
+      boxB,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      { side: ['length+', 'width+'] }
+    );
+    const side = parts.find(p => p.type === 'side');
+    // Method B nominal: (600 - 18 - 18) x (400 - 3) = 564 x 397
+    // With 2mm on length+ and width+: 562 x 395
+    expect(side.cutLength).toBe(562);
+    expect(side.cutWidth).toBe(395);
+  });
+
+  it('no edge banding config produces nominal dimensions', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      {} // empty edge banding config
+    );
+    const top = parts.find(p => p.type === 'top');
+    // Nominal: 764 x 397 — no subtraction
+    expect(top.cutLength).toBe(764);
+    expect(top.cutWidth).toBe(397);
+  });
+
+  it('edge banding edges are recorded on each part', () => {
+    const parts = calculateCarcassParts(
+      boxA,
+      thicknesses,
+      { thickness: 2 },
+      6,
+      [],
+      { top: ['length+'], side: ['width+'], back: [], shelf: [] }
+    );
+    const top = parts.find(p => p.type === 'top');
+    const side = parts.find(p => p.type === 'side');
+    const bottom = parts.find(p => p.type === 'bottom');
+    const back = parts.find(p => p.type === 'back');
+
+    expect(top.edgeBandingEdges).toContain('length+');
+    expect(side.edgeBandingEdges).toContain('width+');
+    expect(bottom.edgeBandingEdges).toEqual([]);
+    expect(back.edgeBandingEdges).toEqual([]);
+  });
+});
+
+// ============================================================
 // calculateDrawerParts
 // ============================================================
 

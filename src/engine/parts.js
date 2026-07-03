@@ -24,9 +24,15 @@
  * @param {object} thicknesses - { side, top, bottom, back } in mm
  * @param {object|null} edgeBanding - { thickness } in mm, or null if no edge banding
  * @param {number} [backPanelOverlap=6] - recessed back panel overlap in mm (default 6mm = 3mm per side)
+ * @param {object[]} [internalShelves=[]] - array of shelf configs:
+ *   [{ quantity, thickness? }] — thickness defaults to the `top` thickness from `thicknesses`
+ * @param {object} [edgeBandingEdges={}] - per-type edge banding config:
+ *   { side: ['width+'], top: ['length+', 'length-', 'width+'], bottom: [], back: [], shelf: [] }
+ *   Each key is a part type; each value is an array of edges to band.
+ *   Edges: subset of ['length+', 'length-', 'width+', 'width-']
  * @returns {Part[]}
  */
-export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOverlap = 6) {
+export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOverlap = 6, internalShelves = [], edgeBandingEdges = {}) {
   const { external_W, external_H, external_D, construction_method } = box;
   const { side, top, bottom, back } = thicknesses;
   const eb = edgeBanding ? edgeBanding.thickness : 0;
@@ -56,6 +62,15 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
   const parts = [];
   let partId = 0;
 
+  /**
+   * Look up the edge banding edges for a given part type.
+   * @param {string} type - part type key
+   * @returns {string[]}
+   */
+  function getEdgesForType(type) {
+    return edgeBandingEdges[type] || [];
+  }
+
   if (construction_method === 'A') {
     // Method A: sides run full external height. Top and bottom sit between them.
     //
@@ -66,7 +81,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
 
     // Side panels (quantity: 2)
     {
-      const { cutLength, cutWidth } = applyEdgeBanding(external_H, external_D);
+      const edges = getEdgesForType('side');
+      const { cutLength, cutWidth } = applyEdgeBanding(external_H, external_D, edges);
       parts.push({
         id: `carcass-side-${partId++}`,
         type: 'side',
@@ -75,7 +91,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 2,
         materialThickness: side,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -83,7 +99,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_W - (2 * side);
       const nominalWidth = external_D - back;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('top');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-top-${partId++}`,
         type: 'top',
@@ -92,7 +109,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 1,
         materialThickness: top,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -100,7 +117,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_W - (2 * side);
       const nominalWidth = external_D - back;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('bottom');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-bottom-${partId++}`,
         type: 'bottom',
@@ -109,7 +127,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 1,
         materialThickness: bottom,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -117,7 +135,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_W - backPanelOverlap;
       const nominalWidth = external_H - backPanelOverlap;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('back');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-back-${partId++}`,
         type: 'back',
@@ -126,7 +145,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 1,
         materialThickness: back,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -142,7 +161,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_H - (top + bottom);
       const nominalWidth = external_D - back;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('side');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-side-${partId++}`,
         type: 'side',
@@ -151,7 +171,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 2,
         materialThickness: side,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -159,7 +179,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_W;
       const nominalWidth = external_D - back;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('top');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-top-${partId++}`,
         type: 'top',
@@ -168,7 +189,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 1,
         materialThickness: top,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -176,7 +197,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_W;
       const nominalWidth = external_D - back;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('bottom');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-bottom-${partId++}`,
         type: 'bottom',
@@ -185,7 +207,7 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 1,
         materialThickness: bottom,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
@@ -193,7 +215,8 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
     {
       const nominalLength = external_W - backPanelOverlap;
       const nominalWidth = external_H - backPanelOverlap;
-      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth);
+      const edges = getEdgesForType('back');
+      const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
       parts.push({
         id: `carcass-back-${partId++}`,
         type: 'back',
@@ -202,12 +225,33 @@ export function calculateCarcassParts(box, thicknesses, edgeBanding, backPanelOv
         cutWidth,
         quantity: 1,
         materialThickness: back,
-        edgeBandingEdges: [],
+        edgeBandingEdges: edges,
       });
     }
 
   } else {
     throw new Error(`Unknown construction method: ${construction_method}. Must be 'A' or 'B'.`);
+  }
+
+  // Internal shelves — same width calculation as top/bottom panels
+  // Per ADR-010: shelf length = external_W - (2 * sideThickness)
+  //              shelf width = external_D - backThickness
+  for (const shelf of internalShelves) {
+    const shelfThickness = shelf.thickness ?? top;
+    const nominalLength = external_W - (2 * side);
+    const nominalWidth = external_D - back;
+    const edges = getEdgesForType('shelf');
+    const { cutLength, cutWidth } = applyEdgeBanding(nominalLength, nominalWidth, edges);
+    parts.push({
+      id: `carcass-shelf-${partId++}`,
+      type: 'shelf',
+      label: `Internal Shelf`,
+      cutLength,
+      cutWidth,
+      quantity: shelf.quantity,
+      materialThickness: shelfThickness,
+      edgeBandingEdges: edges,
+    });
   }
 
   return parts;

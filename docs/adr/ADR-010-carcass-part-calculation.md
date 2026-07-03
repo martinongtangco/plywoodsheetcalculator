@@ -1,6 +1,6 @@
 # ADR-010: Carcass Part Calculation Model
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-29
 **Deciders:** Open Source Maintainers
 
@@ -75,11 +75,11 @@ The back panel is the most commonly different thickness (3mm MDF or plywood vs 1
 
 ## Action Items
 
-- [ ] Implement `calculateCarcassParts()` in `src/engine/parts.js`
-- [ ] Add unit tests for Method A with equal thicknesses
-- [ ] Add unit tests for Method A with mixed thicknesses
-- [ ] Add unit tests for Method B with equal thicknesses
-- [ ] Add unit tests for Method B with mixed thicknesses
-- [ ] Add unit tests for internal shelves
-- [ ] Add unit tests verifying internal clearance is consistent between methods
-- [ ] Add unit tests for edge banding subtraction on carcass parts
+- [x] Implement `calculateCarcassParts()` in `src/engine/parts.js`
+- [x] Add unit tests for Method A with equal thicknesses
+- [x] Add unit tests for Method A with mixed thicknesses
+- [x] Add unit tests for Method B with equal thicknesses
+- [x] Add unit tests for Method B with mixed thicknesses
+- [x] Add unit tests for internal shelves
+- [x] Add unit tests verifying internal clearance is consistent between methods
+- [x] Add unit tests for edge banding subtraction on carcass parts
