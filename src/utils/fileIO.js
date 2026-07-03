@@ -1,7 +1,46 @@
 /**
- * fileIO — browser file download and file reading utilities.
+ * fileIO — serialization, deserialization, and browser file I/O.
  * Used by the export/import feature (ADR-006).
+ * Per ADR-014: serialize/deserialize are pure functions (no DOM dependency).
  */
+
+/**
+ * Serialises a Project object to a JSON string.
+ *
+ * @param {Project} project
+ * @returns {string}
+ */
+export function serializeProject(project) {
+  return JSON.stringify(project, null, 2);
+}
+
+/**
+ * Deserialises a JSON string back into a Project object.
+ * Throws a TypeError if the JSON is malformed or the project
+ * structure is invalid.
+ *
+ * @param {string} json
+ * @returns {Project}
+ * @throws {TypeError}
+ */
+export function deserializeProject(json) {
+  if (typeof json !== 'string' || json.trim() === '') {
+    throw new TypeError('Input must be a non-empty JSON string');
+  }
+
+  let project;
+  try {
+    project = JSON.parse(json);
+  } catch (err) {
+    throw new TypeError('Invalid JSON: ' + err.message);
+  }
+
+  if (!project || typeof project !== 'object') {
+    throw new TypeError('Deserialised project is not a valid object');
+  }
+
+  return project;
+}
 
 /**
  * Downloads a string as a file with the given filename and MIME type.
