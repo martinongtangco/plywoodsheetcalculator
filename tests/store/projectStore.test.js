@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useProjectStore } from '../../src/store/projectStore.js';
-import { defaultProject, defaultBox } from '../../src/utils/validate.js';
+import { defaultProject, defaultBox, defaultDrawerConfig } from '../../src/utils/validate.js';
 
 describe('projectStore', () => {
   beforeEach(() => {
@@ -59,6 +59,132 @@ describe('projectStore', () => {
       const project = useProjectStore.getState().getActiveProject();
       expect(project.boxes).toHaveLength(1);
       expect(project.boxes[0].id).toBe(boxId);
+    });
+
+    it('auto-names new boxes as "Box N"', () => {
+      useProjectStore.getState().createProject();
+      useProjectStore.getState().addBox();
+      useProjectStore.getState().addBox();
+      useProjectStore.getState().addBox();
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.boxes[0].name).toBe('Box 1');
+      expect(project.boxes[1].name).toBe('Box 2');
+      expect(project.boxes[2].name).toBe('Box 3');
+    });
+
+    it('uses default dimensions from ADR-016', () => {
+      useProjectStore.getState().createProject();
+      useProjectStore.getState().addBox();
+      const box = useProjectStore.getState().getActiveProject().boxes[0];
+      expect(box.externalWidth).toBe(600);
+      expect(box.externalHeight).toBe(720);
+      expect(box.externalDepth).toBe(570);
+      expect(box.constructionMethod).toBe('A');
+    });
+  });
+
+  describe('updateBox', () => {
+    it('updates box fields', () => {
+      const projectId = useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox();
+      useProjectStore.getState().updateBox(boxId, { name: 'Updated Name', quantity: 3 });
+      const project = useProjectStore.getState().getActiveProject();
+      const box = project.boxes.find((b) => b.id === boxId);
+      expect(box.name).toBe('Updated Name');
+      expect(box.quantity).toBe(3);
+    });
+
+    it('supports function-based updates', () => {
+      const projectId = useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox({ name: 'Test' });
+      useProjectStore.getState().updateBox(boxId, (state) => {
+        const currentBox = state.projects
+          .find((p) => p.id === state.activeProjectId)?.boxes
+          .find((b) => b.id === boxId);
+        return { name: `${currentBox?.name || ''} - Copy` };
+      });
+      const project = useProjectStore.getState().getActiveProject();
+      const box = project.boxes.find((b) => b.id === boxId);
+      expect(box.name).toBe('Test - Copy');
+    });
+  });
+
+  describe('deleteBox', () => {
+    it('removes the box and its drawers', () => {
+      const projectId = useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox();
+      useProjectStore.getState().addDrawer(boxId);
+      useProjectStore.getState().deleteBox(boxId);
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.boxes).toHaveLength(0);
+      expect(project.drawers).toHaveLength(0);
+    });
+  });
+
+  describe('duplicateBox', () => {
+    it('creates a copy with a new id and "(copy)" suffix', () => {
+      useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox({ name: 'Original' });
+      useProjectStore.getState().duplicateBox(boxId);
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.boxes).toHaveLength(2);
+      expect(project.boxes[1].name).toBe('Original (copy)');
+      expect(project.boxes[1].id).not.toBe(boxId);
+    });
+  });
+
+  describe('addDrawer', () => {
+    it('adds a drawer to a box', () => {
+      useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox();
+      const drawerId = useProjectStore.getState().addDrawer(boxId);
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.drawers).toHaveLength(1);
+      expect(project.drawers[0].id).toBe(drawerId);
+      expect(project.drawers[0].boxId).toBe(boxId);
+    });
+
+    it('uses ADR-016 drawer defaults', () => {
+      useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox();
+      useProjectStore.getState().addDrawer(boxId);
+      const drawer = useProjectStore.getState().getActiveProject().drawers[0];
+      expect(drawer.drawerHeight).toBe(150);
+      expect(drawer.trackType).toBe('15mm_side');
+      expect(drawer.thicknesses.side).toBe(15);
+      expect(drawer.thicknesses.frontBack).toBe(18);
+      expect(drawer.thicknesses.base).toBe(5);
+      expect(drawer.backSetback).toBe(0);
+    });
+  });
+
+  describe('updateDrawer', () => {
+    it('updates drawer fields', () => {
+      useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox();
+      const drawerId = useProjectStore.getState().addDrawer(boxId);
+      useProjectStore.getState().updateDrawer(drawerId, {
+        drawerHeight: 200,
+        quantity: 2,
+      });
+      const project = useProjectStore.getState().getActiveProject();
+      const drawer = project.drawers.find((d) => d.id === drawerId);
+      expect(drawer.drawerHeight).toBe(200);
+      expect(drawer.quantity).toBe(2);
+    });
+  });
+
+  describe('deleteDrawer', () => {
+    it('removes a drawer from the project', () => {
+      useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox();
+      useProjectStore.getState().addDrawer(boxId);
+      useProjectStore.getState().addDrawer(boxId);
+      const drawerId = useProjectStore.getState().getActiveProject().drawers[0].id;
+      useProjectStore.getState().deleteDrawer(drawerId);
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.drawers).toHaveLength(1);
+      expect(project.drawers[0].id).not.toBe(drawerId);
     });
   });
 
@@ -153,9 +279,9 @@ describe('projectStore', () => {
           boxId: 'orig-box',
           quantity: 1,
           drawerHeight: 200,
-          trackType: 'standard_15mm',
+          trackType: '15mm_side',
           trackClearancePerSide: 12,
-          thicknesses: { side: 15, frontBack: 15, base: 5 },
+          thicknesses: { side: 15, frontBack: 18, base: 5 },
           backSetback: 20,
           baseInsetFromSide: 1,
           baseInsetFromFront: 1,
@@ -202,5 +328,42 @@ describe('projectStore', () => {
       const parsed = JSON.parse(stored);
       expect(parsed.state.projects[0].name).toBe('Survive');
     });
+  });
+});
+
+describe('defaultBox', () => {
+  it('auto-names based on boxCount', () => {
+    expect(defaultBox(0).name).toBe('Box 1');
+    expect(defaultBox(2).name).toBe('Box 3');
+    expect(defaultBox(9).name).toBe('Box 10');
+  });
+
+  it('matches ADR-016 defaults', () => {
+    const box = defaultBox(0);
+    expect(box.externalWidth).toBe(600);
+    expect(box.externalHeight).toBe(720);
+    expect(box.externalDepth).toBe(570);
+    expect(box.constructionMethod).toBe('A');
+    expect(box.quantity).toBe(1);
+    expect(box.thicknesses.side).toBe(18);
+    expect(box.thicknesses.top).toBe(18);
+    expect(box.thicknesses.bottom).toBe(18);
+    expect(box.thicknesses.back).toBe(12);
+    expect(box.internalShelves).toEqual([]);
+  });
+});
+
+describe('defaultDrawerConfig', () => {
+  it('matches ADR-016 drawer defaults', () => {
+    const drawer = defaultDrawerConfig('test-box-id');
+    expect(drawer.drawerHeight).toBe(150);
+    expect(drawer.trackType).toBe('15mm_side');
+    expect(drawer.thicknesses.side).toBe(15);
+    expect(drawer.thicknesses.frontBack).toBe(18);
+    expect(drawer.thicknesses.base).toBe(5);
+    expect(drawer.backSetback).toBe(0);
+    expect(drawer.baseInsetFromSide).toBe(1);
+    expect(drawer.baseInsetFromFront).toBe(1);
+    expect(drawer.boxId).toBe('test-box-id');
   });
 });

@@ -119,7 +119,9 @@ export const useProjectStore = create(
          * @returns {string} The new box id
          */
         addBox: (overrides = {}) => {
-          const box = { ...defaultBox(), ...overrides };
+          const project = get().getActiveProject();
+          const boxCount = project ? project.boxes.length : 0;
+          const box = { ...defaultBox(boxCount), ...overrides };
           const errors = validateBox(box);
           if (errors.length > 0) {
             console.warn('Box validation warnings:', errors);

@@ -2,48 +2,310 @@
  * BoxConfig.jsx — Boxes tab component
  *
  * ADR-015: Component-per-tab architecture.
+ * ADR-016: Box Configuration UI — accordion-style box cards.
  * Reads from and writes to Zustand stores. Never imports from src/engine/.
- *
- * Features:
- * - List all boxes in the active project
- * - Add / delete / duplicate boxes
- * - Edit box dimensions, construction method, thicknesses, edge banding
- * - Configure internal shelves
- * - Configure drawer configs per box
  */
 
 import { useState, useCallback, useMemo } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
+import { THICKNESSES } from '../presets/thicknesses.js';
+import { TRACK_TYPES } from '../presets/trackTypes.js';
 
 // Stable empty array to avoid creating new references in Zustand selectors
 const EMPTY_ARRAY = [];
 
-// Edge options for edge banding
+// Edge options for edge banding (per ADR-008)
 const EDGE_OPTIONS = [
-  { value: 'length+', label: 'Length +' },
-  { value: 'length-', label: 'Length −' },
-  { value: 'width+', label: 'Width +' },
-  { value: 'width-', label: 'Width −' },
+  { value: 'front', label: 'Front' },
+  { value: 'back', label: 'Back' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
 ];
 
+// Edge options specific to each part type
+const EDGE_OPTIONS_BY_PART = {
+  side: [
+    { value: 'front', label: 'Front' },
+    { value: 'back', label: 'Back' },
+  ],
+  top: [
+    { value: 'left', label: 'Left' },
+    { value: 'right', label: 'Right' },
+    { value: 'back', label: 'Back' },
+  ],
+  bottom: [
+    { value: 'left', label: 'Left' },
+    { value: 'right', label: 'Right' },
+  ],
+};
+
 /**
- * Individual box editor panel.
- * Accepts only boxId (stable primitive) and selects its own data from the store.
+ * ThicknessSelect — dropdown populated from thickness presets.
  */
-function BoxEditor({ boxId }) {
+function ThicknessSelect({ value, onChange, label }) {
+  return (
+    <select
+      value={value ?? ''}
+      onChange={(e) => {
+        const preset = THICKNESSES.find((t) => t.id === e.target.value);
+        onChange(preset ? preset.value : null);
+      }}
+      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+    >
+      <option value="">Select…</option>
+      {THICKNESSES.map((t) => (
+        <option key={t.id} value={t.id}>
+          {t.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+/**
+ * ShelfRow — single internal shelf editor row.
+ * ADR-016: Internal Shelves — list of { heightFromBottom, quantity } with add/remove.
+ */
+function ShelfRow({ shelf, index, onChange, onRemove }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-xs text-gray-500">#{index + 1}</span>
+      <label className="flex items-center gap-1 text-sm">
+        Qty
+        <input
+          type="number"
+          min="1"
+          step="1"
+          value={shelf.quantity}
+          onChange={(e) => onChange(index, 'quantity', parseInt(e.target.value, 10) || 1)}
+          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+        />
+      </label>
+      <label className="flex items-center gap-1 text-sm">
+        H from bot. (mm)
+        <input
+          type="number"
+          min="0"
+          step="1"
+          value={shelf.heightFromBottom ?? ''}
+          onChange={(e) => onChange(index, 'heightFromBottom', parseFloat(e.target.value) || 0)}
+          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+          placeholder="auto"
+        />
+      </label>
+      <button
+        onClick={() => onRemove(index)}
+        className="text-xs text-red-500 hover:underline"
+      >
+        Remove
+      </button>
+    </div>
+  );
+}
+
+/**
+ * DrawerConfigInline — inline drawer configuration form within the box card.
+ * ADR-016: DrawerConfigInline sub-component.
+ */
+function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
+  const handleTrackTypeChange = useCallback(
+    (trackTypeId) => {
+      const preset = TRACK_TYPES.find((t) => t.id === trackTypeId);
+      const clearance = preset?.clearance_per_side ?? drawer.trackClearancePerSide;
+      onUpdate(drawer.id, { trackType: trackTypeId, trackClearancePerSide: clearance ?? 0 });
+    },
+    [drawer, onUpdate]
+  );
+
+  return (
+    <div className="p-3 bg-gray-50 rounded-md space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-700">
+          Drawer — {drawer.drawerHeight}mm high × {drawer.quantity}
+        </span>
+        <button
+          onClick={() => onRemove(drawer.id)}
+          className="text-xs text-red-500 hover:underline"
+        >
+          Remove
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        <label className="block">
+          <span className="text-xs text-gray-500">Height (mm)</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={drawer.drawerHeight}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                drawerHeight: parseFloat(e.target.value) || 0,
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-xs text-gray-500">Quantity</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={drawer.quantity}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                quantity: parseInt(e.target.value, 10) || 1,
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-xs text-gray-500">Track type</span>
+          <select
+            value={drawer.trackType}
+            onChange={(e) => handleTrackTypeChange(e.target.value)}
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm bg-white"
+          >
+            {TRACK_TYPES.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <label className="block">
+          <span className="text-xs text-gray-500">Side (mm)</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={drawer.thicknesses.side}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                thicknesses: { ...drawer.thicknesses, side: parseFloat(e.target.value) || 0 },
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-xs text-gray-500">Front/Back (mm)</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={drawer.thicknesses.frontBack}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                thicknesses: { ...drawer.thicknesses, frontBack: parseFloat(e.target.value) || 0 },
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-xs text-gray-500">Base (mm)</span>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={drawer.thicknesses.base}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                thicknesses: { ...drawer.thicknesses, base: parseFloat(e.target.value) || 0 },
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-xs text-gray-500">Back setback (mm)</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={drawer.backSetback}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                backSetback: parseFloat(e.target.value) || 0,
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <label className="block">
+          <span className="text-xs text-gray-500">Base inset side (mm)</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={drawer.baseInsetFromSide}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                baseInsetFromSide: parseFloat(e.target.value) || 0,
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-xs text-gray-500">Base inset front (mm)</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={drawer.baseInsetFromFront}
+            onChange={(e) =>
+              onUpdate(drawer.id, {
+                baseInsetFromFront: parseFloat(e.target.value) || 0,
+              })
+            }
+            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+          />
+        </label>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * BoxCard — collapsible card for a single box.
+ * ADR-016: Each expanded BoxCard contains these sections in order:
+ * 1. Basic Info — name, quantity
+ * 2. External Dimensions — width, height, depth (mm)
+ * 3. Construction Method — radio group
+ * 4. Material Thicknesses — dropdown from presets
+ * 5. Edge Banding — thickness selector, checkboxes per part type
+ * 6. Internal Shelves — ShelfRow list
+ * 7. Drawers — DrawerConfigInline list
+ */
+function BoxCard({ boxId }) {
   const updateBox = useProjectStore((s) => s.updateBox);
-  const addDrawer = useProjectStore((s) => s.addDrawer);
   const updateDrawer = useProjectStore((s) => s.updateDrawer);
   const deleteDrawer = useProjectStore((s) => s.deleteDrawer);
+  const addDrawer = useProjectStore((s) => s.addDrawer);
 
-  // Select the box directly from store by id — box reference is stable unless this specific box is updated
   const box = useProjectStore((s) => {
     const project = s.getActiveProject();
     if (!project) return null;
     return project.boxes.find((b) => b.id === boxId) ?? null;
   });
 
-  // Select drawers array — uses stable EMPTY_ARRAY when no project
   const allDrawers = useProjectStore((s) => {
     const project = s.getActiveProject();
     return project ? project.drawers : EMPTY_ARRAY;
@@ -55,11 +317,8 @@ function BoxEditor({ boxId }) {
 
   const [expanded, setExpanded] = useState(false);
 
-  // Stable handlers: only depend on boxId (primitive) and store actions (stable refs)
   const handleFieldChange = useCallback(
-    (field, value) => {
-      updateBox(boxId, { [field]: value });
-    },
+    (field, value) => updateBox(boxId, { [field]: value }),
     [boxId, updateBox]
   );
 
@@ -71,10 +330,7 @@ function BoxEditor({ boxId }) {
           .find((bx) => bx.id === boxId);
         if (!b) return {};
         return {
-          thicknesses: {
-            ...b.thicknesses,
-            [key]: parseFloat(value) || 0,
-          },
+          thicknesses: { ...b.thicknesses, [key]: value },
         };
       });
     },
@@ -90,10 +346,7 @@ function BoxEditor({ boxId }) {
           .find((bx) => bx.id === boxId);
         if (!b) return {};
         return {
-          edgeBanding: {
-            ...b.edgeBanding,
-            thickness,
-          },
+          edgeBanding: { ...b.edgeBanding, thickness },
         };
       });
     },
@@ -114,10 +367,7 @@ function BoxEditor({ boxId }) {
         return {
           edgeBanding: {
             ...b.edgeBanding,
-            edges: {
-              ...b.edgeBanding?.edges,
-              [partType]: newEdges,
-            },
+            edges: { ...b.edgeBanding?.edges, [partType]: newEdges },
           },
         };
       });
@@ -165,66 +415,40 @@ function BoxEditor({ boxId }) {
     [boxId, updateBox]
   );
 
-  if (!box) {
-    return null;
-  }
+  if (!box) return null;
 
   return (
     <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
-      {/* Box header */}
+      {/* Box header — summary */}
       <div
         className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-900">
-              {box.name || `Box`}
-            </span>
+            <span className="font-medium text-gray-900">{box.name || 'Box'}</span>
             <span className="text-xs text-gray-500">
               {box.externalWidth}×{box.externalHeight}×{box.externalDepth} mm
+              {box.quantity > 1 ? ` × ${box.quantity}` : ''}
             </span>
           </div>
         </div>
-        <span className="text-gray-400 text-sm">
-          {expanded ? '▲' : '▼'}
-        </span>
+        <span className="text-gray-400 text-sm">{expanded ? '▲' : '▼'}</span>
       </div>
 
-      {/* Expanded editor */}
+      {/* Expanded editor — ADR-016 sections */}
       {expanded && (
         <div className="p-4 space-y-6 border-t border-gray-200">
-          {/* Basic fields */}
+          {/* 1. Basic Info */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Dimensions (mm)</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">Basic Info</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <label className="block">
-                <span className="text-xs text-gray-500">Width</span>
+                <span className="text-xs text-gray-500">Name</span>
                 <input
-                  type="number"
-                  min="1"
-                  value={box.externalWidth}
-                  onChange={(e) => handleFieldChange('externalWidth', parseFloat(e.target.value) || 0)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs text-gray-500">Height</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={box.externalHeight}
-                  onChange={(e) => handleFieldChange('externalHeight', parseFloat(e.target.value) || 0)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs text-gray-500">Depth</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={box.externalDepth}
-                  onChange={(e) => handleFieldChange('externalDepth', parseFloat(e.target.value) || 0)}
+                  type="text"
+                  value={box.name}
+                  onChange={(e) => handleFieldChange('name', e.target.value)}
                   className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                 />
               </label>
@@ -233,6 +457,7 @@ function BoxEditor({ boxId }) {
                 <input
                   type="number"
                   min="1"
+                  step="1"
                   value={box.quantity}
                   onChange={(e) => handleFieldChange('quantity', parseInt(e.target.value, 10) || 1)}
                   className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
@@ -241,7 +466,47 @@ function BoxEditor({ boxId }) {
             </div>
           </div>
 
-          {/* Construction method */}
+          {/* 2. External Dimensions */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">External Dimensions (mm)</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <label className="block">
+                <span className="text-xs text-gray-500">Width (mm)</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={box.externalWidth}
+                  onChange={(e) => handleFieldChange('externalWidth', parseFloat(e.target.value) || 0)}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-gray-500">Height (mm)</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={box.externalHeight}
+                  onChange={(e) => handleFieldChange('externalHeight', parseFloat(e.target.value) || 0)}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-gray-500">Depth (mm)</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={box.externalDepth}
+                  onChange={(e) => handleFieldChange('externalDepth', parseFloat(e.target.value) || 0)}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* 3. Construction Method */}
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">Construction Method</h4>
             <div className="flex gap-4">
@@ -255,33 +520,35 @@ function BoxEditor({ boxId }) {
                     className="text-blue-600"
                   />
                   <span className="text-sm text-gray-700">
-                    {m === 'A' ? 'A — Full-height sides' : 'B — Full-width top/bottom'}
+                    {m === 'A' ? 'A — Sides run full height' : 'B — Top/bottom run full width'}
                   </span>
                 </label>
               ))}
             </div>
           </div>
 
-          {/* Material thicknesses */}
+          {/* 4. Material Thicknesses — dropdown from presets */}
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Material Thicknesses (mm)</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">Material Thicknesses</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {['side', 'top', 'bottom', 'back'].map((key) => (
-                <label key={key} className="block">
-                  <span className="text-xs text-gray-500 capitalize">{key}</span>
-                  <input
-                    type="number"
-                    min="1"
-                    value={box.thicknesses[key]}
-                    onChange={(e) => handleThicknessChange(key, e.target.value)}
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                  />
-                </label>
-              ))}
+              {['side', 'top', 'bottom', 'back'].map((key) => {
+                const matchedPreset = THICKNESSES.find(
+                  (t) => t.value === box.thicknesses[key]
+                );
+                return (
+                  <label key={key} className="block">
+                    <span className="text-xs text-gray-500 capitalize">{key}</span>
+                    <ThicknessSelect
+                      value={matchedPreset?.id ?? box.thicknesses[key]}
+                      onChange={(val) => handleThicknessChange(key, val)}
+                    />
+                  </label>
+                );
+              })}
             </div>
           </div>
 
-          {/* Edge banding */}
+          {/* 5. Edge Banding */}
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">Edge Banding</h4>
             <label className="block mb-3">
@@ -303,7 +570,7 @@ function BoxEditor({ boxId }) {
                 {['side', 'top', 'bottom'].map((partType) => (
                   <div key={partType} className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-gray-500 capitalize w-12">{partType}</span>
-                    {EDGE_OPTIONS.map(({ value, label }) => (
+                    {(EDGE_OPTIONS_BY_PART[partType] || []).map(({ value, label }) => (
                       <label key={value} className="flex items-center gap-1 text-xs">
                         <input
                           type="checkbox"
@@ -319,7 +586,7 @@ function BoxEditor({ boxId }) {
             )}
           </div>
 
-          {/* Internal shelves */}
+          {/* 6. Internal Shelves */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold text-gray-700">Internal Shelves</h4>
@@ -333,25 +600,13 @@ function BoxEditor({ boxId }) {
             {box.internalShelves && box.internalShelves.length > 0 ? (
               <div className="space-y-2">
                 {box.internalShelves.map((shelf, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500">#{i + 1}</span>
-                    <label className="flex items-center gap-1 text-sm">
-                      Qty
-                      <input
-                        type="number"
-                        min="1"
-                        value={shelf.quantity}
-                        onChange={(e) => handleShelfChange(i, 'quantity', parseInt(e.target.value, 10) || 1)}
-                        className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
-                      />
-                    </label>
-                    <button
-                      onClick={() => handleRemoveShelf(i)}
-                      className="text-xs text-red-500 hover:underline"
-                    >
-                      Remove
-                    </button>
-                  </div>
+                  <ShelfRow
+                    key={i}
+                    shelf={shelf}
+                    index={i}
+                    onChange={handleShelfChange}
+                    onRemove={handleRemoveShelf}
+                  />
                 ))}
               </div>
             ) : (
@@ -359,7 +614,7 @@ function BoxEditor({ boxId }) {
             )}
           </div>
 
-          {/* Drawers */}
+          {/* 7. Drawers */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold text-gray-700">Drawers</h4>
@@ -373,63 +628,12 @@ function BoxEditor({ boxId }) {
             {projectDrawers.length > 0 ? (
               <div className="space-y-3">
                 {projectDrawers.map((drawer) => (
-                  <div key={drawer.id} className="p-3 bg-gray-50 rounded-md space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">
-                        Drawer — {drawer.drawerHeight}mm high × {drawer.quantity}
-                      </span>
-                      <button
-                        onClick={() => deleteDrawer(drawer.id)}
-                        className="text-xs text-red-500 hover:underline"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      <label className="block">
-                        <span className="text-xs text-gray-500">Height (mm)</span>
-                        <input
-                          type="number"
-                          min="1"
-                          value={drawer.drawerHeight}
-                          onChange={(e) =>
-                            updateDrawer(drawer.id, {
-                              drawerHeight: parseFloat(e.target.value) || 0,
-                            })
-                          }
-                          className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="text-xs text-gray-500">Quantity</span>
-                        <input
-                          type="number"
-                          min="1"
-                          value={drawer.quantity}
-                          onChange={(e) =>
-                            updateDrawer(drawer.id, {
-                              quantity: parseInt(e.target.value, 10) || 1,
-                            })
-                          }
-                          className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="text-xs text-gray-500">Track clearance/side (mm)</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={drawer.trackClearancePerSide}
-                          onChange={(e) =>
-                            updateDrawer(drawer.id, {
-                              trackClearancePerSide: parseFloat(e.target.value) || 0,
-                            })
-                          }
-                          className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                        />
-                      </label>
-                    </div>
-                  </div>
+                  <DrawerConfigInline
+                    key={drawer.id}
+                    drawer={drawer}
+                    onUpdate={updateDrawer}
+                    onRemove={deleteDrawer}
+                  />
                 ))}
               </div>
             ) : (
@@ -443,10 +647,10 @@ function BoxEditor({ boxId }) {
 }
 
 /**
- * BoxConfig — main Boxes tab component
+ * BoxConfig — main Boxes tab component (ADR-016).
+ * Accordion-style list where each box is a collapsible card.
  */
 export default function BoxConfig() {
-  // Select the boxes array reference — uses stable EMPTY_ARRAY when no project
   const boxes = useProjectStore((s) => {
     const project = s.getActiveProject();
     return project ? project.boxes : EMPTY_ARRAY;
@@ -454,12 +658,9 @@ export default function BoxConfig() {
   const boxIds = useMemo(() => boxes.map((b) => b.id), [boxes]);
 
   const addBox = useProjectStore((s) => s.addBox);
-
-  // Select delete and duplicate actions (stable function refs)
   const deleteBox = useProjectStore((s) => s.deleteBox);
   const duplicateBox = useProjectStore((s) => s.duplicateBox);
 
-  // For each boxId, select the box name for the delete confirmation
   const getBox = useCallback(
     (id) => {
       const project = useProjectStore.getState().getActiveProject();
@@ -504,7 +705,7 @@ export default function BoxConfig() {
       <div className="space-y-3">
         {boxIds.map((id, index) => (
           <div key={id} className="relative">
-            <BoxEditor boxId={id} />
+            <BoxCard boxId={id} />
             <div className="flex gap-2 mt-2">
               <button
                 onClick={() => duplicateBox(id)}

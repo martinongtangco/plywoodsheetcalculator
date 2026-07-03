@@ -22,13 +22,16 @@ export function defaultProject() {
 
 /**
  * Default values for a new Box.
+ * Auto-numbers as "Box N" based on the current box count in the active project.
+ * When called outside the store (e.g., tests), the counter starts at 1.
  *
+ * @param {number} [boxCount] - Current number of boxes in the project (for auto-naming)
  * @returns {Box}
  */
-export function defaultBox() {
+export function defaultBox(boxCount = 0) {
   return {
     id: uid(),
-    name: '',
+    name: `Box ${boxCount + 1}`,
     quantity: 1,
     externalWidth: 600,
     externalHeight: 720,
@@ -63,15 +66,15 @@ export function defaultDrawerConfig(boxId) {
     id: uid(),
     boxId,
     quantity: 1,
-    drawerHeight: 200,
-    trackType: 'standard_15mm',
+    drawerHeight: 150,
+    trackType: '15mm_side',
     trackClearancePerSide: 12,
     thicknesses: {
       side: 15,
-      frontBack: 15,
+      frontBack: 18,
       base: 5,
     },
-    backSetback: 20,
+    backSetback: 0,
     baseInsetFromSide: 1,
     baseInsetFromFront: 1,
   };

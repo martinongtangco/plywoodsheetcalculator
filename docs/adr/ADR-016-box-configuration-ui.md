@@ -1,6 +1,6 @@
 # ADR-016: Box Configuration UI
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-03
 **Deciders:** Open Source Maintainers
 
@@ -111,13 +111,13 @@ All data is written directly to the Zustand store on every input change (control
 
 ## Action Items
 
-- [ ] Add box CRUD actions to `projectStore` (`addBox`, `updateBox`, `removeBox`)
-- [ ] Add drawer CRUD actions to `projectStore` (`addDrawer`, `updateDrawer`, `removeDrawer`)
-- [ ] Add shelf CRUD actions to `projectStore` (`addShelf`, `updateShelf`, `removeShelf`)
-- [ ] Create `BoxConfig.jsx` with accordion layout
-- [ ] Create `BoxCard.jsx` with collapsible sections
-- [ ] Create `DrawerConfigInline.jsx` sub-component
-- [ ] Create `ShelfRow.jsx` sub-component
-- [ ] Wire thickness presets from `src/presets/thicknesses.js`
-- [ ] Wire track type presets from `src/presets/trackTypes.js`
-- [ ] Add unit tests for box CRUD store actions
+- [x] Add box CRUD actions to `projectStore` (`addBox`, `updateBox`, `removeBox`)
+- [x] Add drawer CRUD actions to `projectStore` (`addDrawer`, `updateDrawer`, `removeDrawer`)
+- [x] Add shelf CRUD actions to `projectStore` (shelves managed inline via `updateBox` with `internalShelves` array)
+- [x] Create `BoxConfig.jsx` with accordion layout
+- [x] Create `BoxCard.jsx` with collapsible sections (extracted as sub-component within BoxConfig.jsx)
+- [x] Create `DrawerConfigInline.jsx` sub-component (extracted within BoxConfig.jsx)
+- [x] Create `ShelfRow.jsx` sub-component (extracted within BoxConfig.jsx)
+- [x] Wire thickness presets from `src/presets/thicknesses.js`
+- [x] Wire track type presets from `src/presets/trackTypes.js`
+- [x] Add unit tests for box CRUD store actions
