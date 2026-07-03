@@ -1,0 +1,288 @@
+/**
+ * parts.test.js — Unit tests for src/engine/parts.js
+ *
+ * Covers:
+ * - calculateCarcassParts (Method A and B)
+ * - calculateInternalDimensions
+ * - calculateDrawerParts (stub — should throw)
+ *
+ * Per ADR-009: every public function in the engine has at least
+ * one happy-path test and one edge-case test.
+ */
+import { describe, it, expect } from 'vitest';
+import {
+  calculateCarcassParts,
+  calculateInternalDimensions,
+  calculateDrawerParts,
+} from '../../src/engine/parts.js';
+
+// ============================================================
+// Shared fixtures
+// ============================================================
+
+const standardBoxA = {
+  external_W: 800,
+  external_H: 600,
+  external_D: 400,
+  construction_method: 'A',
+};
+
+const standardBoxB = {
+  external_W: 800,
+  external_H: 600,
+  external_D: 400,
+  construction_method: 'B',
+};
+
+const standardThicknesses = {
+  side: 18,
+  top: 18,
+  bottom: 18,
+  back: 3,
+};
+
+// ============================================================
+// calculateCarcassParts — Method A
+// ============================================================
+
+describe('calculateCarcassParts — Method A', () => {
+  it('returns 4 part types: side (x2), top, bottom, back', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    expect(parts).toHaveLength(4);
+    expect(parts.map(p => p.type)).toEqual(['side', 'top', 'bottom', 'back']);
+  });
+
+  it('side panels have correct dimensions: external_H x external_D', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const side = parts.find(p => p.type === 'side');
+    expect(side.cutLength).toBe(600); // external_H
+    expect(side.cutWidth).toBe(400);  // external_D
+    expect(side.quantity).toBe(2);
+  });
+
+  it('top panel: (external_W - 2*side) x (external_D - back)', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const top = parts.find(p => p.type === 'top');
+    expect(top.cutLength).toBe(800 - 2 * 18); // 764
+    expect(top.cutWidth).toBe(400 - 3);        // 397
+    expect(top.quantity).toBe(1);
+  });
+
+  it('bottom panel matches top panel dimensions', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const top = parts.find(p => p.type === 'top');
+    const bottom = parts.find(p => p.type === 'bottom');
+    expect(bottom.cutLength).toBe(top.cutLength);
+    expect(bottom.cutWidth).toBe(top.cutWidth);
+  });
+
+  it('back panel: (external_W - overlap) x (external_H - overlap)', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const back = parts.find(p => p.type === 'back');
+    // Default overlap is 6mm
+    expect(back.cutLength).toBe(800 - 6);  // 794
+    expect(back.cutWidth).toBe(600 - 6);   // 594
+  });
+
+  it('custom backPanelOverlap is respected', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null, 10);
+    const back = parts.find(p => p.type === 'back');
+    expect(back.cutLength).toBe(800 - 10); // 790
+    expect(back.cutWidth).toBe(600 - 10);  // 590
+  });
+
+  it('side panel has correct material thickness', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const side = parts.find(p => p.type === 'side');
+    expect(side.materialThickness).toBe(18);
+  });
+
+  it('back panel has correct material thickness', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const back = parts.find(p => p.type === 'back');
+    expect(back.materialThickness).toBe(3);
+  });
+
+  it('each part has a unique id', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const ids = parts.map(p => p.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
+  });
+
+  it('each part has an empty edgeBandingEdges array by default', () => {
+    const parts = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    for (const part of parts) {
+      expect(Array.isArray(part.edgeBandingEdges)).toBe(true);
+      expect(part.edgeBandingEdges).toHaveLength(0);
+    }
+  });
+});
+
+// ============================================================
+// calculateCarcassParts — Method B
+// ============================================================
+
+describe('calculateCarcassParts — Method B', () => {
+  it('returns 4 part types: side (x2), top, bottom, back', () => {
+    const parts = calculateCarcassParts(standardBoxB, standardThicknesses, null);
+    expect(parts).toHaveLength(4);
+    expect(parts.map(p => p.type)).toEqual(['side', 'top', 'bottom', 'back']);
+  });
+
+  it('side panels: (external_H - top - bottom) x (external_D - back)', () => {
+    const parts = calculateCarcassParts(standardBoxB, standardThicknesses, null);
+    const side = parts.find(p => p.type === 'side');
+    expect(side.cutLength).toBe(600 - 18 - 18); // 564
+    expect(side.cutWidth).toBe(400 - 3);        // 397
+    expect(side.quantity).toBe(2);
+  });
+
+  it('top panel: external_W x (external_D - back)', () => {
+    const parts = calculateCarcassParts(standardBoxB, standardThicknesses, null);
+    const top = parts.find(p => p.type === 'top');
+    expect(top.cutLength).toBe(800);             // external_W
+    expect(top.cutWidth).toBe(400 - 3);          // 397
+  });
+
+  it('bottom panel matches top panel dimensions', () => {
+    const parts = calculateCarcassParts(standardBoxB, standardThicknesses, null);
+    const top = parts.find(p => p.type === 'top');
+    const bottom = parts.find(p => p.type === 'bottom');
+    expect(bottom.cutLength).toBe(top.cutLength);
+    expect(bottom.cutWidth).toBe(top.cutWidth);
+  });
+
+  it('back panel dimensions are identical to Method A', () => {
+    const partsA = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const partsB = calculateCarcassParts(standardBoxB, standardThicknesses, null);
+    const backA = partsA.find(p => p.type === 'back');
+    const backB = partsB.find(p => p.type === 'back');
+    expect(backB.cutLength).toBe(backA.cutLength);
+    expect(backB.cutWidth).toBe(backA.cutWidth);
+  });
+});
+
+// ============================================================
+// calculateCarcassParts — Edge banding
+// ============================================================
+
+describe('calculateCarcassParts — Edge banding', () => {
+  it('edge banding parameter is accepted without error', () => {
+    expect(() => {
+      calculateCarcassParts(standardBoxA, standardThicknesses, { thickness: 2 });
+    }).not.toThrow();
+  });
+
+  it('null edge banding produces same result as { thickness: 0 }', () => {
+    const partsNull = calculateCarcassParts(standardBoxA, standardThicknesses, null);
+    const partsZero = calculateCarcassParts(standardBoxA, standardThicknesses, { thickness: 0 });
+    for (let i = 0; i < partsNull.length; i++) {
+      expect(partsZero[i].cutLength).toBe(partsNull[i].cutLength);
+      expect(partsZero[i].cutWidth).toBe(partsNull[i].cutWidth);
+    }
+  });
+});
+
+// ============================================================
+// calculateCarcassParts — Edge cases
+// ============================================================
+
+describe('calculateCarcassParts — Edge cases', () => {
+  it('throws on unknown construction method', () => {
+    expect(() => {
+      calculateCarcassParts(
+        { ...standardBoxA, construction_method: 'C' },
+        standardThicknesses,
+        null
+      );
+    }).toThrow(/Unknown construction method/);
+  });
+
+  it('throws on empty string construction method', () => {
+    expect(() => {
+      calculateCarcassParts(
+        { ...standardBoxA, construction_method: '' },
+        standardThicknesses,
+        null
+      );
+    }).toThrow();
+  });
+
+  it('handles zero-thickness back panel', () => {
+    const parts = calculateCarcassParts(standardBoxA, { ...standardThicknesses, back: 0 }, null);
+    const top = parts.find(p => p.type === 'top');
+    // top width = external_D - back = 400 - 0 = 400
+    expect(top.cutWidth).toBe(400);
+  });
+
+  it('handles very thin material (3mm)', () => {
+    const thinThicknesses = { side: 3, top: 3, bottom: 3, back: 3 };
+    const parts = calculateCarcassParts(standardBoxA, thinThicknesses, null);
+    const top = parts.find(p => p.type === 'top');
+    expect(top.cutLength).toBe(800 - 2 * 3); // 794
+  });
+
+  it('Method B handles different top and bottom thicknesses', () => {
+    const mixedThicknesses = { side: 18, top: 18, bottom: 25, back: 3 };
+    const parts = calculateCarcassParts(standardBoxB, mixedThicknesses, null);
+    const side = parts.find(p => p.type === 'side');
+    expect(side.cutLength).toBe(600 - 18 - 25); // 557
+  });
+});
+
+// ============================================================
+// calculateInternalDimensions
+// ============================================================
+
+describe('calculateInternalDimensions', () => {
+  it('Method A: correct internal dimensions', () => {
+    const result = calculateInternalDimensions(standardBoxA, standardThicknesses);
+    expect(result.width).toBe(800 - 2 * 18);  // 764
+    expect(result.height).toBe(600 - 18 - 18); // 564
+    expect(result.depth).toBe(400 - 3);         // 397
+  });
+
+  it('Method B: same internal dimensions as Method A', () => {
+    const resultA = calculateInternalDimensions(standardBoxA, standardThicknesses);
+    const resultB = calculateInternalDimensions(standardBoxB, standardThicknesses);
+    expect(resultB.width).toBe(resultA.width);
+    expect(resultB.height).toBe(resultA.height);
+    expect(resultB.depth).toBe(resultA.depth);
+  });
+
+  it('throws on unknown construction method', () => {
+    expect(() => {
+      calculateInternalDimensions(
+        { ...standardBoxA, construction_method: 'C' },
+        standardThicknesses
+      );
+    }).toThrow(/Unknown construction method/);
+  });
+
+  it('handles symmetric box', () => {
+    const box = {
+      external_W: 500,
+      external_H: 500,
+      external_D: 500,
+      construction_method: 'A',
+    };
+    const thicknesses = { side: 18, top: 18, bottom: 18, back: 3 };
+    const result = calculateInternalDimensions(box, thicknesses);
+    expect(result.width).toBe(464);
+    expect(result.height).toBe(464);
+    expect(result.depth).toBe(497);
+  });
+});
+
+// ============================================================
+// calculateDrawerParts
+// ============================================================
+
+describe('calculateDrawerParts', () => {
+  it('throws "not yet implemented" error', () => {
+    expect(() => {
+      calculateDrawerParts({}, {}, {}, null);
+    }).toThrow('calculateDrawerParts not yet implemented');
+  });
+});
