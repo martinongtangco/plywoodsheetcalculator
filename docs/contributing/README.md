@@ -38,3 +38,11 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 - `docs:` documentation only
 - `test:` tests only
 - `chore:` tooling, deps, config
+
+## Data persistence (ADR-006)
+
+- All project data is persisted to browser **localStorage**.
+- The localStorage key is **`ply-calc-projects`** (set in `src/store/projectStore.js`).
+- Clearing browser data deletes all projects. Users should export their project as JSON first.
+- Export produces a `.json` file. Import reads a `.json` file and replaces current state.
+- To test persistence locally: open DevTools → Application → Local Storage → `ply-calc-projects`.
