@@ -4,7 +4,7 @@
  * Covers:
  * - calculateCarcassParts (Method A and B)
  * - calculateInternalDimensions
- * - calculateDrawerParts (stub — should throw)
+ * - calculateDrawerParts (ADR-011)
  *
  * Per ADR-009: every public function in the engine has at least
  * one happy-path test and one edge-case test.
@@ -533,13 +533,295 @@ describe('calculateCarcassParts — Edge Banding Subtraction', () => {
 });
 
 // ============================================================
-// calculateDrawerParts
+// calculateDrawerParts — ADR-011
 // ============================================================
 
-describe('calculateDrawerParts', () => {
-  it('throws "not yet implemented" error', () => {
-    expect(() => {
-      calculateDrawerParts({}, {}, {}, null);
-    }).toThrow('calculateDrawerParts not yet implemented');
+describe('calculateDrawerParts — Standard 15mm drawer with undermount slides', () => {
+  const drawerConfig = {
+    quantity: 1,
+    drawer_height: 200,
+    track_clearance_per_side: 0, // undermount: clearance is 0, attaches to base
+  };
+  const internalDims = { width: 764, depth: 397 };
+  const thicknesses = { side: 15, front_back: 15, base: 6 };
+
+  it('returns 3 part types: drawer_side (x2), drawer_front_back, drawer_base', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    expect(parts).toHaveLength(3);
+    expect(parts.map(p => p.type)).toEqual(['drawer_side', 'drawer_front_back', 'drawer_base']);
+  });
+
+  it('drawer side: length = internalWidth, width = internalHeight', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const side = parts.find(p => p.type === 'drawer_side');
+    // internalWidth = 764 - 0*2 = 764
+    // internalHeight = 200 - 6 = 194
+    expect(side.cutLength).toBe(764);
+    expect(side.cutWidth).toBe(194);
+    expect(side.quantity).toBe(2);
+  });
+
+  it('drawer front/back: length = internalWidth + 2*sideThickness, width = drawerHeight', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const fb = parts.find(p => p.type === 'drawer_front_back');
+    // internalWidth = 764, sideThickness = 15
+    // length = 764 + 2*15 = 794
+    // width = 200
+    expect(fb.cutLength).toBe(794);
+    expect(fb.cutWidth).toBe(200);
+    expect(fb.quantity).toBe(1);
+  });
+
+  it('drawer base: length = internalWidth - 2*baseInsetFromSide, width = internalDepth - baseInsetFromFront', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const base = parts.find(p => p.type === 'drawer_base');
+    // internalWidth = 764
+    // baseInsetFromSide defaults to sideThickness / 2 = 7.5
+    // length = 764 - 2*7.5 = 749
+    // internalDepth = 397 - 20 = 377
+    // baseInsetFromFront defaults to 0
+    // width = 377 - 0 = 377
+    expect(base.cutLength).toBe(749);
+    expect(base.cutWidth).toBe(377);
+    expect(base.quantity).toBe(1);
+  });
+
+  it('drawer side has default edge banding on length+ (front edge)', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const side = parts.find(p => p.type === 'drawer_side');
+    expect(side.edgeBandingEdges).toEqual(['length+']);
+  });
+
+  it('drawer side has correct material thickness', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const side = parts.find(p => p.type === 'drawer_side');
+    expect(side.materialThickness).toBe(15);
+  });
+
+  it('drawer base has correct material thickness', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const base = parts.find(p => p.type === 'drawer_base');
+    expect(base.materialThickness).toBe(6);
+  });
+});
+
+describe('calculateDrawerParts — 18mm drawer with side-mount slides', () => {
+  const drawerConfig = {
+    quantity: 1,
+    drawer_height: 180,
+    track_clearance_per_side: 12.7, // side-mount standard
+  };
+  const internalDims = { width: 764, depth: 400 };
+  const thicknesses = { side: 18, front_back: 18, base: 6 };
+
+  it('track clearance is correctly subtracted from internal width', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const side = parts.find(p => p.type === 'drawer_side');
+    // internalWidth = 764 - 12.7*2 = 738.6
+    expect(side.cutLength).toBe(738.6);
+  });
+
+  it('drawer front/back accounts for 18mm side thickness', () => {
+    const parts = calculateDrawerParts(drawerConfig, internalDims, thicknesses, null);
+    const fb = parts.find(p => p.type === 'drawer_front_back');
+    // internalWidth = 738.6
+    // length = 738.6 + 2*18 = 774.6
+    expect(fb.cutLength).toBe(774.6);
+    expect(fb.materialThickness).toBe(18);
+  });
+});
+
+describe('calculateDrawerParts — Drawer back setback', () => {
+  it('default back setback of 20mm is applied', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 1, drawer_height: 200, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    const base = parts.find(p => p.type === 'drawer_base');
+    // internalDepth = 400 - 20 = 380
+    // base width = 380 - 0 = 380
+    expect(base.cutWidth).toBe(380);
+  });
+
+  it('custom back setback is respected', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 1, drawer_height: 200, track_clearance_per_side: 0, drawer_back_setback: 50 },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    const base = parts.find(p => p.type === 'drawer_base');
+    // internalDepth = 400 - 50 = 350
+    expect(base.cutWidth).toBe(350);
+  });
+});
+
+describe('calculateDrawerParts — Base panel inset calculations', () => {
+  it('custom base_inset_from_side is respected', () => {
+    const parts = calculateDrawerParts(
+      {
+        quantity: 1,
+        drawer_height: 200,
+        track_clearance_per_side: 0,
+        base_inset_from_side: 10,
+      },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    const base = parts.find(p => p.type === 'drawer_base');
+    // internalWidth = 600
+    // length = 600 - 2*10 = 580
+    expect(base.cutLength).toBe(580);
+  });
+
+  it('custom base_inset_from_front is respected', () => {
+    const parts = calculateDrawerParts(
+      {
+        quantity: 1,
+        drawer_height: 200,
+        track_clearance_per_side: 0,
+        base_inset_from_front: 15,
+      },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    const base = parts.find(p => p.type === 'drawer_base');
+    // internalDepth = 400 - 20 = 380
+    // width = 380 - 15 = 365
+    expect(base.cutWidth).toBe(365);
+  });
+});
+
+describe('calculateDrawerParts — Multiple drawers in one cabinet', () => {
+  it('returns 3 parts per drawer, one set per drawer', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 3, drawer_height: 150, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    // 3 drawers * 3 part types = 9 parts
+    expect(parts).toHaveLength(9);
+  });
+
+  it('each drawer part has a unique label indicating drawer number', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 2, drawer_height: 150, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    const labels = parts.map(p => p.label);
+    expect(labels).toContain('Drawer 1 Side');
+    expect(labels).toContain('Drawer 1 Front/Back Frame');
+    expect(labels).toContain('Drawer 1 Base Panel');
+    expect(labels).toContain('Drawer 2 Side');
+    expect(labels).toContain('Drawer 2 Front/Back Frame');
+    expect(labels).toContain('Drawer 2 Base Panel');
+  });
+
+  it('each drawer part has a unique id', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 3, drawer_height: 150, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      null
+    );
+    const ids = parts.map(p => p.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
+  });
+});
+
+describe('calculateDrawerParts — Edge banding on drawer sides', () => {
+  it('edge banding on drawer side length+ reduces cutLength', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 1, drawer_height: 200, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      { thickness: 2 }
+    );
+    const side = parts.find(p => p.type === 'drawer_side');
+    // internalWidth = 600, default edge banding is ['length+']
+    // cutLength = 600 - 2 = 598
+    expect(side.cutLength).toBe(598);
+    expect(side.cutWidth).toBe(194); // internalHeight = 200 - 6 = 194
+  });
+
+  it('custom side_edge_banding config is respected', () => {
+    const parts = calculateDrawerParts(
+      {
+        quantity: 1,
+        drawer_height: 200,
+        track_clearance_per_side: 0,
+        side_edge_banding: ['length+', 'width+'],
+      },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      { thickness: 2 }
+    );
+    const side = parts.find(p => p.type === 'drawer_side');
+    // cutLength = 600 - 2 = 598 (length+)
+    // cutWidth = 194 - 2 = 192 (width+)
+    expect(side.cutLength).toBe(598);
+    expect(side.cutWidth).toBe(192);
+    expect(side.edgeBandingEdges).toEqual(['length+', 'width+']);
+  });
+
+  it('no edge banding produces nominal dimensions', () => {
+    const parts = calculateDrawerParts(
+      {
+        quantity: 1,
+        drawer_height: 200,
+        track_clearance_per_side: 0,
+        side_edge_banding: [],
+      },
+      { width: 600, depth: 400 },
+      { side: 15, front_back: 15, base: 6 },
+      { thickness: 2 }
+    );
+    const side = parts.find(p => p.type === 'drawer_side');
+    expect(side.cutLength).toBe(600);
+    expect(side.cutWidth).toBe(194);
+    expect(side.edgeBandingEdges).toEqual([]);
+  });
+});
+
+describe('calculateDrawerParts — Default thicknesses', () => {
+  it('defaults side thickness to 15mm when not provided', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 1, drawer_height: 200, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      {},
+      null
+    );
+    const side = parts.find(p => p.type === 'drawer_side');
+    expect(side.materialThickness).toBe(15);
+  });
+
+  it('defaults base thickness to 6mm when not provided', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 1, drawer_height: 200, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 15 },
+      null
+    );
+    const base = parts.find(p => p.type === 'drawer_base');
+    expect(base.materialThickness).toBe(6);
+  });
+
+  it('defaults front_back thickness to side thickness when not provided', () => {
+    const parts = calculateDrawerParts(
+      { quantity: 1, drawer_height: 200, track_clearance_per_side: 0 },
+      { width: 600, depth: 400 },
+      { side: 18 },
+      null
+    );
+    const fb = parts.find(p => p.type === 'drawer_front_back');
+    expect(fb.materialThickness).toBe(18);
   });
 });

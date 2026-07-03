@@ -292,15 +292,151 @@ export function calculateInternalDimensions(box, thicknesses) {
 /**
  * Calculate cut dimensions for all parts of a drawer configuration.
  *
- * @param {object} drawerConfig - { quantity, drawer_height, track_clearance_per_side, base_position, base_offset }
- * @param {object} internalDims - { width, depth } of the cabinet interior in mm
- * @param {object} thicknesses - { side, front_back, base } in mm
- * @param {object} edgeBanding - { thickness } in mm, or null
+ * Per ADR-011 formulas:
+ *   internalWidth  = cabinetInternalWidth - (trackClearancePerSide * 2)
+ *   internalDepth  = cabinetInternalDepth - drawerBackSetback
+ *   internalHeight = drawerHeight - bottomThickness
+ *
+ *   Drawer side (qty 2 per drawer):
+ *     length = internalWidth
+ *     width  = internalHeight
+ *
+ *   Drawer front/back (qty 1 per drawer):
+ *     length = internalWidth + (2 * drawerSideThickness)
+ *     width  = drawerHeight
+ *
+ *   Drawer base (qty 1 per drawer):
+ *     length = internalWidth - (2 * baseInsetFromSide)
+ *     width  = internalDepth - baseInsetFromFront
+ *
+ * @param {object} drawerConfig - Drawer configuration:
+ *   - quantity: number of drawers
+ *   - drawer_height: external height of the drawer in mm
+ *   - track_clearance_per_side: clearance needed per side for the slide in mm
+ *   - drawer_back_setback: distance the drawer does not use at the cabinet back in mm (default 20)
+ *   - base_inset_from_side: base panel inset from each side in mm (default = side thickness / 2)
+ *   - base_inset_from_front: base panel inset from the front in mm (default 0 for ledge construction)
+ *   - side_edge_banding: array of edges to band on drawer sides (default ['length+'] for front edge)
+ * @param {object} internalDims - Cabinet interior dimensions:
+ *   - width: internal width in mm
+ *   - depth: internal depth in mm
+ * @param {object} thicknesses - Material thicknesses:
+ *   - side: drawer side panel thickness in mm (default 15)
+ *   - front_back: drawer front/back frame thickness in mm (default = side thickness)
+ *   - base: drawer base panel thickness in mm (default 6)
+ * @param {object|null} edgeBanding - Edge banding config:
+ *   - thickness: edge banding thickness in mm, or null if no edge banding
  * @returns {Part[]}
  */
 export function calculateDrawerParts(drawerConfig, internalDims, thicknesses, edgeBanding) {
-  // TODO: implement
-  throw new Error('calculateDrawerParts not yet implemented');
+  const {
+    quantity = 1,
+    drawer_height,
+    track_clearance_per_side = 0,
+    drawer_back_setback = 20,
+    base_inset_from_side,
+    base_inset_from_front = 0,
+    side_edge_banding,
+  } = drawerConfig;
+
+  const { width: cabinetInternalWidth, depth: cabinetInternalDepth } = internalDims;
+
+  const sideThickness = thicknesses.side ?? 15;
+  const frontBackThickness = thicknesses.front_back ?? sideThickness;
+  const baseThickness = thicknesses.base ?? 6;
+
+  const eb = edgeBanding ? edgeBanding.thickness : 0;
+
+  // Calculate drawer internal dimensions per ADR-011
+  const internalWidth = cabinetInternalWidth - (track_clearance_per_side * 2);
+  const internalDepth = cabinetInternalDepth - drawer_back_setback;
+  const internalHeight = drawer_height - baseThickness;
+
+  // Default base inset from side = drawer side thickness / 2 (centered base on ledge)
+  const resolvedBaseInsetFromSide = base_inset_from_side ?? (sideThickness / 2);
+
+  const parts = [];
+  let partId = 0;
+
+  for (let d = 0; d < quantity; d++) {
+    // Drawer sides (qty 2 per drawer)
+    // length = internalWidth, width = internalHeight
+    const sideEdges = side_edge_banding || ['length+'];
+    let sideCutLength = internalWidth;
+    let sideCutWidth = internalHeight;
+
+    // Apply edge banding subtraction to side panels
+    for (const edge of sideEdges) {
+      if (edge === 'length+' || edge === 'length-') {
+        sideCutLength -= eb;
+      } else if (edge === 'width+' || edge === 'width-') {
+        sideCutWidth -= eb;
+      }
+    }
+
+    parts.push({
+      id: `drawer-side-${partId++}`,
+      type: 'drawer_side',
+      label: `Drawer ${d + 1} Side`,
+      cutLength: sideCutLength,
+      cutWidth: sideCutWidth,
+      quantity: 2,
+      materialThickness: sideThickness,
+      edgeBandingEdges: sideEdges,
+    });
+
+    // Drawer front/back frame (qty 1 per drawer — the structural back; the face is user-specified)
+    // length = internalWidth + (2 * drawerSideThickness), width = drawerHeight
+    const frontBackEdges = [];
+    let fbCutLength = internalWidth + (2 * sideThickness);
+    let fbCutWidth = drawer_height;
+
+    for (const edge of frontBackEdges) {
+      if (edge === 'length+' || edge === 'length-') {
+        fbCutLength -= eb;
+      } else if (edge === 'width+' || edge === 'width-') {
+        fbCutWidth -= eb;
+      }
+    }
+
+    parts.push({
+      id: `drawer-frontback-${partId++}`,
+      type: 'drawer_front_back',
+      label: `Drawer ${d + 1} Front/Back Frame`,
+      cutLength: fbCutLength,
+      cutWidth: fbCutWidth,
+      quantity: 1,
+      materialThickness: frontBackThickness,
+      edgeBandingEdges: frontBackEdges,
+    });
+
+    // Drawer base panel (qty 1 per drawer)
+    // length = internalWidth - (2 * baseInsetFromSide), width = internalDepth - baseInsetFromFront
+    const baseEdges = [];
+    let baseCutLength = internalWidth - (2 * resolvedBaseInsetFromSide);
+    let baseCutWidth = internalDepth - base_inset_from_front;
+
+    for (const edge of baseEdges) {
+      if (edge === 'length+' || edge === 'length-') {
+        baseCutLength -= eb;
+      } else if (edge === 'width+' || edge === 'width-') {
+        baseCutWidth -= eb;
+      }
+    }
+
+    parts.push({
+      id: `drawer-base-${partId++}`,
+      type: 'drawer_base',
+      label: `Drawer ${d + 1} Base Panel`,
+      cutLength: baseCutLength,
+      cutWidth: baseCutWidth,
+      quantity: 1,
+      materialThickness: baseThickness,
+      edgeBandingEdges: baseEdges,
+    });
+  }
+
+  return parts;
 }
 
 /**
