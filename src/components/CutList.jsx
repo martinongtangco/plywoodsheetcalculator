@@ -126,47 +126,47 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
   });
 
   return (
-    <div className="border-b border-gray-200">
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 font-semibold text-gray-700 flex items-center gap-2"
-      >
-        <span className="text-xs text-gray-400">{collapsed ? '▶' : '▼'}</span>
-        {boxName || `Box ${boxId}`}
-        <span className="text-xs text-gray-500">({parts.length} part{parts.length !== 1 ? 's' : ''})</span>
-        {oversizedParts.length > 0 && (
-          <span className="text-xs text-amber-600 ml-auto">⚠ {oversizedParts.length} oversized</span>
-        )}
-      </button>
-      {!collapsed && (
-        <div>
-          {sortedParts.map((part, i) => {
-            const isOversized = (part.cutLength > sheetLength && part.cutWidth > sheetWidth) ||
-              (part.cutLength > sheetWidth && part.cutWidth > sheetLength);
-            return (
-              <tr
-                key={i}
-                className={`border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${isOversized ? 'bg-amber-50' : ''}`}
-              >
-                <td className="px-4 py-2">
-                  <span className={`inline-block w-2 h-2 rounded-full ${partTypeColor(part.type)}`}></span>
-                </td>
-                <td className="px-4 py-2 text-gray-600">
-                  {part.label || partTypeLabel(part.type)}
-                  {isOversized && <span className="ml-2 text-amber-600 text-xs">⚠ too large</span>}
-                </td>
-                <td className="px-4 py-2 text-gray-600">{partTypeLabel(part.type)}</td>
-                <td className="px-4 py-2 text-right font-mono">{part.cutLength} mm</td>
-                <td className="px-4 py-2 text-right font-mono">{part.cutWidth} mm</td>
-                <td className="px-4 py-2 text-right font-mono">{part.quantity}</td>
-                <td className="px-4 py-2 text-right font-mono">{part.materialThickness} mm</td>
-                <td className="px-4 py-2 text-sm text-gray-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
-              </tr>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <>
+      <tr>
+        <td
+          colSpan={8}
+          className="px-4 py-2 bg-gray-100 font-semibold text-gray-700 cursor-pointer hover:bg-gray-200 select-none"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <span className="text-xs text-gray-400 mr-2">{collapsed ? '▶' : '▼'}</span>
+          {boxName || `Box ${boxId}`}
+          <span className="text-xs text-gray-500 ml-1">({parts.length} part{parts.length !== 1 ? 's' : ''})</span>
+          {oversizedParts.length > 0 && (
+            <span className="text-xs text-amber-600 ml-2">⚠ {oversizedParts.length} oversized</span>
+          )}
+        </td>
+      </tr>
+      {!collapsed &&
+        sortedParts.map((part, i) => {
+          const isOversized = (part.cutLength > sheetLength && part.cutWidth > sheetWidth) ||
+            (part.cutLength > sheetWidth && part.cutWidth > sheetLength);
+          return (
+            <tr
+              key={i}
+              className={`border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${isOversized ? 'bg-amber-50' : ''}`}
+            >
+              <td className="px-4 py-2">
+                <span className={`inline-block w-2 h-2 rounded-full ${partTypeColor(part.type)}`}></span>
+              </td>
+              <td className="px-4 py-2 text-gray-600">
+                {part.label || partTypeLabel(part.type)}
+                {isOversized && <span className="ml-2 text-amber-600 text-xs">⚠ too large</span>}
+              </td>
+              <td className="px-4 py-2 text-gray-600">{partTypeLabel(part.type)}</td>
+              <td className="px-4 py-2 text-right font-mono">{part.cutLength} mm</td>
+              <td className="px-4 py-2 text-right font-mono">{part.cutWidth} mm</td>
+              <td className="px-4 py-2 text-right font-mono">{part.quantity}</td>
+              <td className="px-4 py-2 text-right font-mono">{part.materialThickness} mm</td>
+              <td className="px-4 py-2 text-sm text-gray-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
+            </tr>
+          );
+        })}
+    </>
   );
 }
 
@@ -446,24 +446,30 @@ export default function CutList() {
                 <th className="text-left px-4 py-2 font-semibold text-gray-700">Edge Banding</th>
               </tr>
             </thead>
+            <tbody>
+              {groupedByBox.map((group) => (
+                <BoxGroup
+                  key={group.boxId}
+                  boxId={group.boxId}
+                  boxName={group.boxName}
+                  parts={group.parts}
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  sheetWidth={sheetWidth}
+                  sheetLength={sheetLength}
+                />
+              ))}
+              {/* Summary row */}
+              <tr>
+                <td colSpan={8} className="bg-gray-100 px-4 py-2 font-semibold text-gray-700 text-sm">
+                  <div className="flex justify-between">
+                    <span>Summary</span>
+                    <span>{totalQty} total pieces · {totalAreaM2} m² · {groupedByBox.length} box{groupedByBox.length !== 1 ? 'es' : ''}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </table>
-          {groupedByBox.map((group) => (
-            <BoxGroup
-              key={group.boxId}
-              boxId={group.boxId}
-              boxName={group.boxName}
-              parts={group.parts}
-              sortField={sortField}
-              sortDirection={sortDirection}
-              sheetWidth={sheetWidth}
-              sheetLength={sheetLength}
-            />
-          ))}
-          {/* Summary row */}
-          <div className="bg-gray-100 px-4 py-2 font-semibold text-gray-700 text-sm flex justify-between">
-            <span>Summary</span>
-            <span>{totalQty} total pieces · {totalAreaM2} m² · {groupedByBox.length} box{groupedByBox.length !== 1 ? 'es' : ''}</span>
-          </div>
         </div>
       ) : (
         <div className="text-center py-16 text-gray-400">
