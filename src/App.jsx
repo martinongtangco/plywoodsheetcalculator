@@ -1,6 +1,11 @@
 import { useProjectStore } from './store/projectStore.js';
 import { useUIStore } from './store/uiStore.js';
 import ProjectList from './components/ProjectList.jsx';
+import BoxConfig from './components/BoxConfig.jsx';
+import MaterialConfig from './components/MaterialConfig.jsx';
+import CutSettings from './components/CutSettings.jsx';
+import CutList from './components/CutList.jsx';
+import SheetLayoutView from './components/SheetLayoutView.jsx';
 import { downloadFile } from './utils/fileIO.js';
 
 function App() {
@@ -14,6 +19,8 @@ function App() {
   }
 
   // When a project is active, show the project editor view
+  const activeProject = useProjectStore((s) => s.getActiveProject());
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
@@ -22,7 +29,6 @@ function App() {
             <div>
               <button
                 onClick={() => {
-                  // Navigate back to project list
                   useProjectStore.setState({ activeProjectId: null });
                 }}
                 className="text-sm text-blue-600 hover:underline mr-4"
@@ -32,26 +38,36 @@ function App() {
               <h1 className="text-xl font-bold text-gray-900 inline">
                 ply-calc
               </h1>
+              {activeProject && (
+                <span className="ml-3 text-sm text-gray-500">{activeProject.name}</span>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Tab navigation */}
+      {/* Tab navigation — ADR-015 component-per-tab */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-1 -mb-px">
-            {['boxes', 'materials', 'cut-settings', 'output'].map((tab) => (
+            {[
+              { id: 'boxes', label: 'Boxes' },
+              { id: 'materials', label: 'Materials' },
+              { id: 'cut-settings', label: 'Cut Settings' },
+              { id: 'cut-list', label: 'Cut List' },
+              { id: 'sheet-layout', label: 'Sheet Layout' },
+              { id: 'output', label: 'Output' },
+            ].map(({ id, label }) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-3 text-sm font-medium border-b-2 capitalize ${
-                  activeTab === tab
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`px-4 py-3 text-sm font-medium border-b-2 ${
+                  activeTab === id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                {tab === 'cut-settings' ? 'Cut Settings' : tab}
+                {label}
               </button>
             ))}
           </div>
@@ -59,16 +75,12 @@ function App() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {activeTab === 'output' && (
-          <OutputActions />
-        )}
-        {activeTab !== 'output' && (
-          <p className="text-gray-600">
-            {activeTab === 'boxes' && 'Box configuration — coming soon.'}
-            {activeTab === 'materials' && 'Material selection — coming soon.'}
-            {activeTab === 'cut-settings' && 'Cut settings — coming soon.'}
-          </p>
-        )}
+        {activeTab === 'boxes' && <BoxConfig />}
+        {activeTab === 'materials' && <MaterialConfig />}
+        {activeTab === 'cut-settings' && <CutSettings />}
+        {activeTab === 'cut-list' && <CutList />}
+        {activeTab === 'sheet-layout' && <SheetLayoutView />}
+        {activeTab === 'output' && <OutputActions />}
       </main>
     </div>
   );

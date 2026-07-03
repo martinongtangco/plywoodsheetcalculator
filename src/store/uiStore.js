@@ -8,7 +8,7 @@ import { devtools } from 'zustand/middleware';
 export const useUIStore = create(
   devtools(
     (set) => ({
-      activeTab: 'boxes', // 'boxes' | 'materials' | 'cut-settings' | 'output'
+      activeTab: 'boxes', // 'boxes' | 'materials' | 'cut-settings' | 'cut-list' | 'sheet-layout' | 'output'
       selectedBoxId: null,
       showCutSequence: false,
       isExportingPDF: false,
