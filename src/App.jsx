@@ -13,13 +13,12 @@ function App() {
   const activeTab = useUIStore((s) => s.activeTab);
   const setActiveTab = useUIStore((s) => s.setActiveTab);
 
+  const activeProject = useProjectStore((s) => s.getActiveProject());
+
   // When no project is active, show the project list
   if (!activeProjectId) {
     return <ProjectList />;
   }
-
-  // When a project is active, show the project editor view
-  const activeProject = useProjectStore((s) => s.getActiveProject());
 
   return (
     <div className="min-h-screen bg-gray-50">
