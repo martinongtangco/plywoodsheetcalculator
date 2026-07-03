@@ -60,6 +60,6 @@ The trade-off is conceptual overhead for contributors who do not understand wood
 
 - [x] Document kerf model in `src/engine/` files via JSDoc
 - [x] Document edge banding model in `src/engine/parts.js`
-- [ ] Add unit tests for kerf placement (including trailing kerf edge case)
-- [ ] Add unit tests for edge banding subtraction on single and double edges
-- [ ] Add unit test for the full pipeline: box dimensions → cut dimensions → sheet layout
+- [x] Add unit tests for kerf placement (including trailing kerf edge case)
+- [x] Add unit tests for edge banding subtraction on single and double edges
+- [x] Add unit test for the full pipeline: box dimensions → cut dimensions → sheet layout
