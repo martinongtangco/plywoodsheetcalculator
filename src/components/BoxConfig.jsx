@@ -12,8 +12,11 @@
  * - Configure drawer configs per box
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
+
+// Stable empty array to avoid creating new references in Zustand selectors
+const EMPTY_ARRAY = [];
 
 // Edge options for edge banding
 const EDGE_OPTIONS = [
@@ -24,124 +27,147 @@ const EDGE_OPTIONS = [
 ];
 
 /**
- * Individual box editor panel
+ * Individual box editor panel.
+ * Accepts only boxId (stable primitive) and selects its own data from the store.
  */
-function BoxEditor({ box }) {
+function BoxEditor({ boxId }) {
   const updateBox = useProjectStore((s) => s.updateBox);
   const addDrawer = useProjectStore((s) => s.addDrawer);
   const updateDrawer = useProjectStore((s) => s.updateDrawer);
   const deleteDrawer = useProjectStore((s) => s.deleteDrawer);
-  const projectDrawers = useProjectStore((s) => {
+
+  // Select the box directly from store by id — box reference is stable unless this specific box is updated
+  const box = useProjectStore((s) => {
     const project = s.getActiveProject();
-    if (!project) return [];
-    // Stable reference: only returns new array when drawer data actually changes
-    const result = [];
-    for (let i = 0; i < project.drawers.length; i++) {
-      if (project.drawers[i].boxId === box.id) {
-        result.push(project.drawers[i]);
-      }
-    }
-    return result;
-  }, (a, b) => {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
+    if (!project) return null;
+    return project.boxes.find((b) => b.id === boxId) ?? null;
   });
+
+  // Select drawers array — uses stable EMPTY_ARRAY when no project
+  const allDrawers = useProjectStore((s) => {
+    const project = s.getActiveProject();
+    return project ? project.drawers : EMPTY_ARRAY;
+  });
+  const projectDrawers = useMemo(
+    () => allDrawers.filter((d) => d.boxId === boxId),
+    [allDrawers, boxId]
+  );
 
   const [expanded, setExpanded] = useState(false);
 
-  const handleFieldChange = useCallback((field, value) => {
-    updateBox(box.id, { [field]: value });
-  }, [box.id, updateBox]);
+  // Stable handlers: only depend on boxId (primitive) and store actions (stable refs)
+  const handleFieldChange = useCallback(
+    (field, value) => {
+      updateBox(boxId, { [field]: value });
+    },
+    [boxId, updateBox]
+  );
 
-  const handleThicknessChange = useCallback((key, value) => {
-    updateBox(box.id, (currentState) => {
-      const boxInState = currentState.projects
-        .find(p => p.id === currentState.activeProjectId)?.boxes
-        .find(b => b.id === box.id);
-      if (!boxInState) return {};
-      return {
-        thicknesses: {
-          ...boxInState.thicknesses,
-          [key]: parseFloat(value) || 0,
-        },
-      };
-    });
-  }, [box.id, updateBox]);
-
-  const handleEbThicknessChange = useCallback((value) => {
-    const thickness = value === '' || value === 'none' ? null : parseFloat(value);
-    updateBox(box.id, (currentState) => {
-      const boxInState = currentState.projects
-        .find(p => p.id === currentState.activeProjectId)?.boxes
-        .find(b => b.id === box.id);
-      if (!boxInState) return {};
-      return {
-        edgeBanding: {
-          ...boxInState.edgeBanding,
-          thickness,
-        },
-      };
-    });
-  }, [box.id, updateBox]);
-
-  const handleEbEdgesChange = useCallback((partType, edge, checked) => {
-    updateBox(box.id, (currentState) => {
-      const boxInState = currentState.projects
-        .find(p => p.id === currentState.activeProjectId)?.boxes
-        .find(b => b.id === box.id);
-      if (!boxInState) return {};
-      const currentEdges = boxInState.edgeBanding?.edges?.[partType] || [];
-      const newEdges = checked
-        ? [...currentEdges, edge]
-        : currentEdges.filter((e) => e !== edge);
-      return {
-        edgeBanding: {
-          ...boxInState.edgeBanding,
-          edges: {
-            ...boxInState.edgeBanding?.edges,
-            [partType]: newEdges,
+  const handleThicknessChange = useCallback(
+    (key, value) => {
+      updateBox(boxId, (state) => {
+        const b = state.projects
+          .find((p) => p.id === state.activeProjectId)?.boxes
+          .find((bx) => bx.id === boxId);
+        if (!b) return {};
+        return {
+          thicknesses: {
+            ...b.thicknesses,
+            [key]: parseFloat(value) || 0,
           },
-        },
-      };
-    });
-  }, [box.id, updateBox]);
+        };
+      });
+    },
+    [boxId, updateBox]
+  );
+
+  const handleEbThicknessChange = useCallback(
+    (value) => {
+      const thickness = value === '' || value === 'none' ? null : parseFloat(value);
+      updateBox(boxId, (state) => {
+        const b = state.projects
+          .find((p) => p.id === state.activeProjectId)?.boxes
+          .find((bx) => bx.id === boxId);
+        if (!b) return {};
+        return {
+          edgeBanding: {
+            ...b.edgeBanding,
+            thickness,
+          },
+        };
+      });
+    },
+    [boxId, updateBox]
+  );
+
+  const handleEbEdgesChange = useCallback(
+    (partType, edge, checked) => {
+      updateBox(boxId, (state) => {
+        const b = state.projects
+          .find((p) => p.id === state.activeProjectId)?.boxes
+          .find((bx) => bx.id === boxId);
+        if (!b) return {};
+        const currentEdges = b.edgeBanding?.edges?.[partType] || [];
+        const newEdges = checked
+          ? [...currentEdges, edge]
+          : currentEdges.filter((e) => e !== edge);
+        return {
+          edgeBanding: {
+            ...b.edgeBanding,
+            edges: {
+              ...b.edgeBanding?.edges,
+              [partType]: newEdges,
+            },
+          },
+        };
+      });
+    },
+    [boxId, updateBox]
+  );
 
   const handleAddShelf = useCallback(() => {
-    updateBox(box.id, (currentState) => {
-      const boxInState = currentState.projects
-        .find(p => p.id === currentState.activeProjectId)?.boxes
-        .find(b => b.id === box.id);
-      if (!boxInState) return {};
-      const shelves = [...(boxInState.internalShelves || []), { quantity: 1 }];
+    updateBox(boxId, (state) => {
+      const b = state.projects
+        .find((p) => p.id === state.activeProjectId)?.boxes
+        .find((bx) => bx.id === boxId);
+      if (!b) return {};
+      const shelves = [...(b.internalShelves || []), { quantity: 1 }];
       return { internalShelves: shelves };
     });
-  }, [box.id, updateBox]);
+  }, [boxId, updateBox]);
 
-  const handleShelfChange = useCallback((index, field, value) => {
-    updateBox(box.id, (currentState) => {
-      const boxInState = currentState.projects
-        .find(p => p.id === currentState.activeProjectId)?.boxes
-        .find(b => b.id === box.id);
-      if (!boxInState) return {};
-      const shelves = [...boxInState.internalShelves];
-      shelves[index] = { ...shelves[index], [field]: value };
-      return { internalShelves: shelves };
-    });
-  }, [box.id, updateBox]);
+  const handleShelfChange = useCallback(
+    (index, field, value) => {
+      updateBox(boxId, (state) => {
+        const b = state.projects
+          .find((p) => p.id === state.activeProjectId)?.boxes
+          .find((bx) => bx.id === boxId);
+        if (!b) return {};
+        const shelves = [...b.internalShelves];
+        shelves[index] = { ...shelves[index], [field]: value };
+        return { internalShelves: shelves };
+      });
+    },
+    [boxId, updateBox]
+  );
 
-  const handleRemoveShelf = useCallback((index) => {
-    updateBox(box.id, (currentState) => {
-      const boxInState = currentState.projects
-        .find(p => p.id === currentState.activeProjectId)?.boxes
-        .find(b => b.id === box.id);
-      if (!boxInState) return {};
-      const shelves = boxInState.internalShelves.filter((_, i) => i !== index);
-      return { internalShelves: shelves };
-    });
-  }, [box.id, updateBox]);
+  const handleRemoveShelf = useCallback(
+    (index) => {
+      updateBox(boxId, (state) => {
+        const b = state.projects
+          .find((p) => p.id === state.activeProjectId)?.boxes
+          .find((bx) => bx.id === boxId);
+        if (!b) return {};
+        const shelves = b.internalShelves.filter((_, i) => i !== index);
+        return { internalShelves: shelves };
+      });
+    },
+    [boxId, updateBox]
+  );
+
+  if (!box) {
+    return null;
+  }
 
   return (
     <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
@@ -338,7 +364,7 @@ function BoxEditor({ box }) {
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold text-gray-700">Drawers</h4>
               <button
-                onClick={() => addDrawer(box.id)}
+                onClick={() => addDrawer(boxId)}
                 className="text-xs text-blue-600 hover:underline"
               >
                 + Add Drawer
@@ -420,14 +446,48 @@ function BoxEditor({ box }) {
  * BoxConfig — main Boxes tab component
  */
 export default function BoxConfig() {
+  // Select the boxes array reference — uses stable EMPTY_ARRAY when no project
   const boxes = useProjectStore((s) => {
     const project = s.getActiveProject();
-    return project ? project.boxes : [];
+    return project ? project.boxes : EMPTY_ARRAY;
   });
+  const boxIds = useMemo(() => boxes.map((b) => b.id), [boxes]);
+
   const addBox = useProjectStore((s) => s.addBox);
+
+  // Select delete and duplicate actions (stable function refs)
   const deleteBox = useProjectStore((s) => s.deleteBox);
   const duplicateBox = useProjectStore((s) => s.duplicateBox);
-  const updateBox = useProjectStore((s) => s.updateBox);
+
+  // For each boxId, select the box name for the delete confirmation
+  const getBox = useCallback(
+    (id) => {
+      const project = useProjectStore.getState().getActiveProject();
+      if (!project) return null;
+      return project.boxes.find((b) => b.id === id) ?? null;
+    },
+    []
+  );
+
+  if (boxIds.length === 0) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
+          <button
+            onClick={() => addBox()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
+          >
+            + Add Box
+          </button>
+        </div>
+        <div className="text-center py-16 text-gray-400">
+          <p className="text-lg">No boxes configured.</p>
+          <p className="text-sm mt-1">Add a box to start designing your furniture.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -441,38 +501,32 @@ export default function BoxConfig() {
         </button>
       </div>
 
-      {boxes.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg">No boxes configured.</p>
-          <p className="text-sm mt-1">Add a box to start designing your furniture.</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {boxes.map((box, index) => (
-            <div key={box.id} className="relative">
-              <BoxEditor box={box} />
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={() => duplicateBox(box.id)}
-                  className="text-xs text-blue-600 hover:underline"
-                >
-                  Duplicate
-                </button>
-                <button
-                  onClick={() => {
-                    if (window.confirm(`Delete "${box.name || `Box ${index + 1}`}"?`)) {
-                      deleteBox(box.id);
-                    }
-                  }}
-                  className="text-xs text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
+      <div className="space-y-3">
+        {boxIds.map((id, index) => (
+          <div key={id} className="relative">
+            <BoxEditor boxId={id} />
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => duplicateBox(id)}
+                className="text-xs text-blue-600 hover:underline"
+              >
+                Duplicate
+              </button>
+              <button
+                onClick={() => {
+                  const b = getBox(id);
+                  if (window.confirm(`Delete "${b?.name || `Box ${index + 1}`}"?`)) {
+                    deleteBox(id);
+                  }
+                }}
+                className="text-xs text-red-600 hover:underline"
+              >
+                Delete
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
