@@ -22,6 +22,9 @@ An ADR documents a significant architectural decision: what was decided, why, an
 | [ADR-012](ADR-012-batch-strip-cut-layout.md) | Batch/Strip Cut Layout Strategy | Proposed |
 | [ADR-013](ADR-013-balanced-layout-strategy.md) | Balanced Layout Strategy | Proposed |
 | [ADR-014](ADR-014-project-data-model.md) | Project Data Model | Proposed |
+| [ADR-015](ADR-015-ui-integration-architecture.md) | UI Integration Architecture | Proposed |
+| [ADR-016](ADR-016-box-configuration-ui.md) | Box Configuration UI | Proposed |
+| [ADR-017](ADR-017-output-display-ui.md) | Output Display UI | Proposed |
 
 ## How to propose a new ADR
 
