@@ -137,22 +137,25 @@ export const useProjectStore = create(
         /**
          * Updates a box by id within the active project.
          * @param {string} boxId
-         * @param {Partial<Box>} updates
+         * @param {Partial<Box>|function} updates - Either a partial object or a function that receives the current state and returns a partial object
          */
         updateBox: (boxId, updates) => {
-          set((state) => ({
-            projects: state.projects.map((p) =>
-              p.id === state.activeProjectId
-                ? {
-                    ...p,
-                    boxes: p.boxes.map((b) =>
-                      b.id === boxId ? { ...b, ...updates } : b
-                    ),
-                    updatedAt: Date.now(),
-                  }
-                : p
-            ),
-          }));
+          set((state) => {
+            const resolvedUpdates = typeof updates === 'function' ? updates(state) : updates;
+            return {
+              projects: state.projects.map((p) =>
+                p.id === state.activeProjectId
+                  ? {
+                      ...p,
+                      boxes: p.boxes.map((b) =>
+                        b.id === boxId ? { ...b, ...resolvedUpdates } : b
+                      ),
+                      updatedAt: Date.now(),
+                    }
+                  : p
+              ),
+            };
+          });
         },
 
         /**
@@ -225,22 +228,25 @@ export const useProjectStore = create(
         /**
          * Updates a drawer config by id within the active project.
          * @param {string} drawerId
-         * @param {Partial<DrawerConfig>} updates
+         * @param {Partial<DrawerConfig>|function} updates - Either a partial object or a function that receives the current state and returns a partial object
          */
         updateDrawer: (drawerId, updates) => {
-          set((state) => ({
-            projects: state.projects.map((p) =>
-              p.id === state.activeProjectId
-                ? {
-                    ...p,
-                    drawers: p.drawers.map((d) =>
-                      d.id === drawerId ? { ...d, ...updates } : d
-                    ),
-                    updatedAt: Date.now(),
-                  }
-                : p
-            ),
-          }));
+          set((state) => {
+            const resolvedUpdates = typeof updates === 'function' ? updates(state) : updates;
+            return {
+              projects: state.projects.map((p) =>
+                p.id === state.activeProjectId
+                  ? {
+                      ...p,
+                      drawers: p.drawers.map((d) =>
+                        d.id === drawerId ? { ...d, ...resolvedUpdates } : d
+                      ),
+                      updatedAt: Date.now(),
+                    }
+                  : p
+              ),
+            };
+          });
         },
 
         /**

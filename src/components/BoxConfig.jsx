@@ -33,7 +33,21 @@ function BoxEditor({ box }) {
   const deleteDrawer = useProjectStore((s) => s.deleteDrawer);
   const projectDrawers = useProjectStore((s) => {
     const project = s.getActiveProject();
-    return project ? project.drawers.filter((d) => d.boxId === box.id) : [];
+    if (!project) return [];
+    // Stable reference: only returns new array when drawer data actually changes
+    const result = [];
+    for (let i = 0; i < project.drawers.length; i++) {
+      if (project.drawers[i].boxId === box.id) {
+        result.push(project.drawers[i]);
+      }
+    }
+    return result;
+  }, (a, b) => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
   });
 
   const [expanded, setExpanded] = useState(false);
@@ -43,55 +57,91 @@ function BoxEditor({ box }) {
   }, [box.id, updateBox]);
 
   const handleThicknessChange = useCallback((key, value) => {
-    updateBox(box.id, {
-      thicknesses: {
-        ...box.thicknesses,
-        [key]: parseFloat(value) || 0,
-      },
+    updateBox(box.id, (currentState) => {
+      const boxInState = currentState.projects
+        .find(p => p.id === currentState.activeProjectId)?.boxes
+        .find(b => b.id === box.id);
+      if (!boxInState) return {};
+      return {
+        thicknesses: {
+          ...boxInState.thicknesses,
+          [key]: parseFloat(value) || 0,
+        },
+      };
     });
-  }, [box.id, box.thicknesses, updateBox]);
+  }, [box.id, updateBox]);
 
   const handleEbThicknessChange = useCallback((value) => {
     const thickness = value === '' || value === 'none' ? null : parseFloat(value);
-    updateBox(box.id, {
-      edgeBanding: {
-        ...box.edgeBanding,
-        thickness,
-      },
+    updateBox(box.id, (currentState) => {
+      const boxInState = currentState.projects
+        .find(p => p.id === currentState.activeProjectId)?.boxes
+        .find(b => b.id === box.id);
+      if (!boxInState) return {};
+      return {
+        edgeBanding: {
+          ...boxInState.edgeBanding,
+          thickness,
+        },
+      };
     });
-  }, [box.id, box.edgeBanding, updateBox]);
+  }, [box.id, updateBox]);
 
   const handleEbEdgesChange = useCallback((partType, edge, checked) => {
-    const currentEdges = box.edgeBanding?.edges?.[partType] || [];
-    const newEdges = checked
-      ? [...currentEdges, edge]
-      : currentEdges.filter((e) => e !== edge);
-    updateBox(box.id, {
-      edgeBanding: {
-        ...box.edgeBanding,
-        edges: {
-          ...box.edgeBanding?.edges,
-          [partType]: newEdges,
+    updateBox(box.id, (currentState) => {
+      const boxInState = currentState.projects
+        .find(p => p.id === currentState.activeProjectId)?.boxes
+        .find(b => b.id === box.id);
+      if (!boxInState) return {};
+      const currentEdges = boxInState.edgeBanding?.edges?.[partType] || [];
+      const newEdges = checked
+        ? [...currentEdges, edge]
+        : currentEdges.filter((e) => e !== edge);
+      return {
+        edgeBanding: {
+          ...boxInState.edgeBanding,
+          edges: {
+            ...boxInState.edgeBanding?.edges,
+            [partType]: newEdges,
+          },
         },
-      },
+      };
     });
-  }, [box.id, box.edgeBanding, updateBox]);
+  }, [box.id, updateBox]);
 
   const handleAddShelf = useCallback(() => {
-    const shelves = [...(box.internalShelves || []), { quantity: 1 }];
-    updateBox(box.id, { internalShelves: shelves });
-  }, [box.id, box.internalShelves, updateBox]);
+    updateBox(box.id, (currentState) => {
+      const boxInState = currentState.projects
+        .find(p => p.id === currentState.activeProjectId)?.boxes
+        .find(b => b.id === box.id);
+      if (!boxInState) return {};
+      const shelves = [...(boxInState.internalShelves || []), { quantity: 1 }];
+      return { internalShelves: shelves };
+    });
+  }, [box.id, updateBox]);
 
   const handleShelfChange = useCallback((index, field, value) => {
-    const shelves = [...box.internalShelves];
-    shelves[index] = { ...shelves[index], [field]: value };
-    updateBox(box.id, { internalShelves: shelves });
-  }, [box.id, box.internalShelves, updateBox]);
+    updateBox(box.id, (currentState) => {
+      const boxInState = currentState.projects
+        .find(p => p.id === currentState.activeProjectId)?.boxes
+        .find(b => b.id === box.id);
+      if (!boxInState) return {};
+      const shelves = [...boxInState.internalShelves];
+      shelves[index] = { ...shelves[index], [field]: value };
+      return { internalShelves: shelves };
+    });
+  }, [box.id, updateBox]);
 
   const handleRemoveShelf = useCallback((index) => {
-    const shelves = box.internalShelves.filter((_, i) => i !== index);
-    updateBox(box.id, { internalShelves: shelves });
-  }, [box.id, box.internalShelves, updateBox]);
+    updateBox(box.id, (currentState) => {
+      const boxInState = currentState.projects
+        .find(p => p.id === currentState.activeProjectId)?.boxes
+        .find(b => b.id === box.id);
+      if (!boxInState) return {};
+      const shelves = boxInState.internalShelves.filter((_, i) => i !== index);
+      return { internalShelves: shelves };
+    });
+  }, [box.id, updateBox]);
 
   return (
     <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
