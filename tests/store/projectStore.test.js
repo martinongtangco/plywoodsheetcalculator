@@ -367,3 +367,297 @@ describe('defaultDrawerConfig', () => {
     expect(drawer.boxId).toBe('test-box-id');
   });
 });
+
+describe('calculateAllParts (ADR-017)', () => {
+  beforeEach(() => {
+    useProjectStore.setState({ projects: [], activeProjectId: null, calculatedParts: [], sheetLayouts: [] });
+  });
+
+  it('returns empty array when no active project', () => {
+    const parts = useProjectStore.getState().calculateAllParts();
+    expect(parts).toEqual([]);
+  });
+
+  it('returns empty array when project has no boxes', () => {
+    useProjectStore.getState().createProject({ name: 'Empty' });
+    const parts = useProjectStore.getState().calculateAllParts();
+    expect(parts).toEqual([]);
+  });
+
+  it('calculates carcass parts for a single box (Method A)', () => {
+    useProjectStore.getState().createProject({ name: 'Test' });
+    const box = defaultBox(0);
+    box.constructionMethod = 'A';
+    box.externalWidth = 600;
+    box.externalHeight = 720;
+    box.externalDepth = 570;
+    const boxId = useProjectStore.getState().addBox(box);
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    const parts = useProjectStore.getState().calculateAllParts();
+
+    // Method A produces: 1 side (qty 2), 1 top, 1 bottom, 1 back = 4 unique parts
+    expect(parts.length).toBe(4);
+    // All parts should be tagged with the box
+    for (const part of parts) {
+      expect(part.boxId).toBe(boxId);
+      expect(part.boxName).toBe('Box 1');
+    }
+    // Check part types
+    const types = parts.map((p) => p.type);
+    expect(types).toContain('side');
+    expect(types).toContain('top');
+    expect(types).toContain('bottom');
+    expect(types).toContain('back');
+  });
+
+  it('calculates parts for Method B construction', () => {
+    useProjectStore.getState().createProject({ name: 'Test B' });
+    const box = defaultBox(0);
+    box.constructionMethod = 'B';
+    box.externalWidth = 600;
+    box.externalHeight = 720;
+    box.externalDepth = 570;
+    const boxId = useProjectStore.getState().addBox(box);
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    const parts = useProjectStore.getState().calculateAllParts();
+    // Method B produces: 1 side (qty 2), 1 top, 1 bottom, 1 back = 4 unique parts
+    expect(parts.length).toBe(4);
+    const types = parts.map((p) => p.type);
+    expect(types).toContain('side');
+    expect(types).toContain('top');
+    expect(types).toContain('bottom');
+    expect(types).toContain('back');
+  });
+
+  it('includes internal shelves when configured', () => {
+    useProjectStore.getState().createProject({ name: 'Shelves' });
+    const box = defaultBox(0);
+    box.externalWidth = 600;
+    box.externalHeight = 720;
+    box.externalDepth = 570;
+    box.internalShelves = [
+      { heightFromBottom: 200, thickness: 18 },
+      { heightFromBottom: 400, thickness: 18 },
+    ];
+    useProjectStore.getState().addBox(box);
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    const parts = useProjectStore.getState().calculateAllParts();
+    const shelfParts = parts.filter((p) => p.type === 'shelf');
+    expect(shelfParts.length).toBe(2);
+  });
+
+  it('includes drawer parts when drawers are configured', () => {
+    useProjectStore.getState().createProject({ name: 'Drawers' });
+    const boxId = useProjectStore.getState().addBox();
+    const drawerId = useProjectStore.getState().addDrawer(boxId);
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    const parts = useProjectStore.getState().calculateAllParts();
+
+    // Should have carcass parts + drawer parts
+    const drawerParts = parts.filter((p) => p.drawerId === drawerId);
+    expect(drawerParts.length).toBeGreaterThan(0);
+    // Drawer should have side, front/back, and base parts
+    const drawerTypes = drawerParts.map((p) => p.type);
+    expect(drawerTypes).toContain('drawer_side');
+    expect(drawerTypes).toContain('drawer_front_back');
+    expect(drawerTypes).toContain('drawer_base');
+  });
+
+  it('multiplies drawer parts by quantity', () => {
+    useProjectStore.getState().createProject({ name: 'Multi Drawer' });
+    const boxId = useProjectStore.getState().addBox();
+    useProjectStore.getState().addDrawer(boxId);
+    useProjectStore.getState().updateDrawer(
+      useProjectStore.getState().getActiveProject().drawers[0].id,
+      { quantity: 3 }
+    );
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    const parts = useProjectStore.getState().calculateAllParts();
+    const drawerParts = parts.filter((p) => p.type === 'drawer_side');
+    // 2 sides per drawer × 3 drawers = 6 side parts total
+    const totalSideQty = drawerParts.reduce((sum, p) => sum + p.quantity, 0);
+    expect(totalSideQty).toBe(6);
+  });
+
+  it('stores calculatedParts in store state', () => {
+    useProjectStore.getState().createProject({ name: 'Store' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    expect(useProjectStore.getState().calculatedParts.length).toBeGreaterThan(0);
+  });
+
+  it('clears sheetLayouts when recalculating', () => {
+    useProjectStore.getState().createProject({ name: 'Clear' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'balanced',
+    });
+
+    // Run layout first
+    useProjectStore.getState().calculateAllParts();
+    useProjectStore.getState().runLayout();
+    expect(useProjectStore.getState().sheetLayouts.length).toBeGreaterThan(0);
+
+    // Recalculate should clear layouts
+    useProjectStore.getState().calculateAllParts();
+    expect(useProjectStore.getState().sheetLayouts).toEqual([]);
+  });
+});
+
+describe('runLayout (ADR-017)', () => {
+  beforeEach(() => {
+    useProjectStore.setState({ projects: [], activeProjectId: null, calculatedParts: [], sheetLayouts: [] });
+  });
+
+  it('returns empty array when no active project', () => {
+    const layouts = useProjectStore.getState().runLayout();
+    expect(layouts).toEqual([]);
+  });
+
+  it('auto-calculates parts when calculatedParts is empty', () => {
+    useProjectStore.getState().createProject({ name: 'Auto' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'balanced',
+    });
+
+    const layouts = useProjectStore.getState().runLayout();
+    // Should have auto-calculated and then laid out
+    expect(layouts.length).toBeGreaterThan(0);
+  });
+
+  it('runs batch layout when mode is batch', () => {
+    useProjectStore.getState().createProject({ name: 'Batch' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'batch',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    const layouts = useProjectStore.getState().runLayout('batch');
+    expect(layouts.length).toBeGreaterThan(0);
+    expect(useProjectStore.getState().sheetLayouts).toBe(layouts);
+  });
+
+  it('runs balanced layout when mode is balanced', () => {
+    useProjectStore.getState().createProject({ name: 'Balanced' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'balanced',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    const layouts = useProjectStore.getState().runLayout('balanced');
+    expect(layouts.length).toBeGreaterThan(0);
+  });
+
+  it('runs optimised layout when mode is optimised', () => {
+    useProjectStore.getState().createProject({ name: 'Optimised' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'hard',
+      cutMode: 'optimised',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    const layouts = useProjectStore.getState().runLayout('optimised');
+    expect(layouts.length).toBeGreaterThan(0);
+  });
+
+  it('defaults to balanced when mode is unknown', () => {
+    useProjectStore.getState().createProject({ name: 'Default' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    const layouts = useProjectStore.getState().runLayout('unknown_mode');
+    expect(layouts.length).toBeGreaterThan(0);
+  });
+
+  it('stores layouts in sheetLayouts state', () => {
+    useProjectStore.getState().createProject({ name: 'Store Layout' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'balanced',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    useProjectStore.getState().runLayout();
+    expect(useProjectStore.getState().sheetLayouts.length).toBeGreaterThan(0);
+  });
+
+  it('layout placements have required fields', () => {
+    useProjectStore.getState().createProject({ name: 'Fields' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'balanced',
+    });
+
+    useProjectStore.getState().calculateAllParts();
+    const layouts = useProjectStore.getState().runLayout();
+    for (const layout of layouts) {
+      expect(layout.sheetIndex).toBeDefined();
+      expect(Array.isArray(layout.placements)).toBe(true);
+      for (const placement of layout.placements) {
+        expect(placement.part).toBeDefined();
+        expect(placement.x).toBeDefined();
+        expect(placement.y).toBeDefined();
+      }
+    }
+  });
+});

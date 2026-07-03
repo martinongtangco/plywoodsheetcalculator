@@ -1,0 +1,15 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# JavaScript, JSON, HTML, CSS
+*.js text
+*.jsx text
+*.json text
+*.html text
+*.css text
+
+# Markdown
+*.md text eol=lf
+
+# Config files
+*.config.js text eol=lf

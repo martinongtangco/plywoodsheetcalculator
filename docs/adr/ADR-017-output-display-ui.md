@@ -1,6 +1,6 @@
 # ADR-017: Output Display UI
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-03
 **Deciders:** Open Source Maintainers
 
@@ -99,13 +99,13 @@ The automatic layout-after-calculate behaviour saves a click but means the layou
 
 ## Action Items
 
-- [ ] Create `CutList.jsx` component with sortable table
-- [ ] Add CSV export to `CutList.jsx`
-- [ ] Create `SheetLayoutView.jsx` component with layout controls
-- [ ] Add `calculateAllParts()` action to `projectStore`
-- [ ] Add `runLayout()` action to `projectStore`
-- [ ] Add validation banner in Output tab
-- [ ] Wire "Calculate" and "Run Layout" buttons
-- [ ] Add error handling for oversized parts
-- [ ] Add unit tests for `calculateAllParts` store action
-- [ ] Add unit tests for `runLayout` store action
+- [x] Create `CutList.jsx` component with sortable table
+- [x] Add CSV export to `CutList.jsx`
+- [x] Create `SheetLayoutView.jsx` component with layout controls
+- [x] Add `calculateAllParts()` action to `projectStore`
+- [x] Add `runLayout()` action to `projectStore`
+- [x] Add validation banner in Output tab
+- [x] Wire "Calculate" and "Run Layout" buttons
+- [x] Add error handling for oversized parts
+- [x] Add unit tests for `calculateAllParts` store action
+- [x] Add unit tests for `runLayout` store action
