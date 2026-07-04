@@ -16,12 +16,7 @@ function App() {
 
   const activeProject = useProjectStore((s) => s.getActiveProject());
 
-  // When no project is active, show the project list
-  if (!activeProjectId) {
-    return <ProjectList />;
-  }
-
-  // -- Inline project rename --
+  // All hooks MUST be called before any early return (Rules of Hooks)
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameName, setRenameName] = useState('');
   const [renameError, setRenameError] = useState('');
@@ -66,6 +61,11 @@ function App() {
       cancelRename();
     }
   }, [commitRename, cancelRename]);
+
+  // When no project is active, show the project list
+  if (!activeProjectId) {
+    return <ProjectList />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
