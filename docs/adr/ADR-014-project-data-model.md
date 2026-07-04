@@ -1,6 +1,6 @@
 # ADR-014: Project Data Model
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-29
 **Deciders:** Open Source Maintainers
 
@@ -144,9 +144,9 @@ Unix timestamps instead of ISO strings keep the JSON smaller and avoid timezone 
 
 ## Action Items
 
-- [ ] Define JSDoc type annotations for Project, Box, DrawerConfig, Part
-- [ ] Create data validation utility in `src/utils/validate.js`
-- [ ] Create UUID generation utility in `src/utils/id.js`
-- [ ] Implement default factory functions for Project, Box, DrawerConfig
-- [ ] Add unit tests for data validation
-- [ ] Add unit tests for JSON round-trip
+- [x] Define JSDoc type annotations for Project, Box, DrawerConfig, Part — `src/types.js`
+- [x] Create data validation utility in `src/utils/validate.js`
+- [x] Create UUID generation utility in `src/utils/id.js`
+- [x] Implement default factory functions for Project, Box, DrawerConfig
+- [x] Add unit tests for data validation — `tests/utils/validate.test.js`
+- [x] Add unit tests for JSON round-trip — `tests/utils/fileIO.test.js`
