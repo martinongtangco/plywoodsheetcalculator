@@ -10,6 +10,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
 import { THICKNESSES } from '../presets/thicknesses.js';
 import { TRACK_TYPES } from '../presets/trackTypes.js';
+import { BoxVisualization } from './BoxVisualization.jsx';
 
 // Stable empty array to avoid creating new references in Zustand selectors
 const EMPTY_ARRAY = [];
@@ -505,6 +506,9 @@ function BoxCard({ boxId }) {
               </label>
             </div>
           </div>
+
+          {/* 2b. Visualization Preview */}
+          <BoxVisualization box={box} thicknesses={box.thicknesses} />
 
           {/* 3. Construction Method */}
           <div>
