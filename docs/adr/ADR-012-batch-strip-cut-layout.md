@@ -1,6 +1,6 @@
 # ADR-012: Batch/Strip Cut Layout Strategy
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-29
 **Deciders:** Open Source Maintainers
 
@@ -70,9 +70,9 @@ The trade-off is material efficiency. Batch mode will generally use more sheets 
 
 ## Action Items
 
-- [ ] Implement `batchLayout()` in `src/engine/batch.js`
-- [ ] Add unit tests for basic strip grouping
-- [ ] Add unit tests for kerf between parts (not after last)
-- [ ] Add unit tests for multi-sheet output
-- [ ] Add unit tests for offcut tracking
-- [ ] Add integration test: parts → batch layout → verify all parts placed
+- [x] Implement `batchLayout()` in `src/engine/batch.js`
+- [x] Add unit tests for basic strip grouping
+- [x] Add unit tests for kerf between parts (not after last)
+- [x] Add unit tests for multi-sheet output
+- [x] Add unit tests for offcut tracking
+- [x] Add integration test: parts → batch layout → verify all parts placed

@@ -1,6 +1,6 @@
 # ADR-013: Balanced Layout Strategy
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-29
 **Deciders:** Open Source Maintainers
 
@@ -70,9 +70,9 @@ The algorithm is simple enough to understand and debug, which is important for a
 
 ## Action Items
 
-- [ ] Implement `balancedLayout()` in `src/engine/balanced.js`
-- [ ] Add unit tests for basic shelf creation and packing
-- [ ] Add unit tests for grain constraint (hard and soft)
-- [ ] Add unit tests for kerf between parts and between shelves
-- [ ] Add unit tests for multi-sheet output
-- [ ] Add integration test: parts → balanced layout → verify all parts placed
+- [x] Implement `balancedLayout()` in `src/engine/balanced.js`
+- [x] Add unit tests for basic shelf creation and packing
+- [x] Add unit tests for grain constraint (hard and soft)
+- [x] Add unit tests for kerf between parts and between shelves
+- [x] Add unit tests for multi-sheet output
+- [x] Add integration test: parts → balanced layout → verify all parts placed
