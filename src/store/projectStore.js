@@ -7,6 +7,7 @@ import {
   defaultBox,
   defaultDrawerConfig,
   validateProject,
+  validateProjectName,
   validateBox,
   validateDrawerConfig,
 } from '../utils/validate.js';
@@ -109,6 +110,40 @@ export const useProjectStore = create(
               activeProjectId: newActiveId,
             };
           });
+        },
+
+        /**
+         * Renames a project. Validates the name against XSS, length, and duplicates.
+         * @param {string} projectId
+         * @param {string} newName
+         * @returns {{ success: boolean, errors?: string[] }}
+         */
+        renameProject: (projectId, newName) => {
+          const { projects } = get();
+          const project = projects.find((p) => p.id === projectId);
+          if (!project) {
+            return { success: false, errors: ['Project not found'] };
+          }
+
+          const existingNames = projects.map((p) => p.name);
+          const { valid, errors } = validateProjectName(newName, existingNames, project.name);
+
+          if (!valid) {
+            return { success: false, errors };
+          }
+
+          // Sanitize: strip HTML tags
+          const sanitized = newName.replace(/<[^>]*>/g, '').trim();
+
+          set((state) => ({
+            projects: state.projects.map((p) =>
+              p.id === projectId
+                ? { ...p, name: sanitized, updatedAt: Date.now() }
+                : p
+            ),
+          }));
+
+          return { success: true };
         },
 
         // -- Box actions --

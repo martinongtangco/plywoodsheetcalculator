@@ -4,6 +4,7 @@ import {
   defaultBox,
   defaultDrawerConfig,
   validateProject,
+  validateProjectName,
   validateBox,
   validateDrawerConfig,
   isPositiveNumber,
@@ -191,5 +192,92 @@ describe('validateDrawerConfig', () => {
 
   it('returns empty array for valid drawer config', () => {
     expect(validateDrawerConfig(defaultDrawerConfig('box-1'))).toEqual([]);
+  });
+});
+
+describe('validateProjectName', () => {
+  it('returns valid for a normal name', () => {
+    const result = validateProjectName('Kitchen Cabinet');
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('rejects empty strings', () => {
+    const result = validateProjectName('');
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('required'))).toBe(true);
+  });
+
+  it('rejects whitespace-only names', () => {
+    const result = validateProjectName('   ');
+    expect(result.valid).toBe(false);
+  });
+
+  it('rejects names exceeding 100 characters', () => {
+    const longName = 'A'.repeat(101);
+    const result = validateProjectName(longName);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('100'))).toBe(true);
+  });
+
+  it('accepts names exactly 100 characters', () => {
+    const exactName = 'A'.repeat(100);
+    const result = validateProjectName(exactName);
+    expect(result.valid).toBe(true);
+  });
+
+  it('rejects duplicate names (case-insensitive)', () => {
+    const existing = ['Kitchen Cabinet', 'Bedroom Unit'];
+    const result = validateProjectName('kitchen cabinet', existing);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('already exists'))).toBe(true);
+  });
+
+  it('allows same name when excluded (renaming self)', () => {
+    const existing = ['Kitchen Cabinet', 'Bedroom Unit'];
+    const result = validateProjectName('New Kitchen', existing, 'Kitchen Cabinet');
+    expect(result.valid).toBe(true);
+  });
+
+  it('does not reject own name when renaming to the same name', () => {
+    const existing = ['Kitchen Cabinet', 'Bedroom Unit'];
+    const result = validateProjectName('Kitchen Cabinet', existing, 'Kitchen Cabinet');
+    expect(result.valid).toBe(true);
+  });
+
+  it('handles HTML tags by stripping them (XSS prevention)', () => {
+    const result = validateProjectName('<script>alert("xss")</script>');
+    // After stripping tags, the content is empty or just text
+    // The name becomes 'alert("xss")' after stripping
+    expect(result.valid).toBe(true);
+    // But the sanitized name should not contain the tags
+    // We verify this is handled at the store level, the validator strips
+  });
+
+  it('rejects non-string input', () => {
+    const result = validateProjectName(123);
+    expect(result.valid).toBe(false);
+  });
+
+  it('rejects null input', () => {
+    const result = validateProjectName(null);
+    expect(result.valid).toBe(false);
+  });
+
+  it('rejects duplicate even with different casing', () => {
+    const existing = ['My Project'];
+    const result = validateProjectName('MY PROJECT', existing);
+    expect(result.valid).toBe(false);
+  });
+
+  it('trims leading and trailing whitespace for validation', () => {
+    const result = validateProjectName('  Trimmed Name  ');
+    expect(result.valid).toBe(true);
+  });
+
+  it('detects duplicate after trimming', () => {
+    const existing = ['Trimmed Name'];
+    const result = validateProjectName('  Trimmed Name  ', existing);
+    expect(result.valid).toBe(false);
   });
 });

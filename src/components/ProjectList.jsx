@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
 import { useUIStore } from '../store/uiStore.js';
 import { downloadFile, readFileAsText, promptFileSelect } from '../utils/fileIO.js';
@@ -15,9 +15,15 @@ export default function ProjectList() {
   const createProject = useProjectStore((s) => s.createProject);
   const openProject = useProjectStore((s) => s.openProject);
   const deleteProject = useProjectStore((s) => s.deleteProject);
+  const renameProject = useProjectStore((s) => s.renameProject);
   const exportProjectJSON = useProjectStore((s) => s.exportProjectJSON);
   const importProjectJSON = useProjectStore((s) => s.importProjectJSON);
   const setActiveTab = useUIStore((s) => s.setActiveTab);
+
+  // Track which project is being renamed: { id, name } | null
+  const [editingProject, setEditingProject] = useState(null);
+  const [renameError, setRenameError] = useState('');
+  const inputRef = useRef(null);
 
   const handleCreate = useCallback(() => {
     createProject();
@@ -74,6 +80,47 @@ export default function ProjectList() {
     return new Date(ts).toLocaleString();
   };
 
+  // -- Rename handlers --
+
+  const startRename = useCallback((project) => {
+    setEditingProject({ id: project.id, name: project.name });
+    setRenameError('');
+    // Focus the input on next render
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+  }, []);
+
+  const commitRename = useCallback(() => {
+    if (!editingProject) return;
+    const trimmed = editingProject.name.trim();
+    if (!trimmed) {
+      setRenameError('Project name is required');
+      return;
+    }
+    const result = renameProject(editingProject.id, trimmed);
+    if (!result.success) {
+      setRenameError(result.errors?.[0] ?? 'Rename failed');
+      return;
+    }
+    setEditingProject(null);
+    setRenameError('');
+  }, [editingProject, renameProject]);
+
+  const cancelRename = useCallback(() => {
+    setEditingProject(null);
+    setRenameError('');
+  }, []);
+
+  const handleRenameKeyDown = useCallback((e) => {
+    if (e.key === 'Enter') {
+      commitRename();
+    } else if (e.key === 'Escape') {
+      cancelRename();
+    }
+  }, [commitRename, cancelRename]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
@@ -122,37 +169,92 @@ export default function ProjectList() {
           </div>
         ) : (
           <ul className="space-y-2">
-            {projects.map((project) => (
-              <li
-                key={project.id}
-                className={`flex items-center justify-between p-4 bg-white border rounded-md ${
-                  project.id === activeProjectId
-                    ? 'border-blue-500 ring-1 ring-blue-500'
-                    : 'border-gray-200'
-                }`}
-              >
-                <button
-                  onClick={() => handleOpen(project.id)}
-                  className="flex-1 text-left"
+            {projects.map((project) => {
+              const isEditing = editingProject?.id === project.id;
+              return (
+                <li
+                  key={project.id}
+                  className={`flex items-center justify-between p-4 bg-white border rounded-md ${
+                    project.id === activeProjectId
+                      ? 'border-blue-500 ring-1 ring-blue-500'
+                      : 'border-gray-200'
+                  } ${isEditing ? 'shadow-md' : ''}`}
                 >
-                  <p className="font-medium text-gray-900">{project.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {project.boxes.length} box{project.boxes.length !== 1 ? 'es' : ''}
-                    {' \u00B7 '}
-                    {project.drawers.length} drawer{project.drawers.length !== 1 ? 's' : ''}
-                    {' \u00B7 '}
-                    Modified {formatDate(project.updatedAt)}
-                  </p>
-                </button>
-                <button
-                  onClick={() => handleDelete(project.id)}
-                  className="ml-4 px-3 py-1 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50"
-                  title={`Delete ${project.name}`}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
+                  {isEditing ? (
+                    /* -- Inline rename form -- */
+                    <div className="flex-1 flex items-center gap-2">
+                      <div className="flex-1">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={editingProject.name}
+                          maxLength={100}
+                          onChange={(e) => {
+                            setEditingProject((prev) => ({ ...prev, name: e.target.value }));
+                            if (renameError) setRenameError('');
+                          }}
+                          onKeyDown={handleRenameKeyDown}
+                          onBlur={commitRename}
+                          className="w-full px-2 py-1 text-sm border border-blue-500 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          aria-label="Project name"
+                        />
+                        {renameError && (
+                          <p className="text-xs text-red-600 mt-1">{renameError}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={commitRename}
+                        className="px-3 py-1 text-sm text-green-700 border border-green-200 rounded hover:bg-green-50"
+                        title="Save"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelRename}
+                        className="px-3 py-1 text-sm text-gray-600 border border-gray-200 rounded hover:bg-gray-50"
+                        title="Cancel"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    /* -- Default project row -- */
+                    <>
+                      <button
+                        onClick={() => handleOpen(project.id)}
+                        className="flex-1 text-left"
+                        title="Open project"
+                      >
+                        <p className="font-medium text-gray-900">{project.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {project.boxes.length} box{project.boxes.length !== 1 ? 'es' : ''}
+                          {' \u00B7 '}
+                          {project.drawers.length} drawer{project.drawers.length !== 1 ? 's' : ''}
+                          {' \u00B7 '}
+                          Modified {formatDate(project.updatedAt)}
+                        </p>
+                      </button>
+                      <div className="ml-4 flex items-center gap-2">
+                        <button
+                          onClick={() => startRename(project)}
+                          className="px-3 py-1 text-sm text-blue-600 border border-blue-200 rounded hover:bg-blue-50"
+                          title={`Rename ${project.name}`}
+                        >
+                          Rename
+                        </button>
+                        <button
+                          onClick={() => handleDelete(project.id)}
+                          className="px-3 py-1 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50"
+                          title={`Delete ${project.name}`}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </main>

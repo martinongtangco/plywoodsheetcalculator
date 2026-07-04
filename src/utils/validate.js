@@ -1,6 +1,52 @@
 import { uid } from './id.js';
 
 /**
+ * Validates a project name for safety and uniqueness.
+ * - Sanitizes HTML tags (XSS prevention)
+ * - Enforces max length of 100 characters
+ * - Blocks duplicate names when `existingNames` is provided
+ *
+ * @param {string} name - The proposed project name
+ * @param {string[]} [existingNames] - Array of existing project names to check against (case-insensitive)
+ * @param {string} [excludeId] - Project ID to exclude from duplicate check (for renaming the same project)
+ * @returns {{ valid: boolean, errors: string[] }}
+ */
+export function validateProjectName(name, existingNames = [], excludeName = null) {
+  const errors = [];
+
+  if (typeof name !== 'string') {
+    return { valid: false, errors: ['Project name must be a string'] };
+  }
+
+  // Strip HTML tags and script tags to prevent XSS
+  const sanitized = name.replace(/<[^>]*>/g, '').trim();
+
+  if (sanitized.length === 0) {
+    errors.push('Project name is required');
+  }
+
+  if (sanitized.length > 100) {
+    errors.push('Project name must be 100 characters or fewer');
+  }
+
+  // Check for duplicate names (case-insensitive), excluding the current name if renaming
+  const normalizedName = sanitized.toLowerCase();
+  const excludedName = excludeName ? excludeName.toLowerCase() : null;
+  const filteredNames = existingNames
+    .filter(n => excludedName ? n.toLowerCase() !== excludedName : true)
+    .map(n => n.toLowerCase());
+
+  if (filteredNames.includes(normalizedName)) {
+    errors.push('A project with this name already exists');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
  * Default values for a new Project.
  *
  * @returns {Project}
