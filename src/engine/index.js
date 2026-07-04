@@ -1,5 +1,10 @@
 // Calculation engine — pure functions only. No UI, no Zustand, no DOM.
-export { calculatePartDimensions, calculateCarcassParts, calculateInternalDimensions } from './parts.js';
+export {
+  calculatePartDimensions,
+  calculateCarcassParts,
+  calculateInternalDimensions,
+  calculateDrawerParts,
+} from './parts.js';
 export { batchLayout } from './batch.js';
 export { balancedLayout } from './balanced.js';
 export { optimisedLayout } from './optimised.js';

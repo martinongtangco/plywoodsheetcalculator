@@ -1,6 +1,6 @@
 # ADR-011: Drawer Part Calculation Model
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-29
 **Deciders:** Open Source Maintainers
 
@@ -83,10 +83,10 @@ The 15mm default for drawer sides matches the most common undermount slide syste
 
 ## Action Items
 
-- [ ] Implement `calculateDrawerParts()` in `src/engine/parts.js`
-- [ ] Add unit tests for standard 15mm drawer with undermount slides
-- [ ] Add unit tests for 18mm drawer with side-mount slides
-- [ ] Add unit tests for drawer back setback
-- [ ] Add unit tests for base panel inset calculations
-- [ ] Add unit tests for multiple drawers in one cabinet
-- [ ] Add unit tests for edge banding on drawer sides
+- [x] Implement `calculateDrawerParts()` in `src/engine/parts.js`
+- [x] Add unit tests for standard 15mm drawer with undermount slides
+- [x] Add unit tests for 18mm drawer with side-mount slides
+- [x] Add unit tests for drawer back setback
+- [x] Add unit tests for base panel inset calculations
+- [x] Add unit tests for multiple drawers in one cabinet
+- [x] Add unit tests for edge banding on drawer sides
