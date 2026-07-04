@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useProjectStore } from './store/projectStore.js';
 import { useUIStore } from './store/uiStore.js';
 import ProjectList from './components/ProjectList.jsx';
@@ -21,25 +21,131 @@ function App() {
     return <ProjectList />;
   }
 
+  // -- Inline project rename --
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameName, setRenameName] = useState('');
+  const [renameError, setRenameError] = useState('');
+  const renameInputRef = useRef(null);
+
+  const startRename = useCallback(() => {
+    if (!activeProject) return;
+    setRenameName(activeProject.name);
+    setRenameError('');
+    setIsRenaming(true);
+    requestAnimationFrame(() => {
+      renameInputRef.current?.focus();
+      renameInputRef.current?.select();
+    });
+  }, [activeProject]);
+
+  const commitRename = useCallback(() => {
+    if (!activeProject) return;
+    const trimmed = renameName.trim();
+    if (!trimmed) {
+      setRenameError('Project name is required');
+      return;
+    }
+    const result = useProjectStore.getState().renameProject(activeProject.id, trimmed);
+    if (!result.success) {
+      setRenameError(result.errors?.[0] ?? 'Rename failed');
+      return;
+    }
+    setIsRenaming(false);
+    setRenameError('');
+  }, [activeProject, renameName]);
+
+  const cancelRename = useCallback(() => {
+    setIsRenaming(false);
+    setRenameError('');
+  }, []);
+
+  const handleRenameKeyDown = useCallback((e) => {
+    if (e.key === 'Enter') {
+      commitRename();
+    } else if (e.key === 'Escape') {
+      cancelRename();
+    }
+  }, [commitRename, cancelRename]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => {
                   useProjectStore.setState({ activeProjectId: null });
                 }}
-                className="text-sm text-blue-600 hover:underline mr-4"
+                className="text-sm text-blue-600 hover:underline"
               >
                 ← Projects
               </button>
-              <h1 className="text-xl font-bold text-gray-900 inline">
-                ply-calc
-              </h1>
               {activeProject && (
-                <span className="ml-3 text-sm text-gray-500">{activeProject.name}</span>
+                <>
+                  <div className="w-px h-6 bg-gray-300" />
+                  {isRenaming ? (
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <input
+                          ref={renameInputRef}
+                          type="text"
+                          value={renameName}
+                          maxLength={100}
+                          onChange={(e) => {
+                            setRenameName(e.target.value);
+                            if (renameError) setRenameError('');
+                          }}
+                          onKeyDown={handleRenameKeyDown}
+                          onBlur={commitRename}
+                          className="px-2 py-1 text-2xl font-bold border-2 border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          aria-label="Project name"
+                        />
+                        {renameError && (
+                          <p className="text-xs text-red-600 mt-1">{renameError}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={commitRename}
+                        className="px-3 py-1 text-sm text-green-700 border border-green-200 rounded hover:bg-green-50"
+                        title="Save"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelRename}
+                        className="px-3 py-1 text-sm text-gray-600 border border-gray-200 rounded hover:bg-gray-50"
+                        title="Cancel"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={startRename}
+                      className="group flex items-center gap-2"
+                      title={`Rename: ${activeProject.name}`}
+                    >
+                      <h1 className="text-2xl font-bold text-gray-900">
+                        {activeProject.name}
+                      </h1>
+                      <svg
+                        className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
