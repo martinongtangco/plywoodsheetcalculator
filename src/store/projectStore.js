@@ -220,13 +220,14 @@ export const useProjectStore = create(
          * @returns {string} The new box id
          */
         duplicateBox: (boxId) => {
-          let sourceBox = null;
+          let newBoxId = null;
           set((state) => {
             const project = state.projects.find((p) => p.id === state.activeProjectId);
             if (!project) return {};
-            sourceBox = project.boxes.find((b) => b.id === boxId);
+            const sourceBox = project.boxes.find((b) => b.id === boxId);
             if (!sourceBox) return {};
             const copy = { ...sourceBox, id: uid(), name: `${sourceBox.name} (copy)` };
+            newBoxId = copy.id;
             return {
               projects: state.projects.map((p) =>
                 p.id === state.activeProjectId
@@ -235,7 +236,74 @@ export const useProjectStore = create(
               ),
             };
           });
-          return sourceBox ? uid() : null;
+          return newBoxId;
+        },
+
+        // -- Group actions --
+
+        /**
+         * Adds a named group to the active project.
+         * @param {string} name
+         * @returns {string|null} The new group id, or null if the name was empty
+         */
+        addGroup: (name) => {
+          const trimmed = String(name ?? '').replace(/<[^>]*>/g, '').trim().slice(0, 100);
+          if (!trimmed) return null;
+          const group = { id: uid(), name: trimmed };
+          set((state) => ({
+            projects: state.projects.map((p) =>
+              p.id === state.activeProjectId
+                ? { ...p, groups: [...(p.groups || []), group], updatedAt: Date.now() }
+                : p
+            ),
+          }));
+          return group.id;
+        },
+
+        /**
+         * Renames a group in the active project. No-op if the name is empty.
+         * @param {string} groupId
+         * @param {string} name
+         */
+        renameGroup: (groupId, name) => {
+          const trimmed = String(name ?? '').replace(/<[^>]*>/g, '').trim().slice(0, 100);
+          if (!trimmed) return;
+          set((state) => ({
+            projects: state.projects.map((p) =>
+              p.id === state.activeProjectId
+                ? {
+                    ...p,
+                    groups: (p.groups || []).map((g) =>
+                      g.id === groupId ? { ...g, name: trimmed } : g
+                    ),
+                    updatedAt: Date.now(),
+                  }
+                : p
+            ),
+          }));
+        },
+
+        /**
+         * Deletes a group from the active project. Any box referencing it
+         * falls back to ungrouped (groupId: null) — mirrors how deleteBox()
+         * also cleans up the box's drawers.
+         * @param {string} groupId
+         */
+        deleteGroup: (groupId) => {
+          set((state) => ({
+            projects: state.projects.map((p) =>
+              p.id === state.activeProjectId
+                ? {
+                    ...p,
+                    groups: (p.groups || []).filter((g) => g.id !== groupId),
+                    boxes: p.boxes.map((b) =>
+                      b.groupId === groupId ? { ...b, groupId: null } : b
+                    ),
+                    updatedAt: Date.now(),
+                  }
+                : p
+            ),
+          }));
         },
 
         // -- Drawer actions --
@@ -502,6 +570,12 @@ export const useProjectStore = create(
         importProjectJSON: (json) => {
           try {
             const parsed = JSON.parse(json);
+            // Normalize fields added after older exports were created, so
+            // legacy JSON (no `groups` key, boxes with no `groupId`) still
+            // passes validation instead of being rejected as malformed.
+            if (!Array.isArray(parsed.groups)) {
+              parsed.groups = [];
+            }
             const errors = validateProject(parsed);
             if (errors.length > 0) {
               return { success: false, errors };
@@ -510,12 +584,19 @@ export const useProjectStore = create(
             const importId = uid();
             const project = { ...parsed, id: importId, updatedAt: Date.now() };
             // Re-ID nested items to avoid collisions
+            const groupRemapIds = new Map();
+            project.groups = project.groups.map((g) => {
+              const newId = uid();
+              groupRemapIds.set(g.id, newId);
+              return { ...g, id: newId };
+            });
             const remapIds = new Map();
             if (project.boxes) {
               project.boxes = project.boxes.map((box) => {
                 const newId = uid();
                 remapIds.set(box.id, newId);
-                return { ...box, id: newId };
+                const newGroupId = box.groupId ? (groupRemapIds.get(box.groupId) ?? null) : null;
+                return { ...box, id: newId, groupId: newGroupId };
               });
             }
             if (project.drawers) {

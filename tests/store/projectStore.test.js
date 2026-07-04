@@ -131,6 +131,65 @@ describe('projectStore', () => {
       expect(project.boxes[1].name).toBe('Original (copy)');
       expect(project.boxes[1].id).not.toBe(boxId);
     });
+
+    it('returns the id of the actual duplicated box', () => {
+      useProjectStore.getState().createProject();
+      const boxId = useProjectStore.getState().addBox({ name: 'Original' });
+      const newId = useProjectStore.getState().duplicateBox(boxId);
+      const project = useProjectStore.getState().getActiveProject();
+      expect(newId).toBe(project.boxes[1].id);
+      expect(newId).not.toBe(boxId);
+    });
+  });
+
+  describe('addGroup', () => {
+    it('adds a group to the active project and returns its id', () => {
+      useProjectStore.getState().createProject();
+      const groupId = useProjectStore.getState().addGroup('Cupboard A');
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.groups).toHaveLength(1);
+      expect(project.groups[0].id).toBe(groupId);
+      expect(project.groups[0].name).toBe('Cupboard A');
+    });
+
+    it('rejects empty or whitespace-only names', () => {
+      useProjectStore.getState().createProject();
+      const groupId = useProjectStore.getState().addGroup('   ');
+      expect(groupId).toBeNull();
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.groups).toHaveLength(0);
+    });
+  });
+
+  describe('renameGroup', () => {
+    it('updates the group name', () => {
+      useProjectStore.getState().createProject();
+      const groupId = useProjectStore.getState().addGroup('Cupboard A');
+      useProjectStore.getState().renameGroup(groupId, 'Bottom Shelves');
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.groups[0].name).toBe('Bottom Shelves');
+    });
+
+    it('ignores an empty name', () => {
+      useProjectStore.getState().createProject();
+      const groupId = useProjectStore.getState().addGroup('Cupboard A');
+      useProjectStore.getState().renameGroup(groupId, '  ');
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.groups[0].name).toBe('Cupboard A');
+    });
+  });
+
+  describe('deleteGroup', () => {
+    it('removes the group and ungroups any box that referenced it', () => {
+      useProjectStore.getState().createProject();
+      const groupId = useProjectStore.getState().addGroup('Cupboard A');
+      const boxId = useProjectStore.getState().addBox();
+      useProjectStore.getState().updateBox(boxId, { groupId });
+      useProjectStore.getState().deleteGroup(groupId);
+      const project = useProjectStore.getState().getActiveProject();
+      expect(project.groups).toHaveLength(0);
+      expect(project.boxes.find((b) => b.id === boxId).groupId).toBeNull();
+    });
   });
 
   describe('addDrawer', () => {
@@ -305,6 +364,39 @@ describe('projectStore', () => {
       const result = useProjectStore.getState().importProjectJSON(json);
       expect(result.success).toBe(true);
       expect(useProjectStore.getState().projects).toHaveLength(2);
+    });
+
+    it('imports a legacy project with no groups key or box.groupId', () => {
+      const project = defaultProject();
+      project.name = 'Legacy';
+      delete project.groups;
+      const box = defaultBox();
+      delete box.groupId;
+      project.boxes = [box];
+      const json = JSON.stringify(project);
+
+      const result = useProjectStore.getState().importProjectJSON(json);
+      expect(result.success).toBe(true);
+      const imported = useProjectStore.getState().getActiveProject();
+      expect(imported.groups).toEqual([]);
+      expect(imported.boxes[0].groupId).toBeNull();
+    });
+
+    it('re-IDs imported groups and remaps box.groupId to the new group id', () => {
+      const project = defaultProject();
+      project.name = 'Group Re-ID';
+      project.groups = [{ id: 'orig-group', name: 'Cupboard A' }];
+      const box = defaultBox();
+      box.id = 'orig-box';
+      box.groupId = 'orig-group';
+      project.boxes = [box];
+      const json = JSON.stringify(project);
+
+      const result = useProjectStore.getState().importProjectJSON(json);
+      expect(result.success).toBe(true);
+      const imported = useProjectStore.getState().getActiveProject();
+      expect(imported.groups[0].id).not.toBe('orig-group');
+      expect(imported.boxes[0].groupId).toBe(imported.groups[0].id);
     });
   });
 

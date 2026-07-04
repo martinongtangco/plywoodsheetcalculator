@@ -6,11 +6,15 @@
  * Reads from and writes to Zustand stores. Never imports from src/engine/.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
+import { useUIStore } from '../store/uiStore.js';
 import { THICKNESSES } from '../presets/thicknesses.js';
 import { TRACK_TYPES } from '../presets/trackTypes.js';
 import { BoxVisualization } from './BoxVisualization.jsx';
+
+// Natural (numeric-aware) sort so "Box 2" sorts before "Box 10"
+const NAME_COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 
 // Stable empty array to avoid creating new references in Zustand selectors
 const EMPTY_ARRAY = [];
@@ -59,6 +63,74 @@ function ThicknessSelect({ value, onChange, label }) {
           {t.label}
         </option>
       ))}
+    </select>
+  );
+}
+
+/**
+ * GroupSelect — dropdown for assigning a box to a named group.
+ * Picking "+ New group…" swaps in an inline text input so a group can be
+ * created on the fly, without leaving the box card (tag-input style).
+ */
+function GroupSelect({ value, groups, onChange, onCreateGroup }) {
+  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (creating) inputRef.current?.focus();
+  }, [creating]);
+
+  const commitCreate = () => {
+    const trimmed = newName.trim();
+    if (trimmed) onCreateGroup(trimmed);
+    setCreating(false);
+    setNewName('');
+  };
+
+  if (creating) {
+    return (
+      <div className="mt-1 flex gap-1">
+        <input
+          ref={inputRef}
+          type="text"
+          value={newName}
+          maxLength={100}
+          placeholder="New group name"
+          onChange={(e) => setNewName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitCreate();
+            if (e.key === 'Escape') {
+              setCreating(false);
+              setNewName('');
+            }
+          }}
+          onBlur={commitCreate}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <select
+      value={value ?? ''}
+      onChange={(e) => {
+        if (e.target.value === '__new__') {
+          setCreating(true);
+          return;
+        }
+        onChange(e.target.value || null);
+      }}
+      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+    >
+      <option value="">Ungrouped</option>
+      {groups.map((g) => (
+        <option key={g.id} value={g.id}>
+          {g.name}
+        </option>
+      ))}
+      <option value="__new__">+ New group…</option>
     </select>
   );
 }
@@ -300,11 +372,17 @@ function BoxCard({ boxId }) {
   const updateDrawer = useProjectStore((s) => s.updateDrawer);
   const deleteDrawer = useProjectStore((s) => s.deleteDrawer);
   const addDrawer = useProjectStore((s) => s.addDrawer);
+  const addGroup = useProjectStore((s) => s.addGroup);
 
   const box = useProjectStore((s) => {
     const project = s.getActiveProject();
     if (!project) return null;
     return project.boxes.find((b) => b.id === boxId) ?? null;
+  });
+
+  const groups = useProjectStore((s) => {
+    const project = s.getActiveProject();
+    return project ? (project.groups || EMPTY_ARRAY) : EMPTY_ARRAY;
   });
 
   const allDrawers = useProjectStore((s) => {
@@ -316,11 +394,32 @@ function BoxCard({ boxId }) {
     [allDrawers, boxId]
   );
 
-  const [expanded, setExpanded] = useState(false);
+  // Single-select accordion: only one box card is expanded at a time, driven
+  // by uiStore.selectedBoxId (previously dead state — see ADR discussion).
+  // This is also what makes "auto-select" on add/duplicate meaningful: setting
+  // selectedBoxId to the new box both opens it and collapses whatever was open.
+  const selectedBoxId = useUIStore((s) => s.selectedBoxId);
+  const setSelectedBox = useUIStore((s) => s.setSelectedBox);
+  const expanded = selectedBoxId === boxId;
+
+  const cardRef = useRef(null);
+  useEffect(() => {
+    if (expanded) {
+      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [expanded]);
 
   const handleFieldChange = useCallback(
     (field, value) => updateBox(boxId, { [field]: value }),
     [boxId, updateBox]
+  );
+
+  const handleCreateGroup = useCallback(
+    (name) => {
+      const groupId = addGroup(name);
+      if (groupId) updateBox(boxId, { groupId });
+    },
+    [boxId, addGroup, updateBox]
   );
 
   const handleThicknessChange = useCallback(
@@ -419,11 +518,11 @@ function BoxCard({ boxId }) {
   if (!box) return null;
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+    <div ref={cardRef} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
       {/* Box header — summary */}
       <div
         className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100"
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => setSelectedBox(expanded ? null : boxId)}
       >
         <div className="flex-1">
           <div className="flex items-center gap-2">
@@ -462,6 +561,15 @@ function BoxCard({ boxId }) {
                   value={box.quantity}
                   onChange={(e) => handleFieldChange('quantity', parseInt(e.target.value, 10) || 1)}
                   className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-gray-500">Group</span>
+                <GroupSelect
+                  value={box.groupId}
+                  groups={groups}
+                  onChange={(groupId) => handleFieldChange('groupId', groupId)}
+                  onCreateGroup={handleCreateGroup}
                 />
               </label>
             </div>
@@ -651,19 +759,57 @@ function BoxCard({ boxId }) {
 }
 
 /**
+ * BoxListItem — a single box row: the collapsible BoxCard plus its
+ * Duplicate/Delete actions. Shared between the grouped and ungrouped
+ * rendering branches below.
+ */
+function BoxListItem({ boxId, fallbackName, onDuplicate, onDelete }) {
+  return (
+    <div className="relative">
+      <BoxCard boxId={boxId} />
+      <div className="flex gap-2 mt-2">
+        <button
+          onClick={() => onDuplicate(boxId)}
+          className="text-xs text-blue-600 hover:underline"
+        >
+          Duplicate
+        </button>
+        <button
+          onClick={() => onDelete(boxId, fallbackName)}
+          className="text-xs text-red-600 hover:underline"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
  * BoxConfig — main Boxes tab component (ADR-016).
- * Accordion-style list where each box is a collapsible card.
+ * Accordion-style list where each box is a collapsible card, organized into
+ * named groups (a project may have none) plus an "Ungrouped" bucket. Boxes
+ * within each bucket, and the groups themselves, are always sorted by name.
  */
 export default function BoxConfig() {
   const boxes = useProjectStore((s) => {
     const project = s.getActiveProject();
     return project ? project.boxes : EMPTY_ARRAY;
   });
-  const boxIds = useMemo(() => boxes.map((b) => b.id), [boxes]);
+  const groups = useProjectStore((s) => {
+    const project = s.getActiveProject();
+    return project ? (project.groups || EMPTY_ARRAY) : EMPTY_ARRAY;
+  });
 
   const addBox = useProjectStore((s) => s.addBox);
   const deleteBox = useProjectStore((s) => s.deleteBox);
   const duplicateBox = useProjectStore((s) => s.duplicateBox);
+  const renameGroup = useProjectStore((s) => s.renameGroup);
+  const deleteGroup = useProjectStore((s) => s.deleteGroup);
+  const setSelectedBox = useUIStore((s) => s.setSelectedBox);
+
+  const [renamingGroupId, setRenamingGroupId] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
 
   const getBox = useCallback(
     (id) => {
@@ -674,13 +820,68 @@ export default function BoxConfig() {
     []
   );
 
-  if (boxIds.length === 0) {
+  const handleDelete = useCallback(
+    (id, fallbackName) => {
+      const b = getBox(id);
+      if (window.confirm(`Delete "${b?.name || fallbackName}"?`)) {
+        deleteBox(id);
+      }
+    },
+    [getBox, deleteBox]
+  );
+
+  const handleDeleteGroup = useCallback(
+    (group, count) => {
+      const message = count > 0
+        ? `Delete group "${group.name}"? ${count} box${count === 1 ? '' : 'es'} will become ungrouped.`
+        : `Delete group "${group.name}"?`;
+      if (window.confirm(message)) {
+        deleteGroup(group.id);
+      }
+    },
+    [deleteGroup]
+  );
+
+  const sections = useMemo(() => {
+    const byGroup = new Map();
+    const ungrouped = [];
+    for (const box of boxes) {
+      if (box.groupId) {
+        if (!byGroup.has(box.groupId)) byGroup.set(box.groupId, []);
+        byGroup.get(box.groupId).push(box);
+      } else {
+        ungrouped.push(box);
+      }
+    }
+    const sortByName = (arr) => [...arr].sort((a, b) => NAME_COLLATOR.compare(a.name, b.name));
+
+    const groupSections = [...groups]
+      .sort((a, b) => NAME_COLLATOR.compare(a.name, b.name))
+      .map((g) => ({ group: g, boxes: sortByName(byGroup.get(g.id) || []) }));
+
+    return { groupSections, ungrouped: sortByName(ungrouped) };
+  }, [boxes, groups]);
+
+  const hasGroups = groups.length > 0;
+  const hasBoxes = boxes.length > 0;
+
+  const handleAddBox = () => {
+    const id = addBox();
+    setSelectedBox(id);
+  };
+
+  const handleDuplicate = (id) => {
+    const newId = duplicateBox(id);
+    if (newId) setSelectedBox(newId);
+  };
+
+  if (!hasBoxes) {
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
           <button
-            onClick={() => addBox()}
+            onClick={handleAddBox}
             className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
           >
             + Add Box
@@ -699,38 +900,95 @@ export default function BoxConfig() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
         <button
-          onClick={() => addBox()}
+          onClick={handleAddBox}
           className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
         >
           + Add Box
         </button>
       </div>
 
-      <div className="space-y-3">
-        {boxIds.map((id, index) => (
-          <div key={id} className="relative">
-            <BoxCard boxId={id} />
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={() => duplicateBox(id)}
-                className="text-xs text-blue-600 hover:underline"
-              >
-                Duplicate
-              </button>
-              <button
-                onClick={() => {
-                  const b = getBox(id);
-                  if (window.confirm(`Delete "${b?.name || `Box ${index + 1}`}"?`)) {
-                    deleteBox(id);
-                  }
-                }}
-                className="text-xs text-red-600 hover:underline"
-              >
-                Delete
-              </button>
+      <div className="space-y-6">
+        {sections.groupSections.map(({ group, boxes: groupBoxes }) => (
+          <div key={group.id}>
+            <div className="flex items-center justify-between mb-2">
+              {renamingGroupId === group.id ? (
+                <input
+                  type="text"
+                  autoFocus
+                  value={renameValue}
+                  maxLength={100}
+                  onChange={(e) => setRenameValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      renameGroup(group.id, renameValue);
+                      setRenamingGroupId(null);
+                    } else if (e.key === 'Escape') {
+                      setRenamingGroupId(null);
+                    }
+                  }}
+                  onBlur={() => {
+                    renameGroup(group.id, renameValue);
+                    setRenamingGroupId(null);
+                  }}
+                  className="px-2 py-1 text-sm font-semibold border border-blue-400 rounded"
+                />
+              ) : (
+                <h3 className="text-sm font-semibold text-gray-700">{group.name}</h3>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setRenamingGroupId(group.id);
+                    setRenameValue(group.name);
+                  }}
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  Rename
+                </button>
+                <button
+                  onClick={() => handleDeleteGroup(group, groupBoxes.length)}
+                  className="text-xs text-red-600 hover:underline"
+                >
+                  Delete group
+                </button>
+              </div>
             </div>
+            {groupBoxes.length > 0 ? (
+              <div className="space-y-3">
+                {groupBoxes.map((box, index) => (
+                  <BoxListItem
+                    key={box.id}
+                    boxId={box.id}
+                    fallbackName={`Box ${index + 1}`}
+                    onDuplicate={handleDuplicate}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400">No boxes in this group.</p>
+            )}
           </div>
         ))}
+
+        {(sections.ungrouped.length > 0 || !hasGroups) && (
+          <div>
+            {hasGroups && (
+              <h3 className="text-sm font-semibold text-gray-500 mb-2">Ungrouped</h3>
+            )}
+            <div className="space-y-3">
+              {sections.ungrouped.map((box, index) => (
+                <BoxListItem
+                  key={box.id}
+                  boxId={box.id}
+                  fallbackName={`Box ${index + 1}`}
+                  onDuplicate={handleDuplicate}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -63,6 +63,7 @@ export function defaultProject() {
     grainConstraint: 'soft',
     boxes: [],
     drawers: [],
+    groups: [],
   };
 }
 
@@ -79,6 +80,7 @@ export function defaultBox(boxCount = 0) {
     id: uid(),
     name: `Box ${boxCount + 1}`,
     quantity: 1,
+    groupId: null,
     externalWidth: 600,
     externalHeight: 720,
     externalDepth: 570,
@@ -201,6 +203,10 @@ export function validateProject(project) {
 
   if (!Array.isArray(project.drawers)) {
     errors.push('Project.drawers must be an array');
+  }
+
+  if (!Array.isArray(project.groups)) {
+    errors.push('Project.groups must be an array');
   }
 
   return errors;
