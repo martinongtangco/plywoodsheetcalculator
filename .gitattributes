@@ -13,3 +13,6 @@
 
 # Config files
 *.config.js text eol=lf
+
+# Build output (generated files - always LF)
+dist/ text eol=lf
