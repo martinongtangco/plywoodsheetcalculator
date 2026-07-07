@@ -8,6 +8,7 @@ import CutSettings from './components/CutSettings.jsx';
 import CutList from './components/CutList.jsx';
 import SheetLayoutView from './components/SheetLayoutView.jsx';
 import { downloadFile } from './utils/fileIO.js';
+import { downloadPdf } from './pdf/generate.js';
 
 function App() {
   const activeProjectId = useProjectStore((s) => s.activeProjectId);
@@ -222,6 +223,37 @@ function OutputActions() {
     downloadFile(json, `${safeName}.json`);
   };
 
+  const handleExportPdf = useCallback(async () => {
+    const activeProject = useProjectStore.getState().getActiveProject();
+    const currentParts = useProjectStore.getState().calculatedParts;
+    const currentLayouts = useProjectStore.getState().sheetLayouts;
+
+    if (!activeProject || currentParts.length === 0) {
+      alert('Nothing to export. Click "Calculate" first.');
+      return;
+    }
+
+    const project = projects.find((p) => p.id === activeProjectId);
+    const safeName = project
+      ? project.name.replace(/[^a-z0-9]+/gi, '_').toLowerCase()
+      : 'project';
+
+    try {
+      await downloadPdf(
+        {
+          project: activeProject,
+          parts: currentParts,
+          layouts: currentLayouts,
+          sheet: activeProject.sheetSize,
+        },
+        `${safeName}.pdf`
+      );
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      alert('PDF generation failed. Check console for details.');
+    }
+  }, [projects, activeProjectId]);
+
   const handleCalculate = useCallback(() => {
     const result = validateProjectForCalculation();
     if (result.errors.length > 0) {
@@ -251,6 +283,12 @@ function OutputActions() {
             className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700"
           >
             Export JSON
+          </button>
+          <button
+            onClick={handleExportPdf}
+            className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700"
+          >
+            Export PDF
           </button>
         </div>
       </div>

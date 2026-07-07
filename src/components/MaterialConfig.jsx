@@ -6,20 +6,12 @@
  *
  * Features:
  * - Select sheet size from presets or enter custom dimensions
- * - Set blade kerf
+ * - Set blade kerf from presets or enter custom value
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
-
-// Sheet size presets (common plywood/mDF sizes in mm)
-const SHEET_PRESETS = [
-  { label: 'Standard 18mm (2440×1220)', width: 1220, length: 2440 },
-  { label: 'Standard 12mm (2440×1220)', width: 1220, length: 2440 },
-  { label: 'Large (3050×1525)', width: 1525, length: 3050 },
-  { label: 'Half sheet (1830×1220)', width: 1220, length: 1830 },
-  { label: 'Quarter sheet (1220×1220)', width: 1220, length: 1220 },
-];
+import { SHEET_SIZES, KERF_PRESETS } from '../presets/index.js';
 
 /**
  * Sheet size selection panel
@@ -52,9 +44,9 @@ function SheetSizeSelector() {
       <div>
         <span className="text-xs text-gray-500 block mb-2">Presets</span>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {SHEET_PRESETS.map((preset) => (
+          {SHEET_SIZES.map((preset) => (
             <button
-              key={preset.label}
+              key={preset.id}
               onClick={() => handlePresetSelect(preset)}
               className={`px-3 py-2 text-left text-sm rounded-md border transition-colors ${
                 width === preset.width && length === preset.length
@@ -106,23 +98,58 @@ function KerfInput() {
   const updateProject = useProjectStore((s) => s.updateProject);
 
   const kerf = project?.kerf ?? 3;
+  const [customKerf, setCustomKerf] = useState(String(kerf));
 
-  const handleKerfChange = useCallback((value) => {
-    updateProject({ kerf: parseFloat(value) || 0 });
+  const handlePresetSelect = useCallback((preset) => {
+    if (preset.value !== null) {
+      updateProject({ kerf: preset.value });
+      setCustomKerf(String(preset.value));
+    }
+  }, [updateProject]);
+
+  const handleCustomChange = useCallback((value) => {
+    setCustomKerf(value);
+    const val = parseFloat(value);
+    if (!isNaN(val) && val >= 0) {
+      updateProject({ kerf: val });
+    }
   }, [updateProject]);
 
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-gray-700">Blade Kerf</h3>
+
+      {/* Presets */}
+      <div>
+        <span className="text-xs text-gray-500 block mb-2">Presets</span>
+        <div className="flex flex-wrap gap-2">
+          {KERF_PRESETS.filter((p) => p.id !== 'custom').map((preset) => (
+            <button
+              key={preset.id}
+              onClick={() => handlePresetSelect(preset)}
+              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors ${
+                kerf === preset.value
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              {preset.label}
+              <span className="ml-1 text-xs text-gray-400">({preset.value}mm)</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom input */}
       <div>
         <label className="block">
-          <span className="text-xs text-gray-500">Kerf (mm)</span>
+          <span className="text-xs text-gray-500">Custom Kerf (mm)</span>
           <input
             type="number"
             min="0"
-            step="0.5"
-            value={kerf}
-            onChange={(e) => handleKerfChange(e.target.value)}
+            step="0.1"
+            value={customKerf}
+            onChange={(e) => handleCustomChange(e.target.value)}
             className="mt-1 w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
           />
         </label>
