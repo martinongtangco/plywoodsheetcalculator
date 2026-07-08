@@ -122,14 +122,15 @@ function addSummaryPage(pdfDoc, font, boldFont, project, sheet, parts) {
 
   for (const [label, value] of summaryRows) {
     y -= FONT_SIZE_BODY;
-    page.drawText(`${label}:`, {
+    const labelText = `${label}:`;
+    page.drawText(labelText, {
       x: MARGIN_LEFT,
       y,
       size: FONT_SIZE_BODY,
       font: boldFont,
       color: rgb(0, 0, 0),
     });
-    const labelWidth = font.widthOfTextAtSize(`${label}:`, FONT_SIZE_BODY);
+    const labelWidth = boldFont.widthOfTextAtSize(labelText, FONT_SIZE_BODY);
     page.drawText(value, {
       x: MARGIN_LEFT + labelWidth + 6,
       y,
@@ -203,7 +204,18 @@ function addCutListPages(pdfDoc, font, boldFont, parts) {
     font: boldFont,
     color: rgb(0, 0, 0),
   });
-  y -= 20;
+
+  // Divider line
+  y -= 8;
+  page.drawLine({
+    start: { x: MARGIN_LEFT, y },
+    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
+    thickness: 1,
+    color: rgb(0.7, 0.7, 0.7),
+  });
+
+  // Table section spacer
+  y -= 16;
 
   // Draw header row
   y = drawTableRow(page, font, boldFont, tableHeaders, scaledColWidths, y, true);
@@ -254,33 +266,72 @@ function addCutListPages(pdfDoc, font, boldFont, parts) {
 
 /**
  * Draw a single table row. Returns the y position for the next row.
+ *
+ * Drawing order matters: the separator line is drawn FIRST so that the text
+ * renders on top of it. In PDF coordinates y increases upward and the text
+ * baseline sits at `y` with the glyph body extending upward. By drawing the
+ * line before the text we avoid the visual overlap seen when the line is
+ * rendered after (on top of) the glyphs.
+ *
+ * Cell alignment:
+ *   - Column 0 (#):       center
+ *   - Column 1 (Type):    left
+ *   - Column 2 (Label):   left
+ *   - Column 3 (L mm):    right  (numeric)
+ *   - Column 4 (W mm):    right  (numeric)
+ *   - Column 5 (Qty):     center (numeric)
+ *   - Column 6 (Thickness): right (numeric)
  */
 function drawTableRow(page, font, boldFont, cells, colWidths, y, isHeader) {
   const rowFont = isHeader ? boldFont : font;
   const rowFontSize = isHeader ? FONT_SIZE_TABLE_HEADER : FONT_SIZE_TABLE_CELL;
   const textColor = isHeader ? rgb(0, 0, 0) : rgb(0.2, 0.2, 0.2);
+  const rowHeight = isHeader ? TABLE_HEADER_HEIGHT : TABLE_ROW_HEIGHT;
+
+  // Draw the separator line FIRST so text renders on top of it.
+  const lineY = y - rowHeight + 1;
+  page.drawLine({
+    start: { x: MARGIN_LEFT, y: lineY },
+    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: lineY },
+    thickness: isHeader ? 1.5 : 0.5,
+    color: isHeader ? rgb(0.3, 0.3, 0.3) : rgb(0.8, 0.8, 0.8),
+  });
+
+  // Define alignment per column index:
+  //   0=#(center), 1=Type(left), 2=Label(left), 3=L(mm)(right), 4=W(mm)(right), 5=Qty(center), 6=Thickness(right)
+  const alignments = ['center', 'left', 'left', 'right', 'right', 'center', 'right'];
 
   let x = MARGIN_LEFT;
   for (let i = 0; i < cells.length; i++) {
-    page.drawText(cells[i], {
-      x,
+    const cellText = cells[i];
+    const cellWidth = colWidths[i];
+    const alignment = alignments[i] || 'left';
+    const textWidth = rowFont.widthOfTextAtSize(cellText, rowFontSize);
+
+    let drawX = x;
+    if (alignment === 'center') {
+      drawX = x + (cellWidth - textWidth) / 2;
+    } else if (alignment === 'right') {
+      drawX = x + cellWidth - textWidth - 2; // 2pt padding on right
+    }
+    // left alignment: drawX stays at x + 2pt padding handled by not adding extra
+
+    // Add small left padding for left-aligned text
+    if (alignment === 'left') {
+      drawX = x + 2;
+    }
+
+    page.drawText(cellText, {
+      x: drawX,
       y,
       size: rowFontSize,
       font: rowFont,
       color: textColor,
     });
-    x += colWidths[i];
+    x += cellWidth;
   }
 
-  y -= (isHeader ? TABLE_HEADER_HEIGHT : TABLE_ROW_HEIGHT);
-
-  // Draw horizontal line below
-  page.drawLine({
-    start: { x: MARGIN_LEFT, y: y + 2 },
-    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: y + 2 },
-    thickness: isHeader ? 1.5 : 0.5,
-    color: isHeader ? rgb(0.3, 0.3, 0.3) : rgb(0.8, 0.8, 0.8),
-  });
+  y -= rowHeight;
 
   return y;
 }
@@ -394,7 +445,7 @@ async function embedLayoutAsImage(page, pdfDoc, layout, sheet, x, y) {
       drawWidth = drawHeight * imgAspect;
     }
 
-    pngImage.placement(page, {
+    page.drawImage(pngImage, {
       x,
       y: y + (DIAGRAM_MAX_HEIGHT - drawHeight), // align to top
       width: drawWidth,
