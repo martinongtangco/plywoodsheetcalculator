@@ -1,6 +1,6 @@
 # ADR-009: Testing Strategy
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-29
 **Deciders:** Open Source Maintainers
 
@@ -36,9 +36,9 @@ The trade-off is that Vitest has a smaller community than Jest, but for a projec
 
 ## Action Items
 
-- [ ] Add Vitest to devDependencies
-- [ ] Configure Vitest in `vite.config.js` (or `vitest.config.js`)
-- [ ] Create `tests/engine/` directory structure
-- [ ] Add `test` script to `package.json`
-- [ ] Add CI step to run tests on pull requests
-- [ ] Write initial smoke tests for each engine function stub
+- [x] Add Vitest to devDependencies
+- [x] Configure Vitest in `vite.config.js` (or `vitest.config.js`)
+- [x] Create `tests/engine/` directory structure
+- [x] Add `test` script to `package.json`
+- [x] Add CI step to run tests on pull requests
+- [x] Write initial smoke tests for each engine function stub

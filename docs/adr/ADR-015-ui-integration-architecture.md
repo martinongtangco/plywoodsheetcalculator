@@ -1,6 +1,6 @@
 # ADR-015: UI Integration Architecture
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-03
 **Deciders:** Open Source Maintainers
 
@@ -76,15 +76,15 @@ The store-mediated approach adds a thin orchestration layer in `projectStore` (a
 
 ## Action Items
 
-- [ ] Add `calculateAllParts()` action to `projectStore`
-- [ ] Add `runLayout()` action to `projectStore`
-- [ ] Add `validateProject()` action to `projectStore`
-- [ ] Add `calculatedParts` and `sheetLayouts` fields to project state
-- [ ] Create `BoxConfig.jsx` component
-- [ ] Create `MaterialConfig.jsx` component
-- [ ] Create `CutSettings.jsx` component
-- [ ] Create `CutList.jsx` component
-- [ ] Create `SheetLayoutView.jsx` component
-- [ ] Wire all components into `App.jsx` (remove "coming soon" placeholders)
-- [ ] Add unit tests for store actions
-- [ ] Add validation indicator per tab
+- [x] Add `calculateAllParts()` action to `projectStore`
+- [x] Add `runLayout()` action to `projectStore`
+- [x] Add `validateProject()` action to `projectStore`
+- [x] Add `calculatedParts` and `sheetLayouts` fields to project state
+- [x] Create `BoxConfig.jsx` component
+- [x] Create `MaterialConfig.jsx` component
+- [x] Create `CutSettings.jsx` component
+- [x] Create `CutList.jsx` component
+- [x] Create `SheetLayoutView.jsx` component
+- [x] Wire all components into `App.jsx` (remove "coming soon" placeholders)
+- [x] Add unit tests for store actions
+- [x] Add validation indicator per tab
