@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mobile-friendly scrollbar for tab navigation */
+.mobile-tab-scroll::-webkit-scrollbar {
+  height: 0px;
+}
+
+.mobile-tab-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
+}
+
+/* Ensure touch targets are at least 44px on all interactive elements */
+@media (max-width: 640px) {
+  input[type="number"],
+  input[type="text"],
+  select,
+  textarea {
+    @apply min-h-[44px];
+  }
+}

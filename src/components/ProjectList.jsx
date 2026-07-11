@@ -132,23 +132,23 @@ export default function ProjectList() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Actions */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-wrap gap-3 mb-6">
           <button
             onClick={handleCreate}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px] sm:flex-none"
           >
             New Project
           </button>
           <button
             onClick={handleImport}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
+            className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 min-h-[44px] sm:flex-none"
           >
             Import JSON
           </button>
           <button
             onClick={handleExportActive}
             disabled={!activeProjectId}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] sm:flex-none"
           >
             Export Active
           </button>
@@ -234,17 +234,17 @@ export default function ProjectList() {
                           Modified {formatDate(project.updatedAt)}
                         </p>
                       </button>
-                      <div className="ml-4 flex items-center gap-2">
+                      <div className="ml-4 flex items-center gap-2 flex-shrink-0">
                         <button
                           onClick={() => startRename(project)}
-                          className="px-3 py-1 text-sm text-blue-600 border border-blue-200 rounded hover:bg-blue-50"
+                          className="px-3 py-2 text-sm text-blue-600 border border-blue-200 rounded hover:bg-blue-50 min-h-[44px]"
                           title={`Rename ${project.name}`}
                         >
                           Rename
                         </button>
                         <button
                           onClick={() => handleDelete(project.id)}
-                          className="px-3 py-1 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50"
+                          className="px-3 py-2 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50 min-h-[44px]"
                           title={`Delete ${project.name}`}
                         >
                           Delete

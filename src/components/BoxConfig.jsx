@@ -521,7 +521,7 @@ function BoxCard({ boxId }) {
     <div ref={cardRef} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
       {/* Box header — summary */}
       <div
-        className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100"
+        className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 min-h-[44px]"
         onClick={() => setSelectedBox(expanded ? null : boxId)}
       >
         <div className="flex-1">
@@ -621,15 +621,15 @@ function BoxCard({ boxId }) {
           {/* 3. Construction Method */}
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">Construction Method</h4>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               {['A', 'B'].map((m) => (
-                <label key={m} className="flex items-center gap-2">
+                <label key={m} className="flex items-center gap-2 min-h-[44px]">
                   <input
                     type="radio"
                     name={`method-${box.id}`}
                     checked={box.constructionMethod === m}
                     onChange={() => handleFieldChange('constructionMethod', m)}
-                    className="text-blue-600"
+                    className="text-blue-600 min-h-[16px] min-w-[16px]"
                   />
                   <span className="text-sm text-gray-700">
                     {m === 'A' ? 'A — Sides run full height' : 'B — Top/bottom run full width'}
@@ -671,7 +671,7 @@ function BoxCard({ boxId }) {
                 step="0.5"
                 value={box.edgeBanding?.thickness ?? ''}
                 onChange={(e) => handleEbThicknessChange(e.target.value)}
-                className="mt-1 w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="mt-1 w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
                 placeholder="none"
               />
             </label>
@@ -770,13 +770,13 @@ function BoxListItem({ boxId, fallbackName, onDuplicate, onDelete }) {
       <div className="flex gap-2 mt-2">
         <button
           onClick={() => onDuplicate(boxId)}
-          className="text-xs text-blue-600 hover:underline"
+          className="text-xs text-blue-600 hover:underline px-2 py-2 min-h-[44px]"
         >
           Duplicate
         </button>
         <button
           onClick={() => onDelete(boxId, fallbackName)}
-          className="text-xs text-red-600 hover:underline"
+          className="text-xs text-red-600 hover:underline px-2 py-2 min-h-[44px]"
         >
           Delete
         </button>
@@ -878,11 +878,11 @@ export default function BoxConfig() {
   if (!hasBoxes) {
     return (
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
           <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
           <button
             onClick={handleAddBox}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px]"
           >
             + Add Box
           </button>
@@ -897,11 +897,11 @@ export default function BoxConfig() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
         <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
         <button
           onClick={handleAddBox}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px]"
         >
           + Add Box
         </button>

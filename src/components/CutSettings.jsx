@@ -43,7 +43,7 @@ function GrainConstraintSelector() {
         {GRAIN_OPTIONS.map(({ value, label, description }) => (
           <label
             key={value}
-            className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-colors ${
+            className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-colors min-h-[44px] ${
               grainConstraint === value
                 ? 'border-blue-500 bg-blue-50'
                 : 'border-gray-200 bg-white hover:bg-gray-50'
@@ -54,7 +54,7 @@ function GrainConstraintSelector() {
               name="grainConstraint"
               checked={grainConstraint === value}
               onChange={() => handleChange(value)}
-              className="mt-1 text-blue-600"
+              className="mt-1 text-blue-600 min-h-[16px] min-w-[16px]"
             />
             <div>
               <span className="text-sm font-medium text-gray-900">{label}</span>
@@ -87,7 +87,7 @@ function CutModeSelector() {
         {CUT_MODES.map(({ value, label, description }) => (
           <label
             key={value}
-            className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-colors ${
+            className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-colors min-h-[44px] ${
               cutMode === value
                 ? 'border-blue-500 bg-blue-50'
                 : 'border-gray-200 bg-white hover:bg-gray-50'
@@ -98,7 +98,7 @@ function CutModeSelector() {
               name="cutMode"
               checked={cutMode === value}
               onChange={() => handleChange(value)}
-              className="mt-1 text-blue-600"
+              className="mt-1 text-blue-600 min-h-[16px] min-w-[16px]"
             />
             <div>
               <span className="text-sm font-medium text-gray-900">{label}</span>

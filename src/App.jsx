@@ -78,7 +78,7 @@ function App() {
                 onClick={() => {
                   useProjectStore.setState({ activeProjectId: null });
                 }}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-blue-600 hover:underline min-h-[44px] px-1"
               >
                 ← Projects
               </button>
@@ -156,7 +156,8 @@ function App() {
       {/* Tab navigation — ADR-015 component-per-tab */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-1 -mb-px">
+          {/* Desktop: horizontal tabs. Mobile: scrollable horizontal strip */}
+          <div className="flex gap-1 -mb-px overflow-x-auto mobile-tab-scroll">
             {[
               { id: 'boxes', label: 'Boxes' },
               { id: 'materials', label: 'Materials' },
@@ -168,7 +169,7 @@ function App() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`px-4 py-3 text-sm font-medium border-b-2 ${
+                className={`px-4 py-3 text-sm font-medium border-b-2 whitespace-nowrap flex-shrink-0 min-h-[44px] ${
                   activeTab === id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -271,22 +272,22 @@ function OutputActions() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Output</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCalculate}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px]"
           >
             Calculate
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700"
+            className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 min-h-[44px]"
           >
             Export JSON
           </button>
           <button
             onClick={handleExportPdf}
-            className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700"
+            className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 min-h-[44px]"
           >
             Export PDF
           </button>

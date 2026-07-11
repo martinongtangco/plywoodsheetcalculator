@@ -48,7 +48,7 @@ function SheetSizeSelector() {
             <button
               key={preset.id}
               onClick={() => handlePresetSelect(preset)}
-              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors ${
+              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors min-h-[44px] ${
                 width === preset.width && length === preset.length
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
@@ -71,7 +71,7 @@ function SheetSizeSelector() {
               min="1"
               value={width}
               onChange={(e) => handleCustomChange('width', e.target.value)}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
             />
           </label>
           <label className="block">
@@ -81,7 +81,7 @@ function SheetSizeSelector() {
               min="1"
               value={length}
               onChange={(e) => handleCustomChange('length', e.target.value)}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
             />
           </label>
         </div>
@@ -127,7 +127,7 @@ function KerfInput() {
             <button
               key={preset.id}
               onClick={() => handlePresetSelect(preset)}
-              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors ${
+              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors min-h-[44px] ${
                 kerf === preset.value
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
@@ -150,7 +150,7 @@ function KerfInput() {
             step="0.1"
             value={customKerf}
             onChange={(e) => handleCustomChange(e.target.value)}
-            className="mt-1 w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="mt-1 w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
           />
         </label>
         <p className="text-xs text-gray-400 mt-1">
