@@ -2,6 +2,178 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   Design Tokens — "Craft" Theme
+   Material Design elevation + Jobs minimalism
+   Target: Woodworker demographic (warm, earthy, premium)
+   ============================================ */
+
+@layer base {
+  body {
+    @apply bg-surface-50 text-surface-900 font-sans antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Selection color — warm amber */
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+}
+
+/* ============================================
+   Component Classes
+   Reusable UI patterns following Material Design
+   elevation system with warm shadow tones.
+   ============================================ */
+
+@layer components {
+
+  /* -- Cards -- */
+  .card {
+    @apply bg-white rounded-xl border border-surface-200 shadow-elev-1 p-6 transition-shadow duration-200;
+  }
+
+  .card-hover:hover {
+    @apply shadow-elev-2;
+  }
+
+  /* -- Buttons -- */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-5 py-2.5
+      bg-primary-600 text-white text-sm font-semibold
+      rounded-lg shadow-elev-1
+      hover:bg-primary-700 hover:shadow-elev-2
+      active:bg-primary-800 active:shadow-elev-1
+      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      transition-all duration-150 ease-in-out
+      min-h-[44px];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-5 py-2.5
+      bg-white text-surface-800 text-sm font-semibold
+      border border-surface-300 rounded-lg shadow-elev-1
+      hover:bg-surface-50 hover:border-surface-400 hover:shadow-elev-2
+      active:bg-surface-100 active:shadow-elev-1
+      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      transition-all duration-150 ease-in-out
+      min-h-[44px];
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center px-5 py-2.5
+      bg-danger-600 text-white text-sm font-semibold
+      rounded-lg shadow-elev-1
+      hover:bg-danger-700 hover:shadow-elev-2
+      active:bg-danger-800 active:shadow-elev-1
+      focus:outline-none focus:ring-2 focus:ring-danger-500 focus:ring-offset-2
+      transition-all duration-150 ease-in-out
+      min-h-[44px];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2
+      text-surface-600 text-sm font-medium
+      rounded-lg
+      hover:bg-surface-100 hover:text-surface-900
+      active:bg-surface-200
+      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      transition-all duration-150 ease-in-out
+      min-h-[44px];
+  }
+
+  /* -- Inputs -- */
+  .input {
+    @apply w-full px-3.5 py-2.5
+      bg-white text-surface-900 text-sm
+      border border-surface-300 rounded-lg shadow-elev-1
+      hover:border-surface-400
+      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+      placeholder:text-surface-400
+      transition-all duration-150 ease-in-out
+      min-h-[44px];
+  }
+
+  .input-error {
+    @apply border-danger-400 focus:ring-danger-500 focus:border-danger-500;
+  }
+
+  /* -- Selects -- */
+  .select {
+    @apply w-full px-3.5 py-2.5
+      bg-white text-surface-900 text-sm
+      border border-surface-300 rounded-lg shadow-elev-1
+      hover:border-surface-400
+      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+      transition-all duration-150 ease-in-out
+      min-h-[44px]
+      appearance-none
+      bg-no-repeat
+      pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23928575' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-size: 1.25em;
+  }
+
+  /* -- Badges / Chips -- */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5
+      text-xs font-medium rounded-full;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-800;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-800;
+  }
+
+  /* -- Alerts / Banners -- */
+  .alert {
+    @apply rounded-xl border p-4 animate-fade-in;
+  }
+
+  .alert-info {
+    @apply alert bg-primary-50 border-primary-200 text-primary-900;
+  }
+
+  .alert-success {
+    @apply alert bg-success-50 border-success-200 text-success-900;
+  }
+
+  .alert-danger {
+    @apply alert bg-danger-50 border-danger-200 text-danger-900;
+  }
+
+  /* -- Section headers -- */
+  .section-title {
+    @apply text-lg font-semibold text-surface-900 tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-surface-500;
+  }
+
+  /* -- Tab bar -- */
+  .tab-active {
+    @apply border-primary-600 text-primary-700;
+  }
+
+  .tab-inactive {
+    @apply border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300;
+  }
+}
+
+/* ============================================
+   Utilities
+   ============================================ */
+
 /* Mobile-friendly scrollbar for tab navigation */
 .mobile-tab-scroll::-webkit-scrollbar {
   height: 0px;
@@ -11,6 +183,16 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
   -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
+}
+
+/* Page transitions */
+.page-enter {
+  @apply animate-fade-in;
+}
+
+/* Focus visible ring — only on keyboard nav */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
 }
 
 /* Ensure touch targets are at least 44px on all interactive elements */

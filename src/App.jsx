@@ -69,8 +69,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-surface-50">
+      <header className="bg-white border-b border-surface-200 shadow-elev-1">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -78,13 +78,13 @@ function App() {
                 onClick={() => {
                   useProjectStore.setState({ activeProjectId: null });
                 }}
-                className="text-sm text-blue-600 hover:underline min-h-[44px] px-1"
+                className="text-sm text-primary-600 hover:text-primary-700 hover:underline min-h-[44px] px-1 font-medium transition-colors"
               >
                 ← Projects
               </button>
               {activeProject && (
                 <>
-                  <div className="w-px h-6 bg-gray-300" />
+                  <div className="w-px h-6 bg-surface-300" />
                   {isRenaming ? (
                     <div className="flex items-center gap-2">
                       <div>
@@ -99,23 +99,23 @@ function App() {
                           }}
                           onKeyDown={handleRenameKeyDown}
                           onBlur={commitRename}
-                          className="px-2 py-1 text-2xl font-bold border-2 border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          className="px-2 py-1 text-2xl font-bold border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-surface-900"
                           aria-label="Project name"
                         />
                         {renameError && (
-                          <p className="text-xs text-red-600 mt-1">{renameError}</p>
+                          <p className="text-xs text-danger-600 mt-1">{renameError}</p>
                         )}
                       </div>
                       <button
                         onClick={commitRename}
-                        className="px-3 py-1 text-sm text-green-700 border border-green-200 rounded hover:bg-green-50"
+                        className="px-3 py-1 text-sm font-medium text-success-700 border border-success-300 rounded-lg hover:bg-success-50 transition-colors"
                         title="Save"
                       >
                         Save
                       </button>
                       <button
                         onClick={cancelRename}
-                        className="px-3 py-1 text-sm text-gray-600 border border-gray-200 rounded hover:bg-gray-50"
+                        className="px-3 py-1 text-sm text-surface-600 border border-surface-300 rounded-lg hover:bg-surface-100 transition-colors"
                         title="Cancel"
                       >
                         Cancel
@@ -127,11 +127,11 @@ function App() {
                       className="group flex items-center gap-2"
                       title={`Rename: ${activeProject.name}`}
                     >
-                      <h1 className="text-2xl font-bold text-gray-900">
+                      <h1 className="text-2xl font-bold text-surface-900 tracking-tight">
                         {activeProject.name}
                       </h1>
                       <svg
-                        className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="w-4 h-4 text-surface-400 opacity-0 group-hover:opacity-100 transition-opacity"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -154,7 +154,7 @@ function App() {
       </header>
 
       {/* Tab navigation — ADR-015 component-per-tab */}
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white border-b border-surface-200">
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           <div className="flex -mb-px">
             {[
@@ -217,10 +217,10 @@ function App() {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 sm:py-3 text-xs sm:text-sm font-medium border-b-2 min-h-[44px] px-1 ${
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 sm:py-3 text-xs sm:text-sm font-medium border-b-2 min-h-[44px] px-1 transition-colors ${
                   activeTab === id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary-600 text-primary-700'
+                    : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300'
                 }`}
               >
                 <span className="flex-shrink-0">{icon}</span>
@@ -231,7 +231,7 @@ function App() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 animate-fade-in">
         {activeTab === 'boxes' && <BoxConfig />}
         {activeTab === 'materials' && <MaterialConfig />}
         {activeTab === 'cut-settings' && <CutSettings />}
@@ -245,7 +245,7 @@ function App() {
 
 /**
  * OutputActions — Output tab integrating Cut List and Sheet Layout views.
- * ADR-017: Output Display UI — sub-tab toggle (Cut List / Sheet Layout).
+ * ADR-017: JSON export (download file) in the output screen.
  * ADR-006: JSON export (download file) in the output screen.
  */
 function OutputActions() {
@@ -320,23 +320,30 @@ function OutputActions() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Output</h2>
+        <h2 className="text-lg font-semibold text-surface-900 tracking-tight">Output</h2>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCalculate}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px]"
+            className="btn-primary"
           >
             Calculate
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 min-h-[44px]"
+            className="btn-secondary"
           >
             Export JSON
           </button>
           <button
             onClick={handleExportPdf}
-            className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 min-h-[44px]"
+            className="inline-flex items-center justify-center px-5 py-2.5
+              bg-accent-600 text-white text-sm font-semibold
+              rounded-lg shadow-elev-1
+              hover:bg-accent-700 hover:shadow-elev-2
+              active:bg-accent-800 active:shadow-elev-1
+              focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
+              transition-all duration-150 ease-in-out
+              min-h-[44px]"
           >
             Export PDF
           </button>
@@ -345,13 +352,13 @@ function OutputActions() {
 
       {/* Validation banner */}
       {validationResult && validationResult.errors.length > 0 && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <h3 className="font-semibold text-red-800 mb-2">Cannot calculate — missing required fields</h3>
-          <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
+        <div className="alert-danger mb-4">
+          <h3 className="font-semibold text-danger-800 mb-2">Cannot calculate — missing required fields</h3>
+          <ul className="list-disc list-inside text-sm text-danger-700 space-y-1">
             {!validationResult.boxes && (
               <li>
                 Boxes not configured — go to{' '}
-                <button className="text-blue-600 underline hover:text-blue-800" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
+                <button className="text-primary-600 underline hover:text-primary-800 font-medium" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
                   Boxes tab
                 </button>
               </li>
@@ -359,7 +366,7 @@ function OutputActions() {
             {!validationResult.materials && (
               <li>
                 Sheet size and kerf not set — go to{' '}
-                <button className="text-blue-600 underline hover:text-blue-800" onClick={() => useUIStore.getState().setActiveTab('materials')}>
+                <button className="text-primary-600 underline hover:text-primary-800 font-medium" onClick={() => useUIStore.getState().setActiveTab('materials')}>
                   Materials tab
                 </button>
               </li>
@@ -367,20 +374,20 @@ function OutputActions() {
             {!validationResult.cutSettings && (
               <li>
                 Grain constraint not selected — go to{' '}
-                <button className="text-blue-600 underline hover:text-blue-800" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
+                <button className="text-primary-600 underline hover:text-primary-800 font-medium" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
                   Cut Settings tab
                 </button>
               </li>
             )}
             {validationResult.errors.map((err, i) => (
-              <li key={i} className="text-gray-700">{err}</li>
+              <li key={i} className="text-surface-700">{err}</li>
             ))}
           </ul>
         </div>
       )}
 
       {/* Sub-tab toggle — ADR-017 */}
-      <div className="flex gap-1 mb-6 -mb-px border-b border-gray-200">
+      <div className="flex gap-1 mb-6 -mb-px border-b border-surface-200">
         {[
           { id: 'cut-list', label: 'Cut List' },
           { id: 'sheet-layout', label: 'Sheet Layout' },
@@ -388,10 +395,10 @@ function OutputActions() {
           <button
             key={id}
             onClick={() => setOutputSubTab(id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 ${
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               outputSubTab === id
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary-600 text-primary-700'
+                : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300'
             }`}
           >
             {label}
@@ -415,7 +422,7 @@ function CutListOutputInline() {
 
   if (calculatedParts.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-400">
+      <div className="text-center py-16 text-surface-400">
         <p className="text-lg">No parts calculated.</p>
         <p className="text-sm mt-1">Click "Calculate" to generate the cut list.</p>
       </div>
@@ -435,7 +442,7 @@ function SheetLayoutOutputInline() {
 
   if (calculatedParts.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-400">
+      <div className="text-center py-16 text-surface-400">
         <p className="text-lg">No parts to layout.</p>
         <p className="text-sm mt-1">Click "Calculate" to generate parts and sheet layout.</p>
       </div>
