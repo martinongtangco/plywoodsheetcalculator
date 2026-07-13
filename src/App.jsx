@@ -78,7 +78,7 @@ function App() {
                 onClick={() => {
                   useProjectStore.setState({ activeProjectId: null });
                 }}
-                className="text-sm text-primary-600 hover:text-primary-700 hover:underline min-h-[44px] px-1 font-medium transition-colors"
+                className="text-label-md text-primary-600 hover:text-primary-700 hover:underline min-h-[44px] px-1 transition-colors duration-150"
               >
                 ← Projects
               </button>
@@ -99,23 +99,23 @@ function App() {
                           }}
                           onKeyDown={handleRenameKeyDown}
                           onBlur={commitRename}
-                          className="px-2 py-1 text-2xl font-bold border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-surface-900"
+                          className="px-2 py-1 text-headline-md border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-surface-900"
                           aria-label="Project name"
                         />
                         {renameError && (
-                          <p className="text-xs text-danger-600 mt-1">{renameError}</p>
+                          <p className="text-body-sm text-danger-600 mt-1">{renameError}</p>
                         )}
                       </div>
                       <button
                         onClick={commitRename}
-                        className="px-3 py-1 text-sm font-medium text-success-700 border border-success-300 rounded-lg hover:bg-success-50 transition-colors"
+                        className="px-3 py-1.5 text-label-md text-success-700 border border-success-300 rounded-lg hover:bg-success-50 active:scale-95 transition-all duration-150 min-h-[44px]"
                         title="Save"
                       >
                         Save
                       </button>
                       <button
                         onClick={cancelRename}
-                        className="px-3 py-1 text-sm text-surface-600 border border-surface-300 rounded-lg hover:bg-surface-100 transition-colors"
+                        className="px-3 py-1.5 text-label-md text-surface-600 border border-surface-300 rounded-lg hover:bg-surface-100 active:scale-95 transition-all duration-150 min-h-[44px]"
                         title="Cancel"
                       >
                         Cancel
@@ -127,7 +127,7 @@ function App() {
                       className="group flex items-center gap-2"
                       title={`Rename: ${activeProject.name}`}
                     >
-                      <h1 className="text-2xl font-bold text-surface-900 tracking-tight">
+                      <h1 className="text-headline-md text-surface-900 tracking-tight">
                         {activeProject.name}
                       </h1>
                       <svg
@@ -213,20 +213,34 @@ function App() {
                   </svg>
                 ),
               },
-            ].map(({ id, label, icon }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 sm:py-3 text-xs sm:text-sm font-medium border-b-2 min-h-[44px] px-1 transition-colors ${
-                  activeTab === id
-                    ? 'border-primary-600 text-primary-700'
-                    : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300'
-                }`}
-              >
-                <span className="flex-shrink-0">{icon}</span>
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            ))}
+            ].map(({ id, label, icon }) => {
+              const isActive = activeTab === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`group relative flex-1 flex flex-col items-center justify-center gap-1 py-2 sm:py-2.5 text-label-sm sm:text-label-md min-h-[44px] px-1 transition-colors duration-200 ease-out ${
+                    isActive ? 'tab-active' : 'tab-inactive'
+                  }`}
+                >
+                  <span
+                    className={`flex items-center justify-center w-9 h-7 rounded-full transition-colors duration-200 ease-out ${
+                      isActive ? 'bg-primary-100' : 'group-hover:bg-surface-100'
+                    }`}
+                  >
+                    <span className="flex-shrink-0">{icon}</span>
+                  </span>
+                  <span className="hidden sm:inline">{label}</span>
+                  {/* Animated underline — grows in from the center on activation */}
+                  <span
+                    className={`absolute left-1/2 -translate-x-1/2 bottom-0 h-0.5 w-8 rounded-full bg-primary-600 transition-all duration-200 ease-out origin-center ${
+                      isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
       </nav>
@@ -320,7 +334,7 @@ function OutputActions() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-surface-900 tracking-tight">Output</h2>
+        <h2 className="section-title">Output</h2>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCalculate}
@@ -336,14 +350,7 @@ function OutputActions() {
           </button>
           <button
             onClick={handleExportPdf}
-            className="inline-flex items-center justify-center px-5 py-2.5
-              bg-accent-600 text-white text-sm font-semibold
-              rounded-lg shadow-elev-1
-              hover:bg-accent-700 hover:shadow-elev-2
-              active:bg-accent-800 active:shadow-elev-1
-              focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
-              transition-all duration-150 ease-in-out
-              min-h-[44px]"
+            className="btn-accent"
           >
             Export PDF
           </button>
@@ -353,8 +360,8 @@ function OutputActions() {
       {/* Validation banner */}
       {validationResult && validationResult.errors.length > 0 && (
         <div className="alert-danger mb-4">
-          <h3 className="font-semibold text-danger-800 mb-2">Cannot calculate — missing required fields</h3>
-          <ul className="list-disc list-inside text-sm text-danger-700 space-y-1">
+          <h3 className="text-title-md text-danger-800 mb-2">Cannot calculate — missing required fields</h3>
+          <ul className="list-disc list-inside text-body-sm text-danger-700 space-y-1">
             {!validationResult.boxes && (
               <li>
                 Boxes not configured — go to{' '}
@@ -395,7 +402,7 @@ function OutputActions() {
           <button
             key={id}
             onClick={() => setOutputSubTab(id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-4 py-2 text-label-md border-b-2 transition-colors duration-200 ease-out ${
               outputSubTab === id
                 ? 'border-primary-600 text-primary-700'
                 : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300'

@@ -23,6 +23,7 @@ export default function ProjectList() {
   // Track which project is being renamed: { id, name } | null
   const [editingProject, setEditingProject] = useState(null);
   const [renameError, setRenameError] = useState('');
+  const [showStorageNotice, setShowStorageNotice] = useState(true);
   const inputRef = useRef(null);
 
   const handleCreate = useCallback(() => {
@@ -135,8 +136,8 @@ export default function ProjectList() {
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-surface-900 tracking-tight">ply-calc</h1>
-              <p className="text-sm text-surface-500">Plywood Sheet Calculator</p>
+              <h1 className="text-headline-md text-surface-900 tracking-tight">ply-calc</h1>
+              <p className="text-body-sm text-surface-500">Plywood Sheet Calculator</p>
             </div>
           </div>
         </div>
@@ -156,7 +157,7 @@ export default function ProjectList() {
           </button>
           <button
             onClick={handleImport}
-            className="btn-secondary flex-1 sm:flex-none"
+            className="btn-tonal flex-1 sm:flex-none"
           >
             Import JSON
           </button>
@@ -169,21 +170,49 @@ export default function ProjectList() {
           </button>
         </div>
 
-        {/* Storage info */}
-        <div className="alert-info mb-6">
-          <strong>Storage notice:</strong> Projects are saved in your browser's localStorage.
-          Clearing browser data will delete all projects. Use <em>Export Active</em> to back up
-          a project, then <em>Import JSON</em> on another device.
-        </div>
+        {/* Storage info — a routine product fact, not a warning */}
+        {showStorageNotice && (
+          <div className="banner-notice mb-6">
+            <svg className="w-5 h-5 flex-shrink-0 text-surface-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+            <p className="flex-1">
+              Projects are saved in your browser's local storage. Clearing browser data will
+              delete them — use <span className="font-medium text-surface-800">Export Active</span> to
+              back up a project, then <span className="font-medium text-surface-800">Import JSON</span> on
+              another device.
+            </p>
+            <button
+              onClick={() => setShowStorageNotice(false)}
+              className="flex-shrink-0 p-1 -m-1 rounded-md text-surface-400 hover:text-surface-700 hover:bg-surface-200 transition-colors duration-150"
+              aria-label="Dismiss storage notice"
+            >
+              <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* Project list */}
         {projects.length === 0 ? (
-          <div className="text-center py-16 text-surface-400">
-            <svg className="w-12 h-12 mx-auto mb-4 text-surface-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-            </svg>
-            <p className="text-lg">No projects yet.</p>
-            <p className="text-sm mt-1">Create a new project or import an existing one.</p>
+          <div className="flex flex-col items-center text-center py-16 px-6">
+            <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center mb-5">
+              <svg className="w-8 h-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              </svg>
+            </div>
+            <h2 className="text-headline-md text-surface-900 mb-2">Let's build something</h2>
+            <p className="text-body-md text-surface-500 max-w-sm mb-6">
+              Set up your first cut list — sizes, sheet stock, and kerf — and we'll work out
+              exactly what to cut.
+            </p>
+            <button onClick={handleCreate} className="btn-primary">
+              <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              New Project
+            </button>
           </div>
         ) : (
           <ul className="space-y-2">
@@ -213,23 +242,23 @@ export default function ProjectList() {
                           }}
                           onKeyDown={handleRenameKeyDown}
                           onBlur={commitRename}
-                          className="w-full px-2 py-1 text-sm border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-2 py-1 text-body-md border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                           aria-label="Project name"
                         />
                         {renameError && (
-                          <p className="text-xs text-danger-600 mt-1">{renameError}</p>
+                          <p className="text-body-sm text-danger-600 mt-1">{renameError}</p>
                         )}
                       </div>
                       <button
                         onClick={commitRename}
-                        className="px-3 py-1 text-sm font-medium text-success-700 border border-success-300 rounded-lg hover:bg-success-50 transition-colors"
+                        className="px-3 py-1.5 text-label-md text-success-700 border border-success-300 rounded-lg hover:bg-success-50 active:scale-95 transition-all duration-150 min-h-[44px]"
                         title="Save"
                       >
                         Save
                       </button>
                       <button
                         onClick={cancelRename}
-                        className="px-3 py-1 text-sm text-surface-600 border border-surface-300 rounded-lg hover:bg-surface-100 transition-colors"
+                        className="px-3 py-1.5 text-label-md text-surface-600 border border-surface-300 rounded-lg hover:bg-surface-100 active:scale-95 transition-all duration-150 min-h-[44px]"
                         title="Cancel"
                       >
                         Cancel
@@ -243,8 +272,8 @@ export default function ProjectList() {
                         className="flex-1 text-left"
                         title="Open project"
                       >
-                        <p className="font-semibold text-surface-900">{project.name}</p>
-                        <p className="text-xs text-surface-500 mt-0.5">
+                        <p className="text-title-md text-surface-900">{project.name}</p>
+                        <p className="text-body-sm text-surface-500 mt-0.5">
                           {project.boxes.length} box{project.boxes.length !== 1 ? 'es' : ''}
                           {' \u00B7 '}
                           {project.drawers.length} drawer{project.drawers.length !== 1 ? 's' : ''}
@@ -255,14 +284,14 @@ export default function ProjectList() {
                       <div className="ml-4 flex items-center gap-2 flex-shrink-0">
                         <button
                           onClick={() => startRename(project)}
-                          className="px-3 py-2 text-sm font-medium text-primary-600 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors min-h-[44px]"
+                          className="btn-tonal px-3.5 py-2 text-label-md min-h-[44px]"
                           title={`Rename ${project.name}`}
                         >
                           Rename
                         </button>
                         <button
                           onClick={() => handleDelete(project.id)}
-                          className="px-3 py-2 text-sm font-medium text-danger-600 border border-danger-200 rounded-lg hover:bg-danger-50 transition-colors min-h-[44px]"
+                          className="btn-danger-ghost px-3.5 py-2 min-h-[44px]"
                           title={`Delete ${project.name}`}
                         >
                           Delete

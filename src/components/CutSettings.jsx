@@ -38,15 +38,15 @@ function GrainConstraintSelector() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-gray-700">Grain Constraint</h3>
+      <h3 className="text-title-md text-surface-800">Grain Constraint</h3>
       <div className="space-y-2">
         {GRAIN_OPTIONS.map(({ value, label, description }) => (
           <label
             key={value}
-            className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-colors min-h-[44px] ${
+            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors duration-150 min-h-[44px] ${
               grainConstraint === value
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 bg-white hover:bg-gray-50'
+                ? 'border-primary-400 bg-primary-50'
+                : 'border-surface-200 bg-white hover:bg-surface-50'
             }`}
           >
             <input
@@ -54,11 +54,11 @@ function GrainConstraintSelector() {
               name="grainConstraint"
               checked={grainConstraint === value}
               onChange={() => handleChange(value)}
-              className="mt-1 text-blue-600 min-h-[16px] min-w-[16px]"
+              className="mt-1 accent-primary-600 min-h-[16px] min-w-[16px]"
             />
             <div>
-              <span className="text-sm font-medium text-gray-900">{label}</span>
-              <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+              <span className="text-label-lg text-surface-900">{label}</span>
+              <p className="text-body-sm text-surface-500 mt-0.5">{description}</p>
             </div>
           </label>
         ))}
@@ -82,15 +82,15 @@ function CutModeSelector() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-gray-700">Cut Mode</h3>
+      <h3 className="text-title-md text-surface-800">Cut Mode</h3>
       <div className="space-y-2">
         {CUT_MODES.map(({ value, label, description }) => (
           <label
             key={value}
-            className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-colors min-h-[44px] ${
+            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors duration-150 min-h-[44px] ${
               cutMode === value
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 bg-white hover:bg-gray-50'
+                ? 'border-primary-400 bg-primary-50'
+                : 'border-surface-200 bg-white hover:bg-surface-50'
             }`}
           >
             <input
@@ -98,11 +98,11 @@ function CutModeSelector() {
               name="cutMode"
               checked={cutMode === value}
               onChange={() => handleChange(value)}
-              className="mt-1 text-blue-600 min-h-[16px] min-w-[16px]"
+              className="mt-1 accent-primary-600 min-h-[16px] min-w-[16px]"
             />
             <div>
-              <span className="text-sm font-medium text-gray-900">{label}</span>
-              <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+              <span className="text-label-lg text-surface-900">{label}</span>
+              <p className="text-body-sm text-surface-500 mt-0.5">{description}</p>
             </div>
           </label>
         ))}
@@ -117,12 +117,12 @@ function CutModeSelector() {
 export default function CutSettings() {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Cut Settings</h2>
-      <div className="space-y-8">
-        <div className="p-4 bg-white border border-gray-200 rounded-lg">
+      <h2 className="section-title mb-4">Cut Settings</h2>
+      <div className="space-y-6">
+        <div className="card">
           <GrainConstraintSelector />
         </div>
-        <div className="p-4 bg-white border border-gray-200 rounded-lg">
+        <div className="card">
           <CutModeSelector />
         </div>
       </div>

@@ -404,7 +404,7 @@ export function SheetLayouts({
     <div className={`sheet-layouts ${className}`} role="list" aria-label="Sheet layouts">
       {/* Summary */}
       <div className="sheet-layouts-summary mb-4">
-        <p className="text-sm text-gray-600">
+        <p className="text-body-sm text-surface-600">
           {layouts.length} sheet{layouts.length !== 1 ? 's' : ''} required
         </p>
       </div>
@@ -413,9 +413,9 @@ export function SheetLayouts({
         <div
           key={layout.sheetIndex}
           role="listitem"
-          className="sheet-layouts-item mb-6 border rounded-lg p-4 bg-white"
+          className="sheet-layouts-item mb-6 border border-surface-200 rounded-lg shadow-elev-1 p-4 bg-white"
         >
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">
+          <h3 className="text-title-md text-surface-800 mb-2">
             Sheet {layout.sheetIndex + 1} — {layout.placements.length} parts
           </h3>
           <SheetLayoutDiagram

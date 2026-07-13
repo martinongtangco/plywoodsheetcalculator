@@ -94,7 +94,23 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
+      /* Type scale — Material 3 naming, tuned for a single-product tool.
+         Each entry is [size, { lineHeight, fontWeight, letterSpacing }]. */
+      fontSize: {
+        'display-lg': ['2.25rem', { lineHeight: '2.75rem', fontWeight: '700', letterSpacing: '-0.02em' }],
+        'headline-lg': ['1.75rem', { lineHeight: '2.25rem', fontWeight: '700', letterSpacing: '-0.01em' }],
+        'headline-md': ['1.5rem', { lineHeight: '2rem', fontWeight: '700', letterSpacing: '-0.01em' }],
+        'title-lg': ['1.125rem', { lineHeight: '1.5rem', fontWeight: '600' }],
+        'title-md': ['0.9375rem', { lineHeight: '1.375rem', fontWeight: '600' }],
+        'body-lg': ['1rem', { lineHeight: '1.5rem', fontWeight: '400' }],
+        'body-md': ['0.875rem', { lineHeight: '1.25rem', fontWeight: '400' }],
+        'body-sm': ['0.8125rem', { lineHeight: '1.125rem', fontWeight: '400' }],
+        'label-lg': ['0.875rem', { lineHeight: '1.25rem', fontWeight: '600' }],
+        'label-md': ['0.8125rem', { lineHeight: '1rem', fontWeight: '600' }],
+        'label-sm': ['0.6875rem', { lineHeight: '0.875rem', fontWeight: '600', letterSpacing: '0.02em' }],
+      },
       boxShadow: {
+        'elev-0': '0 0 0 1px rgba(45,40,35,0.06)',
         'elev-1': '0 1px 3px rgba(45,40,35,0.08), 0 1px 2px rgba(45,40,35,0.06)',
         'elev-2': '0 2px 6px rgba(45,40,35,0.08), 0 2px 4px rgba(45,40,35,0.06)',
         'elev-3': '0 4px 12px rgba(45,40,35,0.1), 0 2px 6px rgba(45,40,35,0.06)',

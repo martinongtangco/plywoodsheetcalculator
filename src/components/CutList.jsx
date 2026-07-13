@@ -51,7 +51,7 @@ function partTypeColor(type) {
     drawer_front_back: 'bg-yellow-200 border-yellow-400',
     drawer_base: 'bg-violet-200 border-violet-400',
   };
-  return colours[type] || 'bg-gray-200 border-gray-400';
+  return colours[type] || 'bg-surface-200 border-surface-400';
 }
 
 /**
@@ -95,7 +95,7 @@ function partsToCSV(parts, sheetWidth, sheetLength) {
  * Sort icon component
  */
 function SortIcon({ active, direction }) {
-  if (!active) return <span className="text-gray-300 ml-1">↕</span>;
+  if (!active) return <span className="text-surface-300 ml-1">↕</span>;
   return <span className="ml-1">{direction === 'asc' ? '↑' : '↓'}</span>;
 }
 
@@ -130,14 +130,14 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
       <tr>
         <td
           colSpan={8}
-          className="px-4 py-2 bg-gray-100 font-semibold text-gray-700 cursor-pointer hover:bg-gray-200 select-none"
+          className="px-4 py-2 bg-surface-100 text-label-lg text-surface-800 cursor-pointer hover:bg-surface-200 transition-colors duration-150 select-none"
           onClick={() => setCollapsed(!collapsed)}
         >
-          <span className="text-xs text-gray-400 mr-2">{collapsed ? '▶' : '▼'}</span>
+          <span className="text-label-sm text-surface-400 mr-2">{collapsed ? '▶' : '▼'}</span>
           {boxName || `Box ${boxId}`}
-          <span className="text-xs text-gray-500 ml-1">({parts.length} part{parts.length !== 1 ? 's' : ''})</span>
+          <span className="text-label-sm font-normal text-surface-500 ml-1">({parts.length} part{parts.length !== 1 ? 's' : ''})</span>
           {oversizedParts.length > 0 && (
-            <span className="text-xs text-amber-600 ml-2">⚠ {oversizedParts.length} oversized</span>
+            <span className="text-label-sm font-normal text-amber-600 ml-2">⚠ {oversizedParts.length} oversized</span>
           )}
         </td>
       </tr>
@@ -148,21 +148,21 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
           return (
             <tr
               key={i}
-              className={`border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${isOversized ? 'bg-amber-50' : ''}`}
+              className={`border-b border-surface-100 last:border-b-0 hover:bg-surface-50 transition-colors duration-150 ${isOversized ? 'bg-amber-50' : ''}`}
             >
               <td className="px-4 py-2">
                 <span className={`inline-block w-2 h-2 rounded-full ${partTypeColor(part.type)}`}></span>
               </td>
-              <td className="px-4 py-2 text-gray-600">
+              <td className="px-4 py-2 text-surface-600">
                 {part.label || partTypeLabel(part.type)}
-                {isOversized && <span className="ml-2 text-amber-600 text-xs">⚠ too large</span>}
+                {isOversized && <span className="ml-2 text-amber-600 text-label-sm">⚠ too large</span>}
               </td>
-              <td className="px-4 py-2 text-gray-600">{partTypeLabel(part.type)}</td>
+              <td className="px-4 py-2 text-surface-600">{partTypeLabel(part.type)}</td>
               <td className="px-4 py-2 text-right font-mono">{part.cutLength} mm</td>
               <td className="px-4 py-2 text-right font-mono">{part.cutWidth} mm</td>
               <td className="px-4 py-2 text-right font-mono">{part.quantity}</td>
               <td className="px-4 py-2 text-right font-mono">{part.materialThickness} mm</td>
-              <td className="px-4 py-2 text-sm text-gray-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
+              <td className="px-4 py-2 text-body-sm text-surface-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
             </tr>
           );
         })}
@@ -183,13 +183,13 @@ function ValidationBanner({ result }) {
   };
 
   return (
-    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-      <h3 className="font-semibold text-red-800 mb-2">Cannot calculate — missing required fields</h3>
-      <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
+    <div className="alert-danger mb-4">
+      <h3 className="text-title-md text-danger-800 mb-2">Cannot calculate — missing required fields</h3>
+      <ul className="list-disc list-inside text-body-sm text-danger-700 space-y-1">
         {!result.boxes && (
           <li>
             Boxes not configured — go to{' '}
-            <button className="text-blue-600 underline hover:text-blue-800" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
+            <button className="text-primary-600 underline hover:text-primary-800" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
               Boxes tab
             </button>
           </li>
@@ -197,7 +197,7 @@ function ValidationBanner({ result }) {
         {!result.materials && (
           <li>
             Sheet size and kerf not set — go to{' '}
-            <button className="text-blue-600 underline hover:text-blue-800" onClick={() => useUIStore.getState().setActiveTab('materials')}>
+            <button className="text-primary-600 underline hover:text-primary-800" onClick={() => useUIStore.getState().setActiveTab('materials')}>
               Materials tab
             </button>
           </li>
@@ -205,13 +205,13 @@ function ValidationBanner({ result }) {
         {!result.cutSettings && (
           <li>
             Grain constraint not selected — go to{' '}
-            <button className="text-blue-600 underline hover:text-blue-800" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
+            <button className="text-primary-600 underline hover:text-primary-800" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
               Cut Settings tab
             </button>
           </li>
         )}
         {result.errors.map((err, i) => (
-          <li key={i} className="text-gray-700">{err}</li>
+          <li key={i} className="text-surface-700">{err}</li>
         ))}
       </ul>
     </div>
@@ -324,27 +324,15 @@ export default function CutList() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-        <h2 className="text-lg font-semibold text-gray-900">Cut List</h2>
+        <h2 className="section-title">Cut List</h2>
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={handleCalculate}
-            disabled={!project}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
-          >
+          <button onClick={handleCalculate} disabled={!project} className="btn-primary">
             Calculate
           </button>
-          <button
-            onClick={handleRunLayout}
-            disabled={!project}
-            className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
-          >
+          <button onClick={handleRunLayout} disabled={!project} className="btn-success">
             Run Layout
           </button>
-          <button
-            onClick={handleExportCSV}
-            disabled={calculatedParts.length === 0}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
-          >
+          <button onClick={handleExportCSV} disabled={calculatedParts.length === 0} className="btn-secondary">
             Export CSV
           </button>
         </div>
@@ -355,38 +343,38 @@ export default function CutList() {
 
       {/* Summary */}
       {calculatedParts.length > 0 && (
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="card-flat mb-4 !bg-primary-50 !border-primary-200">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-blue-700">{totalQty}</p>
-              <p className="text-xs text-gray-500">Total Qty</p>
+              <p className="text-headline-md text-primary-700">{totalQty}</p>
+              <p className="text-label-sm text-surface-500">Total Qty</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-700">{totalParts}</p>
-              <p className="text-xs text-gray-500">Unique Parts</p>
+              <p className="text-headline-md text-primary-700">{totalParts}</p>
+              <p className="text-label-sm text-surface-500">Unique Parts</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-700">{totalAreaM2}</p>
-              <p className="text-xs text-gray-500">m² Total Area</p>
+              <p className="text-headline-md text-primary-700">{totalAreaM2}</p>
+              <p className="text-label-sm text-surface-500">m² Total Area</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-700">
+              <p className="text-headline-md text-primary-700">
                 {sheetLayouts.length > 0 ? sheetLayouts.length : '—'}
               </p>
-              <p className="text-xs text-gray-500">Sheets Needed</p>
+              <p className="text-label-sm text-surface-500">Sheets Needed</p>
             </div>
           </div>
 
           {/* Warnings */}
           {(oversizedCount > 0 || unplacedCount > 0) && (
-            <div className="mt-3 pt-3 border-t border-blue-200">
+            <div className="mt-3 pt-3 border-t border-primary-200">
               {oversizedCount > 0 && (
-                <p className="text-sm text-amber-700">
+                <p className="text-body-sm text-amber-700">
                   ⚠ {oversizedCount} part{oversizedCount !== 1 ? 's' : ''} too large to fit on the selected sheet size.
                 </p>
               )}
               {unplacedCount > 0 && (
-                <p className="text-sm text-red-700">
+                <p className="text-body-sm text-danger-700">
                   ⚠ {unplacedCount} part{unplacedCount !== 1 ? 's' : ''} could not be placed by the layout algorithm.
                 </p>
               )}
@@ -397,53 +385,53 @@ export default function CutList() {
 
       {/* Parts table grouped by Box */}
       {calculatedParts.length > 0 ? (
-        <div className="overflow-x-auto border border-gray-200 rounded-lg">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+        <div className="overflow-x-auto border border-surface-200 rounded-lg shadow-elev-0">
+          <table className="w-full text-body-sm">
+            <thead className="bg-surface-50 border-b border-surface-200">
               <tr>
-                <th className="text-left px-4 py-2 font-semibold text-gray-700"></th>
-                <th className="text-left px-4 py-2 font-semibold text-gray-700">
+                <th className="text-left px-4 py-2 text-label-md text-surface-700"></th>
+                <th className="text-left px-4 py-2 text-label-md text-surface-700">
                   <button
                     onClick={() => handleSort('label')}
-                    className="hover:text-gray-900"
+                    className="hover:text-surface-900 transition-colors duration-150"
                   >
                     Label<SortIcon active={sortField === 'label'} direction={sortDirection} />
                   </button>
                 </th>
-                <th className="text-left px-4 py-2 font-semibold text-gray-700">Type</th>
-                <th className="text-right px-4 py-2 font-semibold text-gray-700">
+                <th className="text-left px-4 py-2 text-label-md text-surface-700">Type</th>
+                <th className="text-right px-4 py-2 text-label-md text-surface-700">
                   <button
                     onClick={() => handleSort('cutLength')}
-                    className="hover:text-gray-900"
+                    className="hover:text-surface-900 transition-colors duration-150"
                   >
                     Cut Length<SortIcon active={sortField === 'cutLength'} direction={sortDirection} />
                   </button>
                 </th>
-                <th className="text-right px-4 py-2 font-semibold text-gray-700">
+                <th className="text-right px-4 py-2 text-label-md text-surface-700">
                   <button
                     onClick={() => handleSort('cutWidth')}
-                    className="hover:text-gray-900"
+                    className="hover:text-surface-900 transition-colors duration-150"
                   >
                     Cut Width<SortIcon active={sortField === 'cutWidth'} direction={sortDirection} />
                   </button>
                 </th>
-                <th className="text-right px-4 py-2 font-semibold text-gray-700">
+                <th className="text-right px-4 py-2 text-label-md text-surface-700">
                   <button
                     onClick={() => handleSort('quantity')}
-                    className="hover:text-gray-900"
+                    className="hover:text-surface-900 transition-colors duration-150"
                   >
                     Qty<SortIcon active={sortField === 'quantity'} direction={sortDirection} />
                   </button>
                 </th>
-                <th className="text-right px-4 py-2 font-semibold text-gray-700">
+                <th className="text-right px-4 py-2 text-label-md text-surface-700">
                   <button
                     onClick={() => handleSort('materialThickness')}
-                    className="hover:text-gray-900"
+                    className="hover:text-surface-900 transition-colors duration-150"
                   >
                     Thickness<SortIcon active={sortField === 'materialThickness'} direction={sortDirection} />
                   </button>
                 </th>
-                <th className="text-left px-4 py-2 font-semibold text-gray-700">Edge Banding</th>
+                <th className="text-left px-4 py-2 text-label-md text-surface-700">Edge Banding</th>
               </tr>
             </thead>
             <tbody>
@@ -461,7 +449,7 @@ export default function CutList() {
               ))}
               {/* Summary row */}
               <tr>
-                <td colSpan={8} className="bg-gray-100 px-4 py-2 font-semibold text-gray-700 text-sm">
+                <td colSpan={8} className="bg-surface-100 px-4 py-2 text-label-md text-surface-700">
                   <div className="flex justify-between">
                     <span>Summary</span>
                     <span>{totalQty} total pieces · {totalAreaM2} m² · {groupedByBox.length} box{groupedByBox.length !== 1 ? 'es' : ''}</span>
@@ -472,9 +460,14 @@ export default function CutList() {
           </table>
         </div>
       ) : (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg">No parts calculated.</p>
-          <p className="text-sm mt-1">Configure boxes and click "Calculate" to generate the cut list.</p>
+        <div className="flex flex-col items-center text-center py-16 px-6">
+          <div className="w-14 h-14 rounded-2xl bg-surface-100 flex items-center justify-center mb-4">
+            <svg className="w-7 h-7 text-surface-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
+          </div>
+          <p className="text-title-lg text-surface-700">No parts calculated yet</p>
+          <p className="text-body-sm text-surface-500 mt-1">Configure boxes, then click "Calculate" to generate the cut list.</p>
         </div>
       )}
     </div>

@@ -55,7 +55,7 @@ function ThicknessSelect({ value, onChange, label }) {
         const preset = THICKNESSES.find((t) => t.id === e.target.value);
         onChange(preset ? preset.value : null);
       }}
-      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+      className="select mt-1"
     >
       <option value="">Select…</option>
       {THICKNESSES.map((t) => (
@@ -106,7 +106,7 @@ function GroupSelect({ value, groups, onChange, onCreateGroup }) {
             }
           }}
           onBlur={commitCreate}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+          className="input"
         />
       </div>
     );
@@ -122,7 +122,7 @@ function GroupSelect({ value, groups, onChange, onCreateGroup }) {
         }
         onChange(e.target.value || null);
       }}
-      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+      className="select mt-1"
     >
       <option value="">Ungrouped</option>
       {groups.map((g) => (
@@ -142,8 +142,8 @@ function GroupSelect({ value, groups, onChange, onCreateGroup }) {
 function ShelfRow({ shelf, index, onChange, onRemove }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-gray-500">#{index + 1}</span>
-      <label className="flex items-center gap-1 text-sm">
+      <span className="text-label-sm text-surface-500">#{index + 1}</span>
+      <label className="flex items-center gap-1.5 text-body-sm text-surface-600">
         Qty
         <input
           type="number"
@@ -151,10 +151,10 @@ function ShelfRow({ shelf, index, onChange, onRemove }) {
           step="1"
           value={shelf.quantity}
           onChange={(e) => onChange(index, 'quantity', parseInt(e.target.value, 10) || 1)}
-          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+          className="w-16 px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         />
       </label>
-      <label className="flex items-center gap-1 text-sm">
+      <label className="flex items-center gap-1.5 text-body-sm text-surface-600">
         H from bot. (mm)
         <input
           type="number"
@@ -162,13 +162,13 @@ function ShelfRow({ shelf, index, onChange, onRemove }) {
           step="1"
           value={shelf.heightFromBottom ?? ''}
           onChange={(e) => onChange(index, 'heightFromBottom', parseFloat(e.target.value) || 0)}
-          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+          className="w-20 px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           placeholder="auto"
         />
       </label>
       <button
         onClick={() => onRemove(index)}
-        className="text-xs text-red-500 hover:underline"
+        className="text-label-sm text-danger-600 hover:text-danger-700 hover:underline transition-colors duration-150"
       >
         Remove
       </button>
@@ -191,14 +191,14 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
   );
 
   return (
-    <div className="p-3 bg-gray-50 rounded-md space-y-2">
+    <div className="card-flat space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700">
+        <span className="text-label-lg text-surface-700">
           Drawer — {drawer.drawerHeight}mm high × {drawer.quantity}
         </span>
         <button
           onClick={() => onRemove(drawer.id)}
-          className="text-xs text-red-500 hover:underline"
+          className="text-label-sm text-danger-600 hover:text-danger-700 hover:underline transition-colors duration-150"
         >
           Remove
         </button>
@@ -206,7 +206,7 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
         <label className="block">
-          <span className="text-xs text-gray-500">Height (mm)</span>
+          <span className="text-label-sm text-surface-500">Height (mm)</span>
           <input
             type="number"
             min="1"
@@ -217,12 +217,12 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 drawerHeight: parseFloat(e.target.value) || 0,
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs text-gray-500">Quantity</span>
+          <span className="text-label-sm text-surface-500">Quantity</span>
           <input
             type="number"
             min="1"
@@ -233,16 +233,16 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 quantity: parseInt(e.target.value, 10) || 1,
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs text-gray-500">Track type</span>
+          <span className="text-label-sm text-surface-500">Track type</span>
           <select
             value={drawer.trackType}
             onChange={(e) => handleTrackTypeChange(e.target.value)}
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm bg-white"
+            className="select mt-1 py-1"
           >
             {TRACK_TYPES.map((t) => (
               <option key={t.id} value={t.id}>
@@ -255,7 +255,7 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <label className="block">
-          <span className="text-xs text-gray-500">Side (mm)</span>
+          <span className="text-label-sm text-surface-500">Side (mm)</span>
           <input
             type="number"
             min="1"
@@ -266,12 +266,12 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 thicknesses: { ...drawer.thicknesses, side: parseFloat(e.target.value) || 0 },
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs text-gray-500">Front/Back (mm)</span>
+          <span className="text-label-sm text-surface-500">Front/Back (mm)</span>
           <input
             type="number"
             min="1"
@@ -282,12 +282,12 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 thicknesses: { ...drawer.thicknesses, frontBack: parseFloat(e.target.value) || 0 },
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs text-gray-500">Base (mm)</span>
+          <span className="text-label-sm text-surface-500">Base (mm)</span>
           <input
             type="number"
             min="1"
@@ -298,12 +298,12 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 thicknesses: { ...drawer.thicknesses, base: parseFloat(e.target.value) || 0 },
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs text-gray-500">Back setback (mm)</span>
+          <span className="text-label-sm text-surface-500">Back setback (mm)</span>
           <input
             type="number"
             min="0"
@@ -314,14 +314,14 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 backSetback: parseFloat(e.target.value) || 0,
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <label className="block">
-          <span className="text-xs text-gray-500">Base inset side (mm)</span>
+          <span className="text-label-sm text-surface-500">Base inset side (mm)</span>
           <input
             type="number"
             min="0"
@@ -332,12 +332,12 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 baseInsetFromSide: parseFloat(e.target.value) || 0,
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs text-gray-500">Base inset front (mm)</span>
+          <span className="text-label-sm text-surface-500">Base inset front (mm)</span>
           <input
             type="number"
             min="0"
@@ -348,7 +348,7 @@ function DrawerConfigInline({ drawer, onUpdate, onRemove }) {
                 baseInsetFromFront: parseFloat(e.target.value) || 0,
               })
             }
-            className="mt-1 w-full px-2 py-1 border border-gray-300 rounded text-sm"
+            className="mt-1 w-full px-2 py-1 border border-surface-300 rounded-md text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </label>
       </div>
@@ -518,53 +518,58 @@ function BoxCard({ boxId }) {
   if (!box) return null;
 
   return (
-    <div ref={cardRef} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+    <div ref={cardRef} className="border border-surface-200 rounded-lg bg-white overflow-hidden shadow-elev-0">
       {/* Box header — summary */}
       <div
-        className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 min-h-[44px]"
+        className="flex items-center justify-between px-4 py-3 bg-surface-50 cursor-pointer hover:bg-surface-100 transition-colors duration-150 min-h-[44px]"
         onClick={() => setSelectedBox(expanded ? null : boxId)}
       >
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-900">{box.name || 'Box'}</span>
-            <span className="text-xs text-gray-500">
+            <span className="text-title-md text-surface-900">{box.name || 'Box'}</span>
+            <span className="text-label-sm text-surface-500 font-normal">
               {box.externalWidth}×{box.externalHeight}×{box.externalDepth} mm
               {box.quantity > 1 ? ` × ${box.quantity}` : ''}
             </span>
           </div>
         </div>
-        <span className="text-gray-400 text-sm">{expanded ? '▲' : '▼'}</span>
+        <svg
+          className={`w-4 h-4 text-surface-400 transition-transform duration-200 ease-out ${expanded ? 'rotate-180' : ''}`}
+          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
       </div>
 
       {/* Expanded editor — ADR-016 sections */}
       {expanded && (
-        <div className="p-4 space-y-6 border-t border-gray-200">
+        <div className="p-4 space-y-4 border-t border-surface-200">
           {/* 1. Basic Info */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Basic Info</h4>
+          <div className="card-flat">
+            <h4 className="text-title-md text-surface-800 mb-3">Basic Info</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <label className="block">
-                <span className="text-xs text-gray-500">Name</span>
+                <span className="text-label-sm text-surface-500">Name</span>
                 <input
                   type="text"
                   value={box.name}
                   onChange={(e) => handleFieldChange('name', e.target.value)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="input mt-1 py-2"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-500">Quantity</span>
+                <span className="text-label-sm text-surface-500">Quantity</span>
                 <input
                   type="number"
                   min="1"
                   step="1"
                   value={box.quantity}
                   onChange={(e) => handleFieldChange('quantity', parseInt(e.target.value, 10) || 1)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="input mt-1 py-2"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-500">Group</span>
+                <span className="text-label-sm text-surface-500">Group</span>
                 <GroupSelect
                   value={box.groupId}
                   groups={groups}
@@ -576,51 +581,54 @@ function BoxCard({ boxId }) {
           </div>
 
           {/* 2. External Dimensions */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">External Dimensions (mm)</h4>
+          <div className="card-flat">
+            <h4 className="text-title-md text-surface-800 mb-3">External Dimensions (mm)</h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <label className="block">
-                <span className="text-xs text-gray-500">Width (mm)</span>
+                <span className="text-label-sm text-surface-500">Width (mm)</span>
                 <input
                   type="number"
                   min="1"
                   step="1"
                   value={box.externalWidth}
                   onChange={(e) => handleFieldChange('externalWidth', parseFloat(e.target.value) || 0)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="input mt-1 py-2"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-500">Height (mm)</span>
+                <span className="text-label-sm text-surface-500">Height (mm)</span>
                 <input
                   type="number"
                   min="1"
                   step="1"
                   value={box.externalHeight}
                   onChange={(e) => handleFieldChange('externalHeight', parseFloat(e.target.value) || 0)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="input mt-1 py-2"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-gray-500">Depth (mm)</span>
+                <span className="text-label-sm text-surface-500">Depth (mm)</span>
                 <input
                   type="number"
                   min="1"
                   step="1"
                   value={box.externalDepth}
                   onChange={(e) => handleFieldChange('externalDepth', parseFloat(e.target.value) || 0)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  className="input mt-1 py-2"
                 />
               </label>
             </div>
           </div>
 
           {/* 2b. Visualization Preview */}
-          <BoxVisualization box={box} thicknesses={box.thicknesses} />
+          <div>
+            <h4 className="text-title-md text-surface-800 mb-3">3D Preview</h4>
+            <BoxVisualization box={box} thicknesses={box.thicknesses} />
+          </div>
 
           {/* 3. Construction Method */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Construction Method</h4>
+          <div className="card-flat">
+            <h4 className="text-title-md text-surface-800 mb-2">Construction Method</h4>
             <div className="flex flex-col sm:flex-row gap-3">
               {['A', 'B'].map((m) => (
                 <label key={m} className="flex items-center gap-2 min-h-[44px]">
@@ -629,9 +637,9 @@ function BoxCard({ boxId }) {
                     name={`method-${box.id}`}
                     checked={box.constructionMethod === m}
                     onChange={() => handleFieldChange('constructionMethod', m)}
-                    className="text-blue-600 min-h-[16px] min-w-[16px]"
+                    className="accent-primary-600 min-h-[16px] min-w-[16px]"
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-body-md text-surface-700">
                     {m === 'A' ? 'A — Sides run full height' : 'B — Top/bottom run full width'}
                   </span>
                 </label>
@@ -640,8 +648,8 @@ function BoxCard({ boxId }) {
           </div>
 
           {/* 4. Material Thicknesses — dropdown from presets */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Material Thicknesses</h4>
+          <div className="card-flat">
+            <h4 className="text-title-md text-surface-800 mb-2">Material Thicknesses</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {['side', 'top', 'bottom', 'back'].map((key) => {
                 const matchedPreset = THICKNESSES.find(
@@ -649,7 +657,7 @@ function BoxCard({ boxId }) {
                 );
                 return (
                   <label key={key} className="block">
-                    <span className="text-xs text-gray-500 capitalize">{key}</span>
+                    <span className="text-label-sm text-surface-500 capitalize">{key}</span>
                     <ThicknessSelect
                       value={matchedPreset?.id ?? box.thicknesses[key]}
                       onChange={(val) => handleThicknessChange(key, val)}
@@ -661,17 +669,17 @@ function BoxCard({ boxId }) {
           </div>
 
           {/* 5. Edge Banding */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Edge Banding</h4>
+          <div className="card-flat">
+            <h4 className="text-title-md text-surface-800 mb-2">Edge Banding</h4>
             <label className="block mb-3">
-              <span className="text-xs text-gray-500">Thickness (mm, or leave blank for none)</span>
+              <span className="text-label-sm text-surface-500">Thickness (mm, or leave blank for none)</span>
               <input
                 type="number"
                 min="0"
                 step="0.5"
                 value={box.edgeBanding?.thickness ?? ''}
                 onChange={(e) => handleEbThicknessChange(e.target.value)}
-                className="mt-1 w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
+                className="input mt-1 w-full sm:w-32 py-2"
                 placeholder="none"
               />
             </label>
@@ -681,13 +689,14 @@ function BoxCard({ boxId }) {
               <div className="space-y-2">
                 {['side', 'top', 'bottom'].map((partType) => (
                   <div key={partType} className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-gray-500 capitalize w-12">{partType}</span>
+                    <span className="text-label-sm text-surface-500 capitalize w-12">{partType}</span>
                     {(EDGE_OPTIONS_BY_PART[partType] || []).map(({ value, label }) => (
-                      <label key={value} className="flex items-center gap-1 text-xs">
+                      <label key={value} className="flex items-center gap-1.5 text-body-sm text-surface-700">
                         <input
                           type="checkbox"
                           checked={(box.edgeBanding?.edges?.[partType] || []).includes(value)}
                           onChange={(e) => handleEbEdgesChange(partType, value, e.target.checked)}
+                          className="accent-primary-600"
                         />
                         {label}
                       </label>
@@ -699,12 +708,12 @@ function BoxCard({ boxId }) {
           </div>
 
           {/* 6. Internal Shelves */}
-          <div>
+          <div className="card-flat">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-semibold text-gray-700">Internal Shelves</h4>
+              <h4 className="text-title-md text-surface-800">Internal Shelves</h4>
               <button
                 onClick={handleAddShelf}
-                className="text-xs text-blue-600 hover:underline"
+                className="text-label-sm text-primary-600 hover:text-primary-700 hover:underline transition-colors duration-150"
               >
                 + Add Shelf
               </button>
@@ -722,17 +731,17 @@ function BoxCard({ boxId }) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">No internal shelves configured.</p>
+              <p className="text-body-sm text-surface-400">No internal shelves configured.</p>
             )}
           </div>
 
           {/* 7. Drawers */}
-          <div>
+          <div className="card-flat">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-semibold text-gray-700">Drawers</h4>
+              <h4 className="text-title-md text-surface-800">Drawers</h4>
               <button
                 onClick={() => addDrawer(boxId)}
-                className="text-xs text-blue-600 hover:underline"
+                className="text-label-sm text-primary-600 hover:text-primary-700 hover:underline transition-colors duration-150"
               >
                 + Add Drawer
               </button>
@@ -749,7 +758,7 @@ function BoxCard({ boxId }) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">No drawers configured for this box.</p>
+              <p className="text-body-sm text-surface-400">No drawers configured for this box.</p>
             )}
           </div>
         </div>
@@ -767,16 +776,16 @@ function BoxListItem({ boxId, fallbackName, onDuplicate, onDelete }) {
   return (
     <div className="relative">
       <BoxCard boxId={boxId} />
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-1 mt-1.5">
         <button
           onClick={() => onDuplicate(boxId)}
-          className="text-xs text-blue-600 hover:underline px-2 py-2 min-h-[44px]"
+          className="text-label-sm text-primary-600 hover:text-primary-700 hover:underline px-2 py-2 min-h-[44px] transition-colors duration-150"
         >
           Duplicate
         </button>
         <button
           onClick={() => onDelete(boxId, fallbackName)}
-          className="text-xs text-red-600 hover:underline px-2 py-2 min-h-[44px]"
+          className="text-label-sm text-danger-600 hover:text-danger-700 hover:underline px-2 py-2 min-h-[44px] transition-colors duration-150"
         >
           Delete
         </button>
@@ -879,17 +888,31 @@ export default function BoxConfig() {
     return (
       <div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-          <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
-          <button
-            onClick={handleAddBox}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px]"
-          >
-            + Add Box
+          <h2 className="section-title">Boxes</h2>
+          <button onClick={handleAddBox} className="btn-primary">
+            <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add Box
           </button>
         </div>
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg">No boxes configured.</p>
-          <p className="text-sm mt-1">Add a box to start designing your furniture.</p>
+        <div className="flex flex-col items-center text-center py-16 px-6">
+          <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center mb-5">
+            <svg className="w-8 h-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+            </svg>
+          </div>
+          <h3 className="text-headline-md text-surface-900 mb-2">No boxes yet</h3>
+          <p className="text-body-md text-surface-500 max-w-sm mb-6">
+            A box is one carcass — sides, top, bottom, back. Add your first one to start
+            sizing the parts.
+          </p>
+          <button onClick={handleAddBox} className="btn-primary">
+            <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add Box
+          </button>
         </div>
       </div>
     );
@@ -898,12 +921,12 @@ export default function BoxConfig() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-        <h2 className="text-lg font-semibold text-gray-900">Boxes</h2>
-        <button
-          onClick={handleAddBox}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 min-h-[44px]"
-        >
-          + Add Box
+        <h2 className="section-title">Boxes</h2>
+        <button onClick={handleAddBox} className="btn-primary">
+          <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Add Box
         </button>
       </div>
 
@@ -930,24 +953,24 @@ export default function BoxConfig() {
                     renameGroup(group.id, renameValue);
                     setRenamingGroupId(null);
                   }}
-                  className="px-2 py-1 text-sm font-semibold border border-blue-400 rounded"
+                  className="px-2 py-1 text-title-md border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               ) : (
-                <h3 className="text-sm font-semibold text-gray-700">{group.name}</h3>
+                <h3 className="text-title-md text-surface-800">{group.name}</h3>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   onClick={() => {
                     setRenamingGroupId(group.id);
                     setRenameValue(group.name);
                   }}
-                  className="text-xs text-blue-600 hover:underline"
+                  className="text-label-sm text-primary-600 hover:text-primary-700 hover:underline transition-colors duration-150"
                 >
                   Rename
                 </button>
                 <button
                   onClick={() => handleDeleteGroup(group, groupBoxes.length)}
-                  className="text-xs text-red-600 hover:underline"
+                  className="text-label-sm text-danger-600 hover:text-danger-700 hover:underline transition-colors duration-150"
                 >
                   Delete group
                 </button>
@@ -966,7 +989,7 @@ export default function BoxConfig() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">No boxes in this group.</p>
+              <p className="text-body-sm text-surface-400">No boxes in this group.</p>
             )}
           </div>
         ))}
@@ -974,7 +997,7 @@ export default function BoxConfig() {
         {(sections.ungrouped.length > 0 || !hasGroups) && (
           <div>
             {hasGroups && (
-              <h3 className="text-sm font-semibold text-gray-500 mb-2">Ungrouped</h3>
+              <h3 className="text-label-md text-surface-500 uppercase tracking-wide mb-2">Ungrouped</h3>
             )}
             <div className="space-y-3">
               {sections.ungrouped.map((box, index) => (

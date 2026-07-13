@@ -38,21 +38,17 @@ function SheetSizeSelector() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-gray-700">Sheet Size</h3>
+      <h3 className="text-title-md text-surface-800">Sheet Size</h3>
 
       {/* Presets */}
       <div>
-        <span className="text-xs text-gray-500 block mb-2">Presets</span>
+        <span className="text-label-sm text-surface-500 block mb-2">Presets</span>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {SHEET_SIZES.map((preset) => (
             <button
               key={preset.id}
               onClick={() => handlePresetSelect(preset)}
-              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors min-h-[44px] ${
-                width === preset.width && length === preset.length
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-              }`}
+              className={width === preset.width && length === preset.length ? 'chip-selected' : 'chip-unselected'}
             >
               {preset.label}
             </button>
@@ -62,26 +58,26 @@ function SheetSizeSelector() {
 
       {/* Custom dimensions */}
       <div>
-        <span className="text-xs text-gray-500 block mb-2">Custom Dimensions (mm)</span>
+        <span className="text-label-sm text-surface-500 block mb-2">Custom Dimensions (mm)</span>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="text-xs text-gray-500">Width (mm)</span>
+            <span className="text-label-sm text-surface-500">Width (mm)</span>
             <input
               type="number"
               min="1"
               value={width}
               onChange={(e) => handleCustomChange('width', e.target.value)}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
+              className="input mt-1 py-2"
             />
           </label>
           <label className="block">
-            <span className="text-xs text-gray-500">Length (mm)</span>
+            <span className="text-label-sm text-surface-500">Length (mm)</span>
             <input
               type="number"
               min="1"
               value={length}
               onChange={(e) => handleCustomChange('length', e.target.value)}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
+              className="input mt-1 py-2"
             />
           </label>
         </div>
@@ -117,24 +113,20 @@ function KerfInput() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-gray-700">Blade Kerf</h3>
+      <h3 className="text-title-md text-surface-800">Blade Kerf</h3>
 
       {/* Presets */}
       <div>
-        <span className="text-xs text-gray-500 block mb-2">Presets</span>
+        <span className="text-label-sm text-surface-500 block mb-2">Presets</span>
         <div className="flex flex-wrap gap-2">
           {KERF_PRESETS.filter((p) => p.id !== 'custom').map((preset) => (
             <button
               key={preset.id}
               onClick={() => handlePresetSelect(preset)}
-              className={`px-3 py-2 text-left text-sm rounded-md border transition-colors min-h-[44px] ${
-                kerf === preset.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-              }`}
+              className={kerf === preset.value ? 'chip-selected' : 'chip-unselected'}
             >
               {preset.label}
-              <span className="ml-1 text-xs text-gray-400">({preset.value}mm)</span>
+              <span className="ml-1 text-label-sm font-normal text-surface-400">({preset.value}mm)</span>
             </button>
           ))}
         </div>
@@ -143,17 +135,17 @@ function KerfInput() {
       {/* Custom input */}
       <div>
         <label className="block">
-          <span className="text-xs text-gray-500">Custom Kerf (mm)</span>
+          <span className="text-label-sm text-surface-500">Custom Kerf (mm)</span>
           <input
             type="number"
             min="0"
             step="0.1"
             value={customKerf}
             onChange={(e) => handleCustomChange(e.target.value)}
-            className="mt-1 w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md text-sm min-h-[44px]"
+            className="input mt-1 w-full sm:w-32 py-2"
           />
         </label>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-body-sm text-surface-400 mt-1">
           Kerf is the material removed by the blade. Typical values: 2-4mm for circular saw, 1-2mm for panel saw.
         </p>
       </div>
@@ -167,12 +159,12 @@ function KerfInput() {
 export default function MaterialConfig() {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Materials</h2>
-      <div className="space-y-8">
-        <div className="p-4 bg-white border border-gray-200 rounded-lg">
+      <h2 className="section-title mb-4">Materials</h2>
+      <div className="space-y-6">
+        <div className="card">
           <SheetSizeSelector />
         </div>
-        <div className="p-4 bg-white border border-gray-200 rounded-lg">
+        <div className="card">
           <KerfInput />
         </div>
       </div>
