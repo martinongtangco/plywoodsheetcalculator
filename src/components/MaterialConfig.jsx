@@ -14,6 +14,15 @@ import { useProjectStore } from '../store/projectStore.js';
 import { SHEET_SIZES, KERF_PRESETS } from '../presets/index.js';
 
 /**
+ * Check if the given dimensions match any non-custom preset.
+ */
+function matchesAnyPreset(w, l) {
+  return SHEET_SIZES.some(
+    (p) => p.id !== 'custom' && p.width !== null && w === p.width && l === p.length
+  );
+}
+
+/**
  * Sheet size selection panel
  */
 function SheetSizeSelector() {
@@ -23,18 +32,42 @@ function SheetSizeSelector() {
   const width = project?.sheetSize?.width ?? 1220;
   const length = project?.sheetSize?.length ?? 2440;
 
+  // Track whether the user explicitly clicked Custom or modified custom fields.
+  const [isCustom, setIsCustom] = useState(!matchesAnyPreset(width, length));
+
   const handlePresetSelect = useCallback((preset) => {
+    if (preset.id === 'custom') {
+      setIsCustom(true);
+      return;
+    }
+    setIsCustom(false);
     updateProject({ sheetSize: { width: preset.width, length: preset.length } });
   }, [updateProject]);
 
   const handleCustomChange = useCallback((field, value) => {
+    const newWidth = field === 'width' ? (parseFloat(value) || 0) : width;
+    const newLength = field === 'length' ? (parseFloat(value) || 0) : length;
     updateProject({
-      sheetSize: {
-        width: field === 'width' ? (parseFloat(value) || 0) : width,
-        length: field === 'length' ? (parseFloat(value) || 0) : length,
-      },
+      sheetSize: { width: newWidth, length: newLength },
     });
+    // Auto-select Custom when the user modifies fields
+    setIsCustom(true);
   }, [updateProject, width, length]);
+
+  // Determine which preset (if any) is currently selected.
+  // A preset is selected only when its dimensions match AND custom mode is not active.
+  const getSelectedId = () => {
+    if (isCustom) return 'custom';
+    for (const preset of SHEET_SIZES) {
+      if (preset.id !== 'custom' && preset.width !== null && width === preset.width && length === preset.length) {
+        return preset.id;
+      }
+    }
+    // Dimensions don't match any preset — treat as custom
+    return 'custom';
+  };
+
+  const selectedId = getSelectedId();
 
   return (
     <div className="space-y-4">
@@ -48,7 +81,7 @@ function SheetSizeSelector() {
             <button
               key={preset.id}
               onClick={() => handlePresetSelect(preset)}
-              className={width === preset.width && length === preset.length ? 'chip-selected' : 'chip-unselected'}
+              className={selectedId === preset.id ? 'chip-selected' : 'chip-unselected'}
             >
               {preset.label}
             </button>
