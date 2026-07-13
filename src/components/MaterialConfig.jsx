@@ -38,11 +38,11 @@ function SheetSizeSelector() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-title-md text-surface-800">Sheet Size</h3>
+      <h3 className="text-title-md font-display font-semibold text-ink-900">Sheet Size</h3>
 
       {/* Presets */}
       <div>
-        <span className="text-label-sm text-surface-500 block mb-2">Presets</span>
+        <span className="text-label-sm font-mono text-ink-400 block mb-2 uppercase">Sheet Size</span>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {SHEET_SIZES.map((preset) => (
             <button
@@ -58,10 +58,10 @@ function SheetSizeSelector() {
 
       {/* Custom dimensions */}
       <div>
-        <span className="text-label-sm text-surface-500 block mb-2">Custom Dimensions (mm)</span>
+        <span className="text-label-sm font-mono text-ink-400 block mb-2 uppercase">Custom Dimensions (mm)</span>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="text-label-sm text-surface-500">Width (mm)</span>
+            <span className="text-label-sm font-mono text-ink-400 uppercase">Width (mm)</span>
             <input
               type="number"
               min="1"
@@ -71,7 +71,7 @@ function SheetSizeSelector() {
             />
           </label>
           <label className="block">
-            <span className="text-label-sm text-surface-500">Length (mm)</span>
+            <span className="text-label-sm font-mono text-ink-400 uppercase">Length (mm)</span>
             <input
               type="number"
               min="1"
@@ -113,11 +113,11 @@ function KerfInput() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-title-md text-surface-800">Blade Kerf</h3>
+      <h3 className="text-title-md font-display font-semibold text-ink-900">Blade Kerf</h3>
 
       {/* Presets */}
       <div>
-        <span className="text-label-sm text-surface-500 block mb-2">Presets</span>
+        <span className="text-label-sm font-mono text-ink-400 block mb-2 uppercase">Presets</span>
         <div className="flex flex-wrap gap-2">
           {KERF_PRESETS.filter((p) => p.id !== 'custom').map((preset) => (
             <button
@@ -126,7 +126,7 @@ function KerfInput() {
               className={kerf === preset.value ? 'chip-selected' : 'chip-unselected'}
             >
               {preset.label}
-              <span className="ml-1 text-label-sm font-normal text-surface-400">({preset.value}mm)</span>
+              <span className="ml-1 text-label-sm font-normal text-ink-400">({preset.value}mm)</span>
             </button>
           ))}
         </div>
@@ -135,7 +135,7 @@ function KerfInput() {
       {/* Custom input */}
       <div>
         <label className="block">
-          <span className="text-label-sm text-surface-500">Custom Kerf (mm)</span>
+          <span className="text-label-sm font-mono text-ink-400 uppercase">Custom Kerf (mm)</span>
           <input
             type="number"
             min="0"
@@ -145,7 +145,7 @@ function KerfInput() {
             className="input mt-1 w-full sm:w-32 py-2"
           />
         </label>
-        <p className="text-body-sm text-surface-400 mt-1">
+        <p className="text-body-sm text-ink-400 mt-1">
           Kerf is the material removed by the blade. Typical values: 2-4mm for circular saw, 1-2mm for panel saw.
         </p>
       </div>

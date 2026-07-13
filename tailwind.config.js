@@ -1,140 +1,126 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        /* Primary — warm amber evoking wood grain and craftsmanship */
-        primary: {
-          50:  '#FFF8F0',
-          100: '#FEEDC8',
-          200: '#FDD9A0',
-          300: '#FBC068',
-          400: '#F9A230',
-          500: '#F5890A',
-          600: '#D96C00',
-          700: '#B85000',
-          800: '#97400A',
-          900: '#7A3612',
-          950: '#451A02',
+        // Drafting Room palette — paper + blueprint aesthetic
+        paper: {
+          50: '#FBF8EF',  // cards background
+          100: '#F7F2E7', // app shell background
+          200: '#F1EBDA', // header/tab bar, stat blocks
         },
-        /* Surface — warm whites instead of cool grays */
-        surface: {
-          50:  '#FAF9F7',
-          100: '#F5F3EF',
-          200: '#EDEAE4',
-          300: '#E0DBD2',
-          400: '#C8BFB3',
-          500:  '#ADA292',
-          600:  '#928575',
-          700:  '#75685B',
-          800:  '#5F554A',
-          900:  '#4E463C',
-          950:  '#2D2823',
+        border: {
+          DEFAULT: '#CFC4AA', // outer shell border
+          100: '#DCD2B8',     // dividers, card borders
+          200: '#E5DBC2',     // nested dividers
+          300: '#C9BFA8',     // input borders
+          400: '#CBBE9C',     // thin separators
         },
-        /* Accent — deep walnut for secondary actions and emphasis */
+        ink: {
+          900: '#22303D',   // primary headings/body
+          700: '#3E4C57',   // secondary body
+          500: '#6B7A87',   // muted/labels
+          400: '#8A9199',   // tertiary labels
+          600: '#4A5964',   // tertiary
+        },
         accent: {
-          50:  '#FDF8F6',
-          100:  '#FAEDE6',
-          200:  '#F4D7CB',
-          300:  '#EBBFAD',
-          400:  '#DF9A78',
-          500:  '#D47A52',
-          600:  '#C4613A',
-          700:  '#A64A2C',
-          800:  '#873D26',
-          900:  '#6E3420',
-          950:  '#3C190C',
+          DEFAULT: '#2C5C82', // blueprint blue — primary interactive
+          light: '#DCE9F1',   // light blue background
+          dark: '#1B2A3D',    // dark variant
         },
-        /* Success — warm green like fresh wood */
+        rust: {
+          DEFAULT: '#B5502B', // distinct CTA (Export PDF)
+          light: '#FBF3EA',   // text on rust bg
+        },
         success: {
-          50:  '#F0FDF5',
-          100: '#DCFCE7',
-          200: '#BBF7D0',
-          300: '#86EFAC',
-          400: '#4ADE80',
-          500: '#22C55E',
-          600: '#16A34A',
-          700: '#15803D',
-          800: '#166534',
-          900: '#14532D',
+          50: '#EFF6ED',  // background
+          200: '#BFE0BA', // border
+          700: '#2E5D2A', // text
         },
-        /* Danger — burnt orange instead of harsh red */
+        // Sheet diagram tokens
+        diagram: {
+          canvas: '#1B2A38',     // dark navy blueprint bg
+          outline: '#3D5468',    // sheet outline stroke
+          fill: 'rgba(111,168,199,0.12)', // part fill
+          stroke: '#6FA8C7',     // part stroke
+          plate: '#0F1B26',      // label plate bg
+          label: '#EAF3F8',      // primary label text
+          dim: '#8FB6CC',        // dimension subtext
+        },
+        // Legacy alias for backward compatibility
+        primary: {
+          50: '#EFF6F9',
+          100: '#DCE9F1',
+          200: '#B9D4E4',
+          300: '#8FB8CC',
+          400: '#6FA0C2',
+          500: '#2C5C82',
+          600: '#24506E',
+          700: '#1B3D56',
+          800: '#1B2A38',
+          900: '#0F1B26',
+        },
+        surface: {
+          50: '#F7F2E7',
+          100: '#F1EBDA',
+          200: '#E5DBC2',
+          300: '#DCD2B8',
+          400: '#CFC4AA',
+          500: '#8A9199',
+          600: '#6B7A87',
+          700: '#4A5964',
+          800: '#3E4C57',
+          900: '#22303D',
+        },
         danger: {
-          50:  '#FEF2F2',
-          100: '#FEE2E2',
-          200: '#FECACA',
-          300: '#FCA5A5',
-          400: '#F87171',
-          500: '#EF4444',
-          600: '#DC2626',
-          700: '#B91C1C',
-          800: '#991B1B',
-          900: '#7F1D1D',
-        },
-        /* Info — deep amber */
-        info: {
-          50:  '#FFFEB8',
-          100: '#FEF08A',
-          200: '#FDE047',
-          300: '#FACC15',
-          400: '#EAB308',
-          500: '#CA8A04',
-          600: '#A16207',
-          700: '#854D0E',
-          800: '#713F12',
-          900: '#603214',
+          50: '#FDF2F2',
+          100: '#FDE8E8',
+          200: '#FBD5D5',
+          300: '#F5ABAB',
+          400: '#EF8080',
+          500: '#E55A5A',
+          600: '#D43D3D',
+          700: '#B42C2C',
+          800: '#921F1F',
+          900: '#7A1919',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Source Serif 4"', 'Georgia', 'serif'],
+        body: ['"Work Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
-      /* Type scale — Material 3 naming, tuned for a single-product tool.
-         Each entry is [size, { lineHeight, fontWeight, letterSpacing }]. */
       fontSize: {
-        'display-lg': ['2.25rem', { lineHeight: '2.75rem', fontWeight: '700', letterSpacing: '-0.02em' }],
-        'headline-lg': ['1.75rem', { lineHeight: '2.25rem', fontWeight: '700', letterSpacing: '-0.01em' }],
-        'headline-md': ['1.5rem', { lineHeight: '2rem', fontWeight: '700', letterSpacing: '-0.01em' }],
-        'title-lg': ['1.125rem', { lineHeight: '1.5rem', fontWeight: '600' }],
-        'title-md': ['0.9375rem', { lineHeight: '1.375rem', fontWeight: '600' }],
-        'body-lg': ['1rem', { lineHeight: '1.5rem', fontWeight: '400' }],
-        'body-md': ['0.875rem', { lineHeight: '1.25rem', fontWeight: '400' }],
-        'body-sm': ['0.8125rem', { lineHeight: '1.125rem', fontWeight: '400' }],
-        'label-lg': ['0.875rem', { lineHeight: '1.25rem', fontWeight: '600' }],
-        'label-md': ['0.8125rem', { lineHeight: '1rem', fontWeight: '600' }],
-        'label-sm': ['0.6875rem', { lineHeight: '0.875rem', fontWeight: '600', letterSpacing: '0.02em' }],
-      },
-      boxShadow: {
-        'elev-0': '0 0 0 1px rgba(45,40,35,0.06)',
-        'elev-1': '0 1px 3px rgba(45,40,35,0.08), 0 1px 2px rgba(45,40,35,0.06)',
-        'elev-2': '0 2px 6px rgba(45,40,35,0.08), 0 2px 4px rgba(45,40,35,0.06)',
-        'elev-3': '0 4px 12px rgba(45,40,35,0.1), 0 2px 6px rgba(45,40,35,0.06)',
-        'elev-4': '0 8px 24px rgba(45,40,35,0.12), 0 4px 12px rgba(45,40,35,0.08)',
+        'headline-lg': ['22px', { lineHeight: '1.2' }],
+        'headline-md': ['19px', { lineHeight: '1.3' }],
+        'headline-sm': ['16px', { lineHeight: '1.4' }],
+        'title-md': ['14.5px', { lineHeight: '1.4' }],
+        'title-sm': ['13px', { lineHeight: '1.4' }],
+        'body-md': ['13px', { lineHeight: '1.5' }],
+        'body-sm': ['12px', { lineHeight: '1.5' }],
+        'label-md': ['11px', { lineHeight: '1.3' }],
+        'label-sm': ['10.5px', { lineHeight: '1.3' }],
+        'data-lg': ['22px', { lineHeight: '1.2' }],
+        'data-md': ['14px', { lineHeight: '1.4' }],
       },
       borderRadius: {
-        'lg': '0.75rem',
-        'xl': '1rem',
+        DEFAULT: '2px',
+        lg: '2px',
+        xl: '2px',
+        '2xl': '2px',
+        md: '2px',
+        sm: '2px',
+        // Override — almost everything is sharp 2px
       },
-      keyframes: {
-        'fade-in': {
-          '0%': { opacity: '0', transform: 'translateY(4px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        'scale-in': {
-          '0%': { opacity: '0', transform: 'scale(0.96)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
-        },
-      },
-      animation: {
-        'fade-in': 'fade-in 0.2s ease-out',
-        'scale-in': 'scale-in 0.15s ease-out',
+      boxShadow: {
+        'elev-0': 'none',
+        'elev-1': '0 1px 3px rgba(30,25,15,0.1)',
+        'elev-2': '0 1px 4px rgba(30,25,15,0.12)',
+        'elev-3': '0 2px 8px rgba(30,25,15,0.15)',
+        'none': 'none',
       },
     },
   },
   plugins: [],
-}
+};

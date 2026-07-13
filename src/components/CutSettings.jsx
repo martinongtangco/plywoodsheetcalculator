@@ -38,15 +38,15 @@ function GrainConstraintSelector() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-title-md text-surface-800">Grain Constraint</h3>
+      <span className="text-label-sm font-mono text-ink-400 uppercase">Grain Constraint</span>
       <div className="space-y-2">
         {GRAIN_OPTIONS.map(({ value, label, description }) => (
           <label
             key={value}
-            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors duration-150 min-h-[44px] ${
+            className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors duration-150 min-h-[44px] ${
               grainConstraint === value
-                ? 'border-primary-400 bg-primary-50'
-                : 'border-surface-200 bg-white hover:bg-surface-50'
+                ? 'border-accent bg-accent-light'
+                : 'border-border-100 bg-paper-50 hover:bg-paper-200'
             }`}
           >
             <input
@@ -54,11 +54,11 @@ function GrainConstraintSelector() {
               name="grainConstraint"
               checked={grainConstraint === value}
               onChange={() => handleChange(value)}
-              className="mt-1 accent-primary-600 min-h-[16px] min-w-[16px]"
+              className="mt-1 accent-accent min-h-[16px] min-w-[16px]"
             />
             <div>
-              <span className="text-label-lg text-surface-900">{label}</span>
-              <p className="text-body-sm text-surface-500 mt-0.5">{description}</p>
+              <span className="text-label-lg text-ink-900">{label}</span>
+              <p className="text-body-sm text-ink-500 mt-0.5">{description}</p>
             </div>
           </label>
         ))}
@@ -82,31 +82,21 @@ function CutModeSelector() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-title-md text-surface-800">Cut Mode</h3>
-      <div className="space-y-2">
-        {CUT_MODES.map(({ value, label, description }) => (
-          <label
+      <span className="text-label-sm font-mono text-ink-400 uppercase">Cut Mode</span>
+      <div className="flex flex-wrap gap-2">
+        {CUT_MODES.map(({ value, label }) => (
+          <button
             key={value}
-            className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors duration-150 min-h-[44px] ${
-              cutMode === value
-                ? 'border-primary-400 bg-primary-50'
-                : 'border-surface-200 bg-white hover:bg-surface-50'
-            }`}
+            onClick={() => handleChange(value)}
+            className={cutMode === value ? 'chip-selected' : 'chip-unselected'}
           >
-            <input
-              type="radio"
-              name="cutMode"
-              checked={cutMode === value}
-              onChange={() => handleChange(value)}
-              className="mt-1 accent-primary-600 min-h-[16px] min-w-[16px]"
-            />
-            <div>
-              <span className="text-label-lg text-surface-900">{label}</span>
-              <p className="text-body-sm text-surface-500 mt-0.5">{description}</p>
-            </div>
-          </label>
+            {label}
+          </button>
         ))}
       </div>
+      <p className="text-body-sm text-ink-400">
+        {CUT_MODES.find((m) => m.value === cutMode)?.description}
+      </p>
     </div>
   );
 }

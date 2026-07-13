@@ -7,6 +7,7 @@ import { downloadFile, readFileAsText, promptFileSelect } from '../utils/fileIO.
  * ProjectList — displays all saved projects, allows creating, opening,
  * deleting (with confirmation), importing and exporting projects.
  *
+ * Drafting Room redesign: warm paper + blueprint aesthetic.
  * ADR-006: JSON export/import for portability between devices.
  */
 export default function ProjectList() {
@@ -86,7 +87,6 @@ export default function ProjectList() {
   const startRename = useCallback((project) => {
     setEditingProject({ id: project.id, name: project.name });
     setRenameError('');
-    // Focus the input on next render
     requestAnimationFrame(() => {
       inputRef.current?.focus();
       inputRef.current?.select();
@@ -123,41 +123,41 @@ export default function ProjectList() {
   }, [commitRename, cancelRename]);
 
   return (
-    <div className="min-h-screen bg-surface-50">
-      <header className="bg-white border-b border-surface-200 shadow-elev-1">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-paper-100">
+      {/* Header — paper cream, flat, sharp 2px */}
+      <header className="bg-paper-100 border-b border-border-100">
+        <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center gap-3">
-            {/* Hammer / saw icon */}
-            <div className="flex-shrink-0 w-10 h-10 bg-primary-600 rounded-xl shadow-elev-2 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            {/* Hammer icon — squared tile */}
+            <div className="flex-shrink-0 w-[42px] h-[42px] bg-ink-900 rounded flex items-center justify-center">
+              <svg className="w-[22px] h-[22px] text-paper-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.4}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 4.392l-6.61 1.654a1.002 1.002 0 01-1.203-1.18l1.295-6.648a2.001 2.001 0 01.97-1.426l3.554-1.777a2.001 2.001 0 011.79 0l3.554 1.777a2.001 2.001 0 01.97 1.426l1.295 6.648a1.002 1.002 0 01-1.203 1.18l-6.61-1.654z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 12v7.5" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 19.5h7.5" />
               </svg>
             </div>
             <div>
-              <h1 className="text-headline-md text-surface-900 tracking-tight">ply-calc</h1>
-              <p className="text-body-sm text-surface-500">Plywood Sheet Calculator</p>
+              <h1 className="text-headline-lg font-display font-bold text-ink-900 tracking-tight">
+                ply&nbsp;·&nbsp;calc
+              </h1>
+              <p className="text-body-sm text-ink-500 font-mono">plywood sheet calculator</p>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
+      <main className="max-w-4xl mx-auto px-6 py-6 animate-fade-in">
         {/* Actions */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        <div className="flex flex-wrap gap-2.5 mb-5">
           <button
             onClick={handleCreate}
             className="btn-primary flex-1 sm:flex-none"
           >
-            <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            New Project
+            + New Project
           </button>
           <button
             onClick={handleImport}
-            className="btn-tonal flex-1 sm:flex-none"
+            className="btn-secondary flex-1 sm:flex-none"
           >
             Import JSON
           </button>
@@ -170,21 +170,21 @@ export default function ProjectList() {
           </button>
         </div>
 
-        {/* Storage info — a routine product fact, not a warning */}
+        {/* Storage info */}
         {showStorageNotice && (
-          <div className="banner-notice mb-6">
-            <svg className="w-5 h-5 flex-shrink-0 text-surface-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="banner-notice mb-5">
+            <svg className="w-5 h-5 flex-shrink-0 text-ink-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
             </svg>
             <p className="flex-1">
               Projects are saved in your browser's local storage. Clearing browser data will
-              delete them — use <span className="font-medium text-surface-800">Export Active</span> to
-              back up a project, then <span className="font-medium text-surface-800">Import JSON</span> on
+              delete them — use <span className="font-medium text-ink-900">Export Active</span> to
+              back up a project, then <span className="font-medium text-ink-900">Import JSON</span> on
               another device.
             </p>
             <button
               onClick={() => setShowStorageNotice(false)}
-              className="flex-shrink-0 p-1 -m-1 rounded-md text-surface-400 hover:text-surface-700 hover:bg-surface-200 transition-colors duration-150"
+              className="flex-shrink-0 p-1 -m-1 rounded text-ink-400 hover:text-ink-700 hover:bg-paper-200 transition-colors duration-150"
               aria-label="Dismiss storage notice"
             >
               <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -197,38 +197,35 @@ export default function ProjectList() {
         {/* Project list */}
         {projects.length === 0 ? (
           <div className="flex flex-col items-center text-center py-16 px-6">
-            <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center mb-5">
-              <svg className="w-8 h-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="w-16 h-16 rounded flex items-center justify-center mb-5 bg-accent-light">
+              <svg className="w-8 h-8 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
               </svg>
             </div>
-            <h2 className="text-headline-md text-surface-900 mb-2">Let's build something</h2>
-            <p className="text-body-md text-surface-500 max-w-sm mb-6">
+            <h2 className="text-headline-md font-display font-bold text-ink-900 mb-2">Let's build something</h2>
+            <p className="text-body-md text-ink-500 max-w-sm mb-6">
               Set up your first cut list — sizes, sheet stock, and kerf — and we'll work out
               exactly what to cut.
             </p>
             <button onClick={handleCreate} className="btn-primary">
-              <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              New Project
+              + New Project
             </button>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {projects.map((project) => {
               const isEditing = editingProject?.id === project.id;
+              const isActive = project.id === activeProjectId;
               return (
                 <li
                   key={project.id}
-                  className={`flex items-center justify-between p-4 bg-white rounded-xl border transition-all duration-150 ${
-                    project.id === activeProjectId
-                      ? 'border-primary-400 ring-2 ring-primary-100 shadow-elev-2'
-                      : 'border-surface-200 shadow-elev-1 hover:shadow-elev-2'
-                  } ${isEditing ? 'shadow-elev-3' : ''}`}
+                  className={`flex items-center justify-between p-4 bg-paper-50 rounded border transition-all duration-150 cursor-pointer ${
+                    isActive
+                      ? 'border-accent border-l-[3px]'
+                      : 'border-border-100 hover:border-border-400'
+                  } ${isEditing ? 'border-accent' : ''}`}
                 >
                   {isEditing ? (
-                    /* -- Inline rename form -- */
                     <div className="flex-1 flex items-center gap-2">
                       <div className="flex-1">
                         <input
@@ -242,7 +239,7 @@ export default function ProjectList() {
                           }}
                           onKeyDown={handleRenameKeyDown}
                           onBlur={commitRename}
-                          className="w-full px-2 py-1 text-body-md border-2 border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          className="w-full px-2 py-1 text-body-md border-2 border-accent rounded focus:outline-none focus:ring-2 focus:ring-accent"
                           aria-label="Project name"
                         />
                         {renameError && (
@@ -250,30 +247,29 @@ export default function ProjectList() {
                         )}
                       </div>
                       <button
-                        onClick={commitRename}
-                        className="px-3 py-1.5 text-label-md text-success-700 border border-success-300 rounded-lg hover:bg-success-50 active:scale-95 transition-all duration-150 min-h-[44px]"
+                        onClick={(e) => { e.stopPropagation(); commitRename(); }}
+                        className="px-3 py-1.5 text-label-md font-semibold border border-success-200 rounded hover:bg-success-50 active:scale-95 transition-all duration-150 min-h-[44px] text-success-700"
                         title="Save"
                       >
                         Save
                       </button>
                       <button
-                        onClick={cancelRename}
-                        className="px-3 py-1.5 text-label-md text-surface-600 border border-surface-300 rounded-lg hover:bg-surface-100 active:scale-95 transition-all duration-150 min-h-[44px]"
+                        onClick={(e) => { e.stopPropagation(); cancelRename(); }}
+                        className="px-3 py-1.5 text-label-md text-ink-600 border border-border-300 rounded hover:bg-paper-200 active:scale-95 transition-all duration-150 min-h-[44px]"
                         title="Cancel"
                       >
                         Cancel
                       </button>
                     </div>
                   ) : (
-                    /* -- Default project row -- */
                     <>
                       <button
                         onClick={() => handleOpen(project.id)}
                         className="flex-1 text-left"
                         title="Open project"
                       >
-                        <p className="text-title-md text-surface-900">{project.name}</p>
-                        <p className="text-body-sm text-surface-500 mt-0.5">
+                        <p className="text-title-md font-display font-semibold text-ink-900">{project.name}</p>
+                        <p className="text-body-sm text-ink-500 font-mono mt-1">
                           {project.boxes.length} box{project.boxes.length !== 1 ? 'es' : ''}
                           {' \u00B7 '}
                           {project.drawers.length} drawer{project.drawers.length !== 1 ? 's' : ''}
@@ -283,14 +279,14 @@ export default function ProjectList() {
                       </button>
                       <div className="ml-4 flex items-center gap-2 flex-shrink-0">
                         <button
-                          onClick={() => startRename(project)}
+                          onClick={(e) => { e.stopPropagation(); startRename(project); }}
                           className="btn-tonal px-3.5 py-2 text-label-md min-h-[44px]"
                           title={`Rename ${project.name}`}
                         >
                           Rename
                         </button>
                         <button
-                          onClick={() => handleDelete(project.id)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(project.id); }}
                           className="btn-danger-ghost px-3.5 py-2 min-h-[44px]"
                           title={`Delete ${project.name}`}
                         >

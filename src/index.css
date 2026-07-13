@@ -3,135 +3,127 @@
 @tailwind utilities;
 
 /* ============================================
-   Design Tokens — "Craft" Theme
-   Material Design elevation + Jobs minimalism
-   Target: Woodworker demographic (warm, earthy, premium)
+   Design Tokens — "Drafting Room" Theme
+   Warm paper + blueprint aesthetic (technical-drawing feel)
+   Sharp 2px radii, hairline borders, minimal shadow.
    ============================================ */
 
 @layer base {
   body {
-    @apply bg-surface-50 text-surface-900 font-sans antialiased;
+    @apply bg-paper-100 text-ink-900 font-body antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Selection color — warm amber */
+  /* Selection color — blueprint blue */
   ::selection {
-    @apply bg-primary-200 text-primary-900;
+    @apply bg-accent-light text-ink-900;
   }
 }
 
 /* ============================================
    Component Classes
-   Reusable UI patterns following Material Design
-   elevation system with warm shadow tones.
+   Sharp 2px radius, border-only separation, flat cards.
    ============================================ */
 
 @layer components {
 
   /* -- Cards / surfaces -- */
   .card {
-    @apply bg-white rounded-xl border border-surface-200 shadow-elev-1 p-6 transition-shadow duration-200;
+    @apply bg-paper-50 rounded-lg border border-border-100 p-5 transition-colors duration-150;
   }
 
-  .card-hover:hover {
-    @apply shadow-elev-2;
-  }
-
-  /* Tonal container — for grouping related form fields at a lower
-     emphasis than a full elevated card (Material "surface container"). */
+  /* Flat tonal container for grouping form fields */
   .card-flat {
-    @apply bg-surface-100/70 rounded-lg p-4 border border-surface-200/70;
+    @apply bg-paper-100/50 rounded-lg p-4 border border-border-200/60;
   }
 
   /* -- Buttons --
-     filled (btn-primary) > tonal (btn-tonal) > outlined (btn-secondary) >
-     text (btn-ghost), plus a distinct btn-danger for destructive actions.
-     All share the same elevation/motion language: 150ms ease-out, a
-     pressed scale-down, and a visible focus ring. */
+     Primary: dark ink fill, flat, no shadow
+     Tonal: accent fill
+     Secondary: outline only
+     Accent: rust/sienna fill (distinct CTA)
+     All share 2px radius, 150ms transitions, visible focus ring. */
+
   .btn-primary {
     @apply inline-flex items-center justify-center px-5 py-2.5
-      bg-primary-600 text-white text-label-lg
-      rounded-lg shadow-elev-1
-      hover:bg-primary-700 hover:shadow-elev-2
-      active:bg-primary-800 active:shadow-elev-1 active:scale-95
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      bg-ink-900 text-paper-200 text-body-md font-semibold
+      rounded-lg
+      hover:bg-ink-700
+      active:bg-ink-900 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px]
       disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
-  /* Tonal — filled with the primary-container tone, for secondary actions
-     that still deserve real emphasis (e.g. Import, Export, Rename). */
+  /* Tonal — accent-filled for secondary emphasis actions */
   .btn-tonal {
     @apply inline-flex items-center justify-center px-5 py-2.5
-      bg-primary-100 text-primary-800 text-label-lg
-      rounded-lg
-      hover:bg-primary-200
-      active:bg-primary-300 active:scale-95
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      bg-accent-light text-ink-900 text-body-md font-semibold
+      rounded-lg border border-accent
+      hover:bg-accent hover:text-paper-50
+      active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px];
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center px-5 py-2.5
-      bg-white text-surface-800 text-label-lg
-      border border-surface-300 rounded-lg shadow-elev-1
-      hover:bg-surface-50 hover:border-surface-400 hover:shadow-elev-2
-      active:bg-surface-100 active:shadow-elev-1 active:scale-95
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      bg-transparent text-ink-900 text-body-md font-semibold
+      border border-border-300 rounded-lg
+      hover:bg-paper-200 hover:border-border-400
+      active:bg-border-100 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px]
       disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
-  /* Accent — for a single standout secondary action (e.g. Export PDF)
-     that should read as deliberately different from the primary action. */
+  /* Accent — rust/sienna for Export PDF */
   .btn-accent {
     @apply inline-flex items-center justify-center px-5 py-2.5
-      bg-accent-600 text-white text-label-lg
-      rounded-lg shadow-elev-1
-      hover:bg-accent-700 hover:shadow-elev-2
-      active:bg-accent-800 active:shadow-elev-1 active:scale-95
-      focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
+      bg-rust text-rust-light text-body-md font-semibold
+      rounded-lg
+      hover:bg-[#9A4428]
+      active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-rust focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px];
   }
 
   .btn-danger {
     @apply inline-flex items-center justify-center px-5 py-2.5
-      bg-danger-600 text-white text-label-lg
-      rounded-lg shadow-elev-1
-      hover:bg-danger-700 hover:shadow-elev-2
-      active:bg-danger-800 active:shadow-elev-1 active:scale-95
+      bg-danger-600 text-white text-body-md font-semibold
+      rounded-lg
+      hover:bg-danger-700
+      active:bg-danger-800 active:scale-95
       focus:outline-none focus:ring-2 focus:ring-danger-500 focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px];
   }
 
-  /* Success — filled, for pipeline actions that complete a step
-     (e.g. Run Layout) rather than the page's single primary action. */
+  /* Success — for pipeline completion actions */
   .btn-success {
     @apply inline-flex items-center justify-center px-5 py-2.5
-      bg-success-600 text-white text-label-lg
-      rounded-lg shadow-elev-1
-      hover:bg-success-700 hover:shadow-elev-2
-      active:bg-success-800 active:shadow-elev-1 active:scale-95
-      focus:outline-none focus:ring-2 focus:ring-success-500 focus:ring-offset-2
+      bg-success-700 text-success-50 text-body-md font-semibold
+      rounded-lg
+      hover:bg-[#256B22]
+      active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-success-700 focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px]
       disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
-  /* Low-emphasis destructive — text-only until hovered, for places a full
-     filled danger button would out-compete the page's real focal point. */
+  /* Low-emphasis destructive */
   .btn-danger-ghost {
     @apply inline-flex items-center justify-center px-4 py-2
-      text-danger-600 text-label-md
+      text-danger-600 text-label-md font-semibold
       rounded-lg
       hover:bg-danger-50 hover:text-danger-700
-      active:bg-danger-100 active:scale-95
+      active:scale-95
       focus:outline-none focus:ring-2 focus:ring-danger-500 focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px];
@@ -139,40 +131,41 @@
 
   .btn-ghost {
     @apply inline-flex items-center justify-center px-4 py-2
-      text-surface-600 text-label-md
+      text-ink-600 text-label-md font-semibold
       rounded-lg
-      hover:bg-surface-100 hover:text-surface-900
-      active:bg-surface-200 active:scale-95
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+      hover:bg-paper-200 hover:text-ink-900
+      active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2
       transition-all duration-150 ease-out
       min-h-[44px];
   }
 
-  /* -- Chips -- selectable preset buttons (sheet size, kerf, grain, cut mode) */
+  /* -- Chips -- selectable preset buttons */
   .chip {
-    @apply inline-flex items-center justify-center px-3.5 py-2.5
-      text-body-md text-left rounded-lg border
+    @apply inline-flex items-center justify-center px-4 py-2.5
+      text-body-md font-semibold text-left rounded-lg border
       transition-all duration-150 ease-out
-      min-h-[44px];
+      min-h-[44px]
+      font-body;
   }
 
   .chip-selected {
-    @apply chip bg-primary-100 border-primary-400 text-primary-900 shadow-elev-0;
+    @apply chip bg-ink-900 text-paper-200 border-ink-900;
   }
 
   .chip-unselected {
-    @apply chip bg-white border-surface-200 text-surface-700
-      hover:bg-surface-50 hover:border-surface-300;
+    @apply chip bg-transparent text-ink-600 border-border-300
+      hover:bg-paper-200 hover:border-border-400;
   }
 
-  /* -- Inputs -- */
+  /* -- Inputs -- sharp, border-only, white fill */
   .input {
-    @apply w-full px-3.5 py-2.5
-      bg-white text-surface-900 text-sm
-      border border-surface-300 rounded-lg shadow-elev-1
-      hover:border-surface-400
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-      placeholder:text-surface-400
+    @apply w-full px-3 py-2.5
+      bg-white text-ink-900 text-body-md font-body
+      border border-border-300 rounded-lg
+      hover:border-border-400
+      focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent
+      placeholder:text-ink-400
       transition-all duration-150 ease-in-out
       min-h-[44px];
   }
@@ -183,83 +176,78 @@
 
   /* -- Selects -- */
   .select {
-    @apply w-full px-3.5 py-2.5
-      bg-white text-surface-900 text-sm
-      border border-surface-300 rounded-lg shadow-elev-1
-      hover:border-surface-400
-      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+    @apply w-full px-3 py-2.5
+      bg-white text-ink-900 text-body-md font-body
+      border border-border-300 rounded-lg
+      hover:border-border-400
+      focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent
       transition-all duration-150 ease-in-out
       min-h-[44px]
       appearance-none
       bg-no-repeat
       pr-10;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23928575' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7A87' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
     background-position: right 0.75rem center;
     background-size: 1.25em;
   }
 
-  /* -- Badges -- */
+  /* -- Badges -- mono, uppercase */
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5
-      text-label-sm rounded-full;
+      text-label-sm font-mono rounded-lg;
   }
 
   .badge-primary {
-    @apply badge bg-primary-100 text-primary-800;
+    @apply badge bg-accent-light text-accent;
   }
 
   .badge-success {
-    @apply badge bg-success-100 text-success-800;
+    @apply badge bg-success-50 text-success-700 border border-success-200;
   }
 
   .badge-danger {
     @apply badge bg-danger-100 text-danger-800;
   }
 
-  /* -- Alerts / Banners --
-     Reserved for genuine warnings/errors/success — not routine product
-     facts. Those use .banner-notice below instead. */
+  /* -- Alerts / Banners -- */
   .alert {
-    @apply rounded-xl border p-4 animate-fade-in;
+    @apply rounded-lg border p-4;
   }
 
   .alert-info {
-    @apply alert bg-primary-50 border-primary-200 text-primary-900;
+    @apply alert bg-accent-light border-accent text-ink-900;
   }
 
   .alert-success {
-    @apply alert bg-success-50 border-success-200 text-success-900;
+    @apply alert bg-success-50 border-success-200 text-success-700;
   }
 
   .alert-danger {
     @apply alert bg-danger-50 border-danger-200 text-danger-900;
   }
 
-  /* Calm, low-emphasis, dismissible notice — routine facts (e.g. "data
-     lives in localStorage"), not warnings. Neutral surface tone only. */
+  /* Calm dismissible notice — routine facts */
   .banner-notice {
-    @apply flex items-start gap-3 rounded-lg bg-surface-100 text-surface-700
-      text-body-sm px-4 py-3 animate-fade-in;
+    @apply flex items-start gap-3 rounded-lg bg-paper-200 text-ink-700
+      text-body-sm px-4 py-3 border border-border-100 font-body;
   }
 
-  /* -- Section headers -- */
+  /* -- Section headers -- serif */
   .section-title {
-    @apply text-title-lg text-surface-900 tracking-tight;
+    @apply text-headline-md font-display font-bold text-ink-900;
   }
 
   .section-subtitle {
-    @apply text-body-sm text-surface-500;
+    @apply text-body-sm text-ink-500 font-mono;
   }
 
-  /* -- Tab bar --
-     Underline position is animated via a separate sliding indicator
-     element in the tab bar markup, not per-tab borders. */
+  /* -- Tab bar -- */
   .tab-active {
-    @apply text-primary-700;
+    @apply text-accent font-semibold;
   }
 
   .tab-inactive {
-    @apply text-surface-500 hover:text-surface-800;
+    @apply text-ink-400 hover:text-ink-700;
   }
 }
 
@@ -273,22 +261,27 @@
 }
 
 .mobile-tab-scroll {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-  -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Page transitions */
 .page-enter {
-  @apply animate-fade-in;
+  opacity: 0;
+  animation: fadeIn 0.15s ease-out forwards;
 }
 
-/* Focus visible ring — only on keyboard nav */
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Focus visible ring — blueprint blue */
 :focus-visible {
-  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  @apply outline-none ring-2 ring-accent ring-offset-2;
 }
 
-/* Ensure touch targets are at least 44px on all interactive elements */
+/* Ensure touch targets are at least 44px */
 @media (max-width: 640px) {
   input[type="number"],
   input[type="text"],

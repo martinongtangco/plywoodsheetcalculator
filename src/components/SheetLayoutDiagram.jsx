@@ -190,15 +190,15 @@ export function SheetLayoutDiagram({
 }
         </desc>
 
-        {/* Sheet background */}
+        {/* Sheet background — dark navy blueprint canvas */}
         <rect
           x={0}
           y={0}
           width={viewBoxWidth}
           height={viewBoxHeight}
-          fill="#f0f4f8"
-          stroke="#1e3a5f"
-          strokeWidth={2 / (viewBoxWidth / sheet.width)}
+          fill="#1B2A38"
+          stroke="#3D5468"
+          strokeWidth={4 / (viewBoxWidth / sheet.width)}
         />
 
         {/* Grain direction indicator */}
@@ -259,7 +259,7 @@ export function SheetLayoutDiagram({
                 y={oy}
                 width={ow}
                 height={oh}
-                fill="#e2e8f0"
+                fill="rgba(61,84,104,0.15)"
                 stroke="none"
                 aria-hidden="true"
               />
@@ -282,44 +282,63 @@ export function SheetLayoutDiagram({
 
           return (
             <g key={`part-${idx}`}>
-              {/* Part rectangle */}
+              {/* Part rectangle — dashed technical-drawing cut line */}
               <rect
                 x={px}
                 y={py}
                 width={pw}
                 height={ph}
-                fill={partFillColor(part.type)}
-                stroke={partStrokeColor(placement.grainViolated)}
-                strokeWidth={strokeW}
+                fill="rgba(111,168,199,0.12)"
+                stroke={placement.grainViolated ? '#ef4444' : '#6FA8C7'}
+                strokeWidth={strokeW * 1.5}
+                strokeDasharray={`${strokeW * 5} ${strokeW * 3}`}
                 role="img"
                 aria-label={`${part.label}: ${placedLength}mm × ${placedWidth}mm${placement.grainViolated ? ', grain violated' : ''}${placement.rotated ? ', rotated' : ''}`}
               />
 
-              {/* Part label */}
-              {showLabels &&
-                renderLabelLines(
-                  part.label || `${part.type} ${idx + 1}`,
-                  px,
-                  py,
-                  pw,
-                  ph,
-                  fs
-                )}
-
-              {/* Dimensions label (smaller, below name) */}
-              {showLabels && fs > 0 && canFitText(pw, ph, fs * 0.8) && (
-                <text
-                  x={px + pw / 2}
-                  y={py + ph - fs * 0.5}
-                  textAnchor="middle"
-                  dominantBaseline="auto"
-                  fontSize={fs * 0.8}
-                  fill="rgba(0,0,0,0.5)"
-                  fontFamily="monospace"
-                  pointerEvents="none"
-                >
-                  {`${placedLength}×${placedWidth}`}
-                </text>
+              {/* Label plate — dark backing plate with foreignObject for reliable HTML text */}
+              {showLabels && fs > 0 && canFitText(pw, ph, fs) && (
+                <g>
+                  {/* Dark plate background */}
+                  <rect
+                    x={px + pw * 0.08}
+                    y={py + ph * 0.3}
+                    width={pw * 0.84}
+                    height={ph * 0.4}
+                    rx={8 / (viewBoxWidth / sheet.width) * 10}
+                    fill="#0F1B26"
+                    stroke="#3D5468"
+                    strokeWidth={strokeW}
+                  />
+                  {/* Label name */}
+                  <text
+                    x={px + pw / 2}
+                    y={py + ph * 0.3 + (ph * 0.4 / 2) - fs * 0.3}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={fs}
+                    fill="#EAF3F8"
+                    fontFamily="'IBM Plex Mono', monospace"
+                    fontWeight="700"
+                    pointerEvents="none"
+                  >
+                    {part.label || `${part.type}`}
+                  </text>
+                  {/* Dimensions subtext */}
+                  <text
+                    x={px + pw / 2}
+                    y={py + ph * 0.3 + (ph * 0.4 / 2) + fs * 0.5}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={fs * 0.85}
+                    fill="#8FB6CC"
+                    fontFamily="'IBM Plex Mono', monospace"
+                    fontWeight="500"
+                    pointerEvents="none"
+                  >
+                    {`${placedLength} × ${placedWidth}`}
+                  </text>
+                </g>
               )}
             </g>
           );
@@ -353,26 +372,28 @@ export function SheetLayoutDiagram({
           </text>
         </g>
 
-        {/* Utilisation badge */}
+        {/* Utilisation badge — accent blue pill */}
         <g aria-hidden="true">
           <rect
-            x={viewBoxWidth - Math.max(60, viewBoxWidth * 0.1) - 8}
-            y={viewBoxHeight - Math.max(20, viewBoxHeight * 0.02) - 4}
-            width={Math.max(60, viewBoxWidth * 0.1)}
-            height={Math.max(20, viewBoxHeight * 0.02)}
+            x={viewBoxWidth - Math.max(70, viewBoxWidth * 0.1) - 8}
+            y={viewBoxHeight - Math.max(24, viewBoxHeight * 0.02) - 4}
+            width={Math.max(70, viewBoxWidth * 0.1)}
+            height={Math.max(24, viewBoxHeight * 0.02)}
             rx={4}
-            fill="rgba(30,58,95,0.85)"
+            fill="#DCE9F1"
+            stroke="#2C5C82"
+            strokeWidth={strokeW}
           />
           <text
-            x={viewBoxWidth - Math.max(60, viewBoxWidth * 0.1) - 8 + (Math.max(60, viewBoxWidth * 0.1)) / 2}
-            y={viewBoxHeight - Math.max(20, viewBoxHeight * 0.02) - 4 + (Math.max(20, viewBoxHeight * 0.02)) / 2}
+            x={viewBoxWidth - Math.max(70, viewBoxWidth * 0.1) - 8 + (Math.max(70, viewBoxWidth * 0.1)) / 2}
+            y={viewBoxHeight - Math.max(24, viewBoxHeight * 0.02) - 4 + (Math.max(24, viewBoxHeight * 0.02)) / 2}
             textAnchor="middle"
             dominantBaseline="middle"
             fontSize={Math.max(9, viewBoxWidth * 0.012)}
-            fill="#ffffff"
-            fontFamily="monospace"
+            fill="#2C5C82"
+            fontFamily="'IBM Plex Mono', monospace"
           >
-            {layout.utilisationPercent}%
+            {layout.utilisationPercent}% used
           </text>
         </g>
       </svg>

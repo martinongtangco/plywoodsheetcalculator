@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif&family=Karla:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  body{margin:0;-webkit-font-smoothing:antialiased}
+  ::selection{background:rgba(0,0,0,.15)}
+</style>
+</helmet>
+
+<section id="t1" style="padding:48px 44px 80px;background:#F0EEE9;min-height:100vh;font-family:system-ui,sans-serif;box-sizing:border-box;">
+
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 30px;">
+    <a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none;">1</a>
+    <span style="font:600 14px/1.2 system-ui,sans-serif;color:#1a1a1a;">Three directions for ply-calc — a modern, contemporary redesign</span>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:52px;align-items:flex-start;">
+
+    <!-- ============================= OPTION 1A — DRAFTING ROOM ============================= -->
+    <div id="1a" style="display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a>
+        <span style="font:400 11.5px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6);">Drafting Room — blueprint &amp; paper, technical-drawing feel</span>
+      </div>
+
+      <div style="width:1240px;max-width:100%;background:#F7F2E7;border:1px solid #CFC4AA;border-radius:2px;overflow:hidden;box-shadow:0 1px 3px rgba(30,25,15,.1);font-family:'Work Sans',sans-serif;">
+
+        <sc-if value="{{isProjectsA}}" hint-placeholder-val="{{false}}">
+        <div>
+          <div style="padding:30px 40px 24px;border-bottom:1px solid #DCD2B8;display:flex;align-items:center;gap:14px;">
+            <div style="width:42px;height:42px;background:#22303D;border-radius:2px;display:flex;align-items:center;justify-content:center;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8DEC4" stroke-width="1.4"><path d="M11.42 4.392l-6.61 1.654a1.002 1.002 0 01-1.203-1.18l1.295-6.648a2.001 2.001 0 01.97-1.426l3.554-1.777a2.001 2.001 0 011.79 0l3.554 1.777a2.001 2.001 0 01.97 1.426l1.295 6.648a1.002 1.002 0 01-1.203 1.18l-6.61-1.654z"/><path d="M12 12v7.5M8.25 19.5h7.5"/></svg>
+            </div>
+            <div>
+              <h1 style="margin:0;font-family:'Source Serif 4',serif;font-size:22px;font-weight:700;color:#22303D;letter-spacing:-.01em;">ply&#8202;·&#8202;calc</h1>
+              <p style="margin:2px 0 0;font-size:12.5px;color:#6B7A87;font-family:'IBM Plex Mono',monospace;">plywood sheet calculator</p>
+            </div>
+          </div>
+          <div style="padding:26px 40px 8px;">
+            <div style="display:flex;gap:10px;margin-bottom:22px;">
+              <button style="padding:11px 20px;background:#22303D;color:#F4EFE1;border:none;border-radius:2px;font:600 13px 'Work Sans';cursor:pointer;">+ New Project</button>
+              <button style="padding:11px 20px;background:transparent;color:#22303D;border:1px solid #B9AC8C;border-radius:2px;font:600 13px 'Work Sans';cursor:pointer;">Import JSON</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div onClick="{{goAppA}}" style="cursor:pointer;padding:16px 18px;background:#FBF8EF;border:1px solid #2C5C82;border-left:3px solid #2C5C82;border-radius:2px;">
+                <p style="margin:0;font:600 15px 'Source Serif 4';color:#22303D;">Kitchen Renovation — Oak Run</p>
+                <p style="margin:4px 0 0;font:12px 'IBM Plex Mono';color:#7A8894;">4 boxes · 2 drawers · modified today</p>
+              </div>
+              <div onClick="{{goAppA}}" style="cursor:pointer;padding:16px 18px;background:#FBF8EF;border:1px solid #DCD2B8;border-radius:2px;">
+                <p style="margin:0;font:600 15px 'Source Serif 4';color:#22303D;">Bathroom Vanity</p>
+                <p style="margin:4px 0 0;font:12px 'IBM Plex Mono';color:#7A8894;">1 box · 1 drawer · modified 3 days ago</p>
+              </div>
+              <div onClick="{{goAppA}}" style="cursor:pointer;padding:16px 18px;background:#FBF8EF;border:1px solid #DCD2B8;border-radius:2px;">
+                <p style="margin:0;font:600 15px 'Source Serif 4';color:#22303D;">Workshop Shelving</p>
+                <p style="margin:4px 0 0;font:12px 'IBM Plex Mono';color:#7A8894;">6 boxes · modified last week</p>
+              </div>
+            </div>
+          </div>
+          <div style="height:24px;"></div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isAppA}}" hint-placeholder-val="{{true}}">
+        <div>
+          <div style="padding:18px 32px;border-bottom:1px solid #DCD2B8;display:flex;align-items:center;gap:12px;">
+            <button onClick="{{goProjectsA}}" style="background:none;border:none;color:#2C5C82;font:600 12.5px 'IBM Plex Mono';cursor:pointer;padding:0;">&larr; Projects</button>
+            <div style="width:1px;height:16px;background:#CBBE9C;"></div>
+            <h1 style="margin:0;font-family:'Source Serif 4',serif;font-size:19px;font-weight:700;color:#22303D;">Kitchen Renovation — Oak Run</h1>
+          </div>
+
+          <div style="display:flex;border-bottom:1px solid #DCD2B8;background:#F1EBDA;padding:0 20px;">
+            <button onClick="{{goBoxesA}}" style="{{tabStyleBoxesA}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:block;margin:0 auto 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>Boxes</button>
+            <button onClick="{{goMaterialsA}}" style="{{tabStyleMaterialsA}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:block;margin:0 auto 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>Materials</button>
+            <button onClick="{{goCutSettingsA}}" style="{{tabStyleCutSettingsA}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:block;margin:0 auto 4px;"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h7"/></svg>Cut Settings</button>
+            <button onClick="{{goCutListA}}" style="{{tabStyleCutListA}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:block;margin:0 auto 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zM3.75 12h.007v.008H3.75V12zm-.375 5.25h.007v.008H3.75v-.008z"/></svg>Cut List</button>
+            <button onClick="{{goSheetLayoutA}}" style="{{tabStyleSheetLayoutA}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:block;margin:0 auto 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>Sheet Layout</button>
+            <button onClick="{{goOutputA}}" style="{{tabStyleOutputA}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:block;margin:0 auto 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>Output</button>
+          </div>
+
+          <div style="padding:30px 32px 36px;min-height:520px;">
+
+            <sc-if value="{{panelBoxesA}}" hint-placeholder-val="{{false}}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                <h2 style="margin:0;font-family:'Source Serif 4',serif;font-size:19px;color:#22303D;">Boxes</h2>
+                <button style="padding:9px 16px;background:#22303D;color:#F4EFE1;border:none;border-radius:2px;font:600 12.5px 'Work Sans';cursor:pointer;">+ Add Box</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <sc-for list="{{boxesA}}" as="box" hint-placeholder-count="4">
+                <div style="border:1px solid #DCD2B8;background:#FBF8EF;border-radius:2px;">
+                  <div onClick="{{box.onToggle}}" style="cursor:pointer;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="display:flex;align-items:baseline;gap:10px;">
+                      <span style="font:600 14.5px 'Source Serif 4';color:#22303D;">{{box.name}}</span>
+                      <span style="font:12px 'IBM Plex Mono';color:#8A9199;">{{box.dims}} · qty {{box.qty}}</span>
+                    </div>
+                    <span style="font:11px 'IBM Plex Mono';color:#2C5C82;">{{box.group}}</span>
+                  </div>
+                  <sc-if value="{{box.expanded}}" hint-placeholder-val="{{false}}">
+                  <div style="padding:4px 18px 20px;border-top:1px solid #E5DBC2;display:flex;flex-direction:column;gap:14px;">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;">
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">NAME</span><input defaultValue="{{box.name}}" style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">QTY</span><input defaultValue="{{box.qty}}" style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">GROUP</span>
+                        <select style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>Base Run</option><option>Uppers</option></select>
+                      </label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">CONSTRUCTION</span>
+                        <select style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>A — Sides full height</option><option>B — Top/bottom full width</option></select>
+                      </label>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">WIDTH (mm)</span><input defaultValue="600" style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">HEIGHT (mm)</span><input defaultValue="720" style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">DEPTH (mm)</span><input defaultValue="580" style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">SIDE</span><select style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">TOP</span><select style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">BOTTOM</span><select style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">BACK</span><select style="padding:7px 9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>12mm Ply</option></select></label>
+                    </div>
+                    <div style="display:flex;gap:24px;font:12.5px 'Work Sans';color:#4A5964;">
+                      <span>Edge banding: <b style="color:#22303D;">0.8mm PVC</b> — Front, Left</span>
+                      <span>Shelves: <b style="color:#22303D;">2 configured</b></span>
+                      <span>Drawers: <b style="color:#22303D;">1 configured</b></span>
+                    </div>
+                  </div>
+                  </sc-if>
+                </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelMaterialsA}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-family:'Source Serif 4',serif;font-size:19px;color:#22303D;">Materials</h2>
+              <div style="display:flex;flex-direction:column;gap:20px;max-width:640px;">
+                <div>
+                  <p style="margin:0 0 8px;font:11px 'IBM Plex Mono';color:#8A9199;">SHEET SIZE</p>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{goSheetSize4x8A}}" style="{{sheetChip4x8A}}">1220 &times; 2440 mm (4&times;8 ft)</button>
+                    <button onClick="{{goSheetSize5x10A}}" style="{{sheetChip5x10A}}">1525 &times; 3050 mm (5&times;10 ft)</button>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">DEFAULT THICKNESS</span><select style="padding:9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>18mm Birch Ply</option></select></label>
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">KERF (mm)</span><input defaultValue="3" style="padding:9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">EDGE BANDING</span><input defaultValue="0.8mm PVC" style="padding:9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"/></label>
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:11px 'IBM Plex Mono';color:#8A9199;">TRACK TYPE</span><select style="padding:9px;border:1px solid #C9BFA8;border-radius:2px;font:13px 'Work Sans';background:#fff;"><option>Undermount, soft-close</option></select></label>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelCutSettingsA}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-family:'Source Serif 4',serif;font-size:19px;color:#22303D;">Cut Settings</h2>
+              <div style="display:flex;flex-direction:column;gap:22px;max-width:640px;">
+                <div>
+                  <p style="margin:0 0 8px;font:11px 'IBM Plex Mono';color:#8A9199;">CONSTRUCTION METHOD</p>
+                  <div style="display:flex;gap:18px;">
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Work Sans';color:#3E4C57;"><input type="radio" name="cmA" defaultChecked/>A — Sides full height</label>
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Work Sans';color:#3E4C57;"><input type="radio" name="cmA"/>B — Top/bottom full width</label>
+                  </div>
+                </div>
+                <div>
+                  <p style="margin:0 0 8px;font:11px 'IBM Plex Mono';color:#8A9199;">GRAIN CONSTRAINT</p>
+                  <div style="display:flex;gap:18px;">
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Work Sans';color:#3E4C57;"><input type="radio" name="grA" defaultChecked/>Soft — rotate if needed</label>
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Work Sans';color:#3E4C57;"><input type="radio" name="grA"/>Hard — never rotate</label>
+                  </div>
+                </div>
+                <div>
+                  <p style="margin:0 0 8px;font:11px 'IBM Plex Mono';color:#8A9199;">CUT MODE</p>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{goLayoutModeBatchA}}" style="{{modeChipBatchA}}">Batch</button>
+                    <button onClick="{{goLayoutModeBalancedA}}" style="{{modeChipBalancedA}}">Balanced</button>
+                    <button onClick="{{goLayoutModeOptimisedA}}" style="{{modeChipOptimisedA}}">Optimised</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelCutListA}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 16px;font-family:'Source Serif 4',serif;font-size:19px;color:#22303D;">Cut List</h2>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;padding:16px 18px;background:#22303D;border-radius:2px;">
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#F4EFE1;">34</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#9FB0BE;">TOTAL PIECES</p></div>
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#F4EFE1;">8</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#9FB0BE;">UNIQUE PARTS</p></div>
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#F4EFE1;">2.14</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#9FB0BE;">M&sup2; TOTAL AREA</p></div>
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#F4EFE1;">2</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#9FB0BE;">SHEETS NEEDED</p></div>
+              </div>
+              <div style="border:1px solid #DCD2B8;border-radius:2px;overflow:hidden;">
+                <table style="width:100%;border-collapse:collapse;font:13px 'Work Sans';">
+                  <thead><tr style="background:#F1EBDA;">
+                    <sc-for list="{{columnsA}}" as="col" hint-placeholder-count="6">
+                    <th style="text-align:left;padding:9px 14px;border-bottom:1px solid #DCD2B8;"><button onClick="{{col.onSort}}" style="background:none;border:none;cursor:pointer;font:600 11px 'IBM Plex Mono';color:#5A6873;padding:0;text-transform:uppercase;">{{col.label}} {{col.indicator}}</button></th>
+                    </sc-for>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{cutListA}}" as="row" hint-placeholder-count="8">
+                    <tr style="border-bottom:1px solid #EDE6D3;">
+                      <td style="padding:9px 14px;color:#22303D;">{{row.label}}</td>
+                      <td style="padding:9px 14px;color:#6B7A87;">{{row.type}}</td>
+                      <td style="padding:9px 14px;font-family:'IBM Plex Mono';color:#3E4C57;">{{row.lengthDisp}}</td>
+                      <td style="padding:9px 14px;font-family:'IBM Plex Mono';color:#3E4C57;">{{row.widthDisp}}</td>
+                      <td style="padding:9px 14px;font-family:'IBM Plex Mono';color:#3E4C57;">{{row.qty}}</td>
+                      <td style="padding:9px 14px;font-family:'IBM Plex Mono';color:#3E4C57;">{{row.thickness}}</td>
+                    </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelSheetLayoutA}}" hint-placeholder-val="{{true}}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h2 style="margin:0;font-family:'Source Serif 4',serif;font-size:19px;color:#22303D;">Sheet Layout</h2>
+                <div style="display:flex;gap:10px;">
+                  <button onClick="{{goLayoutModeBatchA}}" style="{{modeChipBatchA}}">Batch</button>
+                  <button onClick="{{goLayoutModeBalancedA}}" style="{{modeChipBalancedA}}">Balanced</button>
+                  <button onClick="{{goLayoutModeOptimisedA}}" style="{{modeChipOptimisedA}}">Optimised</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;padding:16px 18px;background:#F1EBDA;border:1px solid #DCD2B8;border-radius:2px;">
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#2C5C82;">2</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#8A9199;">SHEETS REQUIRED</p></div>
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#2C5C82;">28</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#8A9199;">PARTS PLACED</p></div>
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#2C5C82;">75%</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#8A9199;">AVG UTILISATION</p></div>
+                <div><p style="margin:0;font:700 22px 'Source Serif 4';color:#2C5C82;">0.53</p><p style="margin:2px 0 0;font:11px 'IBM Plex Mono';color:#8A9199;">M&sup2; OFFCUT</p></div>
+              </div>
+              <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                <sc-for list="{{sheets}}" as="sheet" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font:600 13px 'IBM Plex Mono';color:#22303D;">SHEET {{sheet.index}}</span>
+                    <span style="font:12px 'IBM Plex Mono';color:#2C5C82;background:#DCE9F1;padding:2px 8px;border-radius:2px;">{{sheet.utilizationDisp}} used</span>
+                  </div>
+                  <svg width="300" height="600" viewBox="0 0 1220 2440" style="background:#1B2A38;border-radius:2px;">
+                    <rect x="0" y="0" width="1220" height="2440" fill="none" stroke="#3D5468" stroke-width="4"/>
+                    <sc-for list="{{sheet.placements}}" as="p" hint-placeholder-count="6">
+                    <rect x="{{p.x}}" y="{{p.y}}" width="{{p.w}}" height="{{p.h}}" fill="rgba(111,168,199,0.12)" stroke="#6FA8C7" stroke-width="3" stroke-dasharray="10 6"/>
+                    <rect x="{{p.plateX}}" y="{{p.plateY}}" width="{{p.plateW}}" height="{{p.plateH}}" rx="8" fill="#0F1B26" stroke="#3D5468" stroke-width="2"/>
+                    <foreignObject x="{{p.plateX}}" y="{{p.plateY}}" width="{{p.plateW}}" height="{{p.plateH}}">
+                      <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;">
+                        <div style="color:#EAF3F8;font-size:32px;font-weight:700;line-height:1.2;white-space:nowrap;">{{p.label}}</div>
+                        <div style="color:#8FB6CC;font-size:26px;font-weight:500;line-height:1.2;white-space:nowrap;">{{p.dimDisp}}</div>
+                      </div>
+                    </foreignObject>
+                    </sc-for>
+                  </svg>
+                </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelOutputA}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-family:'Source Serif 4',serif;font-size:19px;color:#22303D;">Output</h2>
+              <div style="display:flex;gap:10px;margin-bottom:20px;">
+                <button style="padding:11px 20px;background:#22303D;color:#F4EFE1;border:none;border-radius:2px;font:600 13px 'Work Sans';cursor:pointer;">Calculate</button>
+                <button style="padding:11px 20px;background:transparent;color:#22303D;border:1px solid #B9AC8C;border-radius:2px;font:600 13px 'Work Sans';cursor:pointer;">Export JSON</button>
+                <button style="padding:11px 20px;background:#B5502B;color:#FBF3EA;border:none;border-radius:2px;font:600 13px 'Work Sans';cursor:pointer;">Export PDF</button>
+                <button onClick="{{goSheetLayoutA}}" style="padding:11px 20px;background:transparent;color:#2C5C82;border:1px solid #2C5C82;border-radius:2px;font:600 13px 'Work Sans';cursor:pointer;">View Sheet Layout</button>
+              </div>
+              <div style="padding:16px 18px;background:#EFF6ED;border:1px solid #BFE0BA;border-radius:2px;color:#2E5D2A;font:13px 'Work Sans';">Ready to export — 34 pieces across 2 sheets, 75% average utilisation.</div>
+            </div>
+            </sc-if>
+
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- ============================= OPTION 1B — NIGHT SHOP ============================= -->
+    <div id="1b" style="display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a>
+        <span style="font:400 11.5px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6);">Night Shop — dark pro tool, amber glow</span>
+      </div>
+
+      <div style="width:1240px;max-width:100%;background:#1B1A20;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.35);font-family:'Space Grotesk',sans-serif;">
+
+        <sc-if value="{{isProjectsB}}" hint-placeholder-val="{{false}}">
+        <div>
+          <div style="padding:30px 40px 24px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:14px;">
+            <div style="width:42px;height:42px;background:linear-gradient(135deg,#E8823A,#C4611F);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(232,130,58,.35);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B1A20" stroke-width="1.6"><path d="M11.42 4.392l-6.61 1.654a1.002 1.002 0 01-1.203-1.18l1.295-6.648a2.001 2.001 0 01.97-1.426l3.554-1.777a2.001 2.001 0 011.79 0l3.554 1.777a2.001 2.001 0 01.97 1.426l1.295 6.648a1.002 1.002 0 01-1.203 1.18l-6.61-1.654z"/><path d="M12 12v7.5M8.25 19.5h7.5"/></svg>
+            </div>
+            <div>
+              <h1 style="margin:0;font-size:21px;font-weight:700;color:#F1EEE8;">ply-calc</h1>
+              <p style="margin:2px 0 0;font-size:12.5px;color:#8B8579;font-family:'JetBrains Mono',monospace;">plywood sheet calculator</p>
+            </div>
+          </div>
+          <div style="padding:26px 40px 8px;">
+            <div style="display:flex;gap:10px;margin-bottom:22px;">
+              <button style="padding:11px 20px;background:#E8823A;color:#1B1A20;border:none;border-radius:10px;font:600 13px 'Space Grotesk';cursor:pointer;">+ New Project</button>
+              <button style="padding:11px 20px;background:rgba(255,255,255,.06);color:#F1EEE8;border:1px solid rgba(255,255,255,.1);border-radius:10px;font:600 13px 'Space Grotesk';cursor:pointer;">Import JSON</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div onClick="{{goAppB}}" style="cursor:pointer;padding:16px 18px;background:rgba(232,130,58,.08);border:1px solid rgba(232,130,58,.4);border-radius:12px;">
+                <p style="margin:0;font:600 15px 'Space Grotesk';color:#F1EEE8;">Kitchen Renovation — Oak Run</p>
+                <p style="margin:4px 0 0;font:12px 'JetBrains Mono';color:#9C968C;">4 boxes · 2 drawers · modified today</p>
+              </div>
+              <div onClick="{{goAppB}}" style="cursor:pointer;padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;">
+                <p style="margin:0;font:600 15px 'Space Grotesk';color:#F1EEE8;">Bathroom Vanity</p>
+                <p style="margin:4px 0 0;font:12px 'JetBrains Mono';color:#9C968C;">1 box · 1 drawer · modified 3 days ago</p>
+              </div>
+              <div onClick="{{goAppB}}" style="cursor:pointer;padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;">
+                <p style="margin:0;font:600 15px 'Space Grotesk';color:#F1EEE8;">Workshop Shelving</p>
+                <p style="margin:4px 0 0;font:12px 'JetBrains Mono';color:#9C968C;">6 boxes · modified last week</p>
+              </div>
+            </div>
+          </div>
+          <div style="height:24px;"></div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isAppB}}" hint-placeholder-val="{{true}}">
+        <div>
+          <div style="padding:18px 32px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;">
+            <button onClick="{{goProjectsB}}" style="background:none;border:none;color:#E8823A;font:600 12.5px 'JetBrains Mono';cursor:pointer;padding:0;">&larr; Projects</button>
+            <div style="width:1px;height:16px;background:rgba(255,255,255,.12);"></div>
+            <h1 style="margin:0;font-size:18px;font-weight:700;color:#F1EEE8;">Kitchen Renovation — Oak Run</h1>
+          </div>
+
+          <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.08);background:#211F26;padding:0 20px;">
+            <button onClick="{{goBoxesB}}" style="{{tabStyleBoxesB}}">Boxes</button>
+            <button onClick="{{goMaterialsB}}" style="{{tabStyleMaterialsB}}">Materials</button>
+            <button onClick="{{goCutSettingsB}}" style="{{tabStyleCutSettingsB}}">Cut Settings</button>
+            <button onClick="{{goCutListB}}" style="{{tabStyleCutListB}}">Cut List</button>
+            <button onClick="{{goSheetLayoutB}}" style="{{tabStyleSheetLayoutB}}">Sheet Layout</button>
+            <button onClick="{{goOutputB}}" style="{{tabStyleOutputB}}">Output</button>
+          </div>
+
+          <div style="padding:30px 32px 36px;min-height:520px;">
+
+            <sc-if value="{{panelBoxesB}}" hint-placeholder-val="{{false}}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                <h2 style="margin:0;font-size:18px;font-weight:700;color:#F1EEE8;">Boxes</h2>
+                <button style="padding:9px 16px;background:#E8823A;color:#1B1A20;border:none;border-radius:9px;font:600 12.5px 'Space Grotesk';cursor:pointer;">+ Add Box</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <sc-for list="{{boxesB}}" as="box" hint-placeholder-count="4">
+                <div style="border:1px solid rgba(255,255,255,.08);background:#211F26;border-radius:12px;">
+                  <div onClick="{{box.onToggle}}" style="cursor:pointer;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="display:flex;align-items:baseline;gap:10px;">
+                      <span style="font:600 14.5px 'Space Grotesk';color:#F1EEE8;">{{box.name}}</span>
+                      <span style="font:12px 'JetBrains Mono';color:#8A8378;">{{box.dims}} · qty {{box.qty}}</span>
+                    </div>
+                    <span style="font:11px 'JetBrains Mono';color:#4FB8B0;">{{box.group}}</span>
+                  </div>
+                  <sc-if value="{{box.expanded}}" hint-placeholder-val="{{false}}">
+                  <div style="padding:4px 18px 20px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:14px;">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;">
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">NAME</span><input defaultValue="{{box.name}}" style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">QTY</span><input defaultValue="{{box.qty}}" style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">GROUP</span><select style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>Base Run</option><option>Uppers</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">CONSTRUCTION</span><select style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>A — Sides full height</option><option>B — Top/bottom full width</option></select></label>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">WIDTH (mm)</span><input defaultValue="600" style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">HEIGHT (mm)</span><input defaultValue="720" style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">DEPTH (mm)</span><input defaultValue="580" style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">SIDE</span><select style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">TOP</span><select style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">BOTTOM</span><select style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:4px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">BACK</span><select style="padding:8px 10px;border:1px solid rgba(255,255,255,.1);border-radius:8px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>12mm Ply</option></select></label>
+                    </div>
+                    <div style="display:flex;gap:24px;font:12.5px 'Space Grotesk';color:#B8B2A6;">
+                      <span>Edge banding: <b style="color:#F1EEE8;">0.8mm PVC</b> — Front, Left</span>
+                      <span>Shelves: <b style="color:#F1EEE8;">2 configured</b></span>
+                      <span>Drawers: <b style="color:#F1EEE8;">1 configured</b></span>
+                    </div>
+                  </div>
+                  </sc-if>
+                </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelMaterialsB}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-size:18px;font-weight:700;color:#F1EEE8;">Materials</h2>
+              <div style="display:flex;flex-direction:column;gap:20px;max-width:640px;">
+                <div>
+                  <p style="margin:0 0 8px;font:10.5px 'JetBrains Mono';color:#77726A;">SHEET SIZE</p>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{goSheetSize4x8B}}" style="{{sheetChip4x8B}}">1220 &times; 2440 mm (4&times;8 ft)</button>
+                    <button onClick="{{goSheetSize5x10B}}" style="{{sheetChip5x10B}}">1525 &times; 3050 mm (5&times;10 ft)</button>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">DEFAULT THICKNESS</span><select style="padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:9px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>18mm Birch Ply</option></select></label>
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">KERF (mm)</span><input defaultValue="3" style="padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:9px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">EDGE BANDING</span><input defaultValue="0.8mm PVC" style="padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:9px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"/></label>
+                  <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:10.5px 'JetBrains Mono';color:#77726A;">TRACK TYPE</span><select style="padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:9px;font:13px 'Space Grotesk';background:#17161B;color:#F1EEE8;"><option>Undermount, soft-close</option></select></label>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelCutSettingsB}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-size:18px;font-weight:700;color:#F1EEE8;">Cut Settings</h2>
+              <div style="display:flex;flex-direction:column;gap:22px;max-width:640px;">
+                <div>
+                  <p style="margin:0 0 8px;font:10.5px 'JetBrains Mono';color:#77726A;">CONSTRUCTION METHOD</p>
+                  <div style="display:flex;gap:18px;">
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Space Grotesk';color:#D8D3C8;"><input type="radio" name="cmB" defaultChecked/>A — Sides full height</label>
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Space Grotesk';color:#D8D3C8;"><input type="radio" name="cmB"/>B — Top/bottom full width</label>
+                  </div>
+                </div>
+                <div>
+                  <p style="margin:0 0 8px;font:10.5px 'JetBrains Mono';color:#77726A;">GRAIN CONSTRAINT</p>
+                  <div style="display:flex;gap:18px;">
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Space Grotesk';color:#D8D3C8;"><input type="radio" name="grB" defaultChecked/>Soft — rotate if needed</label>
+                    <label style="display:flex;align-items:center;gap:7px;font:13px 'Space Grotesk';color:#D8D3C8;"><input type="radio" name="grB"/>Hard — never rotate</label>
+                  </div>
+                </div>
+                <div>
+                  <p style="margin:0 0 8px;font:10.5px 'JetBrains Mono';color:#77726A;">CUT MODE</p>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{goLayoutModeBatchB}}" style="{{modeChipBatchB}}">Batch</button>
+                    <button onClick="{{goLayoutModeBalancedB}}" style="{{modeChipBalancedB}}">Balanced</button>
+                    <button onClick="{{goLayoutModeOptimisedB}}" style="{{modeChipOptimisedB}}">Optimised</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelCutListB}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#F1EEE8;">Cut List</h2>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;padding:16px 18px;background:rgba(232,130,58,.08);border:1px solid rgba(232,130,58,.3);border-radius:12px;">
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">34</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#9C968C;">TOTAL PIECES</p></div>
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">8</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#9C968C;">UNIQUE PARTS</p></div>
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">2.14</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#9C968C;">M&sup2; TOTAL AREA</p></div>
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">2</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#9C968C;">SHEETS NEEDED</p></div>
+              </div>
+              <div style="border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;">
+                <table style="width:100%;border-collapse:collapse;font:13px 'Space Grotesk';">
+                  <thead><tr style="background:#211F26;">
+                    <sc-for list="{{columnsB}}" as="col" hint-placeholder-count="6">
+                    <th style="text-align:left;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.08);"><button onClick="{{col.onSort}}" style="background:none;border:none;cursor:pointer;font:600 10.5px 'JetBrains Mono';color:#9C968C;padding:0;text-transform:uppercase;">{{col.label}} {{col.indicator}}</button></th>
+                    </sc-for>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{cutListB}}" as="row" hint-placeholder-count="8">
+                    <tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+                      <td style="padding:9px 14px;color:#F1EEE8;">{{row.label}}</td>
+                      <td style="padding:9px 14px;color:#9C968C;">{{row.type}}</td>
+                      <td style="padding:9px 14px;font-family:'JetBrains Mono';color:#D8D3C8;">{{row.lengthDisp}}</td>
+                      <td style="padding:9px 14px;font-family:'JetBrains Mono';color:#D8D3C8;">{{row.widthDisp}}</td>
+                      <td style="padding:9px 14px;font-family:'JetBrains Mono';color:#D8D3C8;">{{row.qty}}</td>
+                      <td style="padding:9px 14px;font-family:'JetBrains Mono';color:#D8D3C8;">{{row.thickness}}</td>
+                    </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelSheetLayoutB}}" hint-placeholder-val="{{true}}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h2 style="margin:0;font-size:18px;font-weight:700;color:#F1EEE8;">Sheet Layout</h2>
+                <div style="display:flex;gap:10px;">
+                  <button onClick="{{goLayoutModeBatchB}}" style="{{modeChipBatchB}}">Batch</button>
+                  <button onClick="{{goLayoutModeBalancedB}}" style="{{modeChipBalancedB}}">Balanced</button>
+                  <button onClick="{{goLayoutModeOptimisedB}}" style="{{modeChipOptimisedB}}">Optimised</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;padding:16px 18px;background:#211F26;border:1px solid rgba(255,255,255,.08);border-radius:12px;">
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">2</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#77726A;">SHEETS REQUIRED</p></div>
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">28</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#77726A;">PARTS PLACED</p></div>
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">75%</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#77726A;">AVG UTILISATION</p></div>
+                <div><p style="margin:0;font:700 22px 'Space Grotesk';color:#E8823A;">0.53</p><p style="margin:2px 0 0;font:10.5px 'JetBrains Mono';color:#77726A;">M&sup2; OFFCUT</p></div>
+              </div>
+              <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                <sc-for list="{{sheets}}" as="sheet" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font:600 13px 'JetBrains Mono';color:#F1EEE8;">SHEET {{sheet.index}}</span>
+                    <span style="font:12px 'JetBrains Mono';color:#E8823A;background:rgba(232,130,58,.12);padding:2px 8px;border-radius:6px;">{{sheet.utilizationDisp}} used</span>
+                  </div>
+                  <svg width="300" height="600" viewBox="0 0 1220 2440" style="background:#0F0E12;border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,.06);">
+                    <rect x="0" y="0" width="1220" height="2440" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="4"/>
+                    <sc-for list="{{sheet.placements}}" as="p" hint-placeholder-count="6">
+                    <rect x="{{p.x}}" y="{{p.y}}" width="{{p.w}}" height="{{p.h}}" fill="rgba(232,130,58,.14)" stroke="#E8823A" stroke-width="3"/>
+                    <text x="{{p.cx}}" y="{{p.cy}}" fill="#F6D9BF" font-size="42" font-family="JetBrains Mono" text-anchor="middle" dominant-baseline="middle">{{p.label}}</text>
+                    </sc-for>
+                  </svg>
+                </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelOutputB}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-size:18px;font-weight:700;color:#F1EEE8;">Output</h2>
+              <div style="display:flex;gap:10px;margin-bottom:20px;">
+                <button style="padding:11px 20px;background:#E8823A;color:#1B1A20;border:none;border-radius:10px;font:600 13px 'Space Grotesk';cursor:pointer;">Calculate</button>
+                <button style="padding:11px 20px;background:rgba(255,255,255,.06);color:#F1EEE8;border:1px solid rgba(255,255,255,.1);border-radius:10px;font:600 13px 'Space Grotesk';cursor:pointer;">Export JSON</button>
+                <button style="padding:11px 20px;background:#4FB8B0;color:#0F2422;border:none;border-radius:10px;font:600 13px 'Space Grotesk';cursor:pointer;">Export PDF</button>
+                <button onClick="{{goSheetLayoutB}}" style="padding:11px 20px;background:transparent;color:#E8823A;border:1px solid #E8823A;border-radius:10px;font:600 13px 'Space Grotesk';cursor:pointer;">View Sheet Layout</button>
+              </div>
+              <div style="padding:16px 18px;background:rgba(79,184,176,.1);border:1px solid rgba(79,184,176,.35);border-radius:12px;color:#8FD9D2;font:13px 'Space Grotesk';">Ready to export — 34 pieces across 2 sheets, 75% average utilisation.</div>
+            </div>
+            </sc-if>
+
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- ============================= OPTION 1C — WARM STUDIO ============================= -->
+    <div id="1c" style="display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a>
+        <span style="font:400 11.5px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6);">Warm Studio — light, friendly, refined</span>
+      </div>
+
+      <div style="width:1240px;max-width:100%;background:#FFFFFF;border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(43,38,32,.12);font-family:'Karla',sans-serif;">
+
+        <sc-if value="{{isProjectsC}}" hint-placeholder-val="{{false}}">
+        <div>
+          <div style="padding:34px 44px 26px;background:#FBF7F0;display:flex;align-items:center;gap:14px;">
+            <div style="width:44px;height:44px;background:#C1633B;border-radius:14px;display:flex;align-items:center;justify-content:center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FBF7F0" stroke-width="1.6"><path d="M11.42 4.392l-6.61 1.654a1.002 1.002 0 01-1.203-1.18l1.295-6.648a2.001 2.001 0 01.97-1.426l3.554-1.777a2.001 2.001 0 011.79 0l3.554 1.777a2.001 2.001 0 01.97 1.426l1.295 6.648a1.002 1.002 0 01-1.203 1.18l-6.61-1.654z"/><path d="M12 12v7.5M8.25 19.5h7.5"/></svg>
+            </div>
+            <div>
+              <h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;color:#2B2620;">ply-calc</h1>
+              <p style="margin:2px 0 0;font-size:13px;color:#8A8175;">Plywood sheet calculator</p>
+            </div>
+          </div>
+          <div style="padding:28px 44px 10px;">
+            <div style="display:flex;gap:10px;margin-bottom:24px;">
+              <button style="padding:12px 22px;background:#C1633B;color:#FFF9F2;border:none;border-radius:14px;font:600 13.5px 'Karla';cursor:pointer;">+ New Project</button>
+              <button style="padding:12px 22px;background:#F1EBDD;color:#2B2620;border:none;border-radius:14px;font:600 13.5px 'Karla';cursor:pointer;">Import JSON</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div onClick="{{goAppC}}" style="cursor:pointer;padding:18px 20px;background:#FFFFFF;border:1.5px solid #C1633B;border-radius:16px;box-shadow:0 2px 10px rgba(193,99,59,.1);">
+                <p style="margin:0;font-family:'Instrument Serif',serif;font-size:19px;color:#2B2620;">Kitchen Renovation — Oak Run</p>
+                <p style="margin:5px 0 0;font:12.5px 'Karla';color:#9A9186;">4 boxes · 2 drawers · modified today</p>
+              </div>
+              <div onClick="{{goAppC}}" style="cursor:pointer;padding:18px 20px;background:#FFFFFF;border:1.5px solid rgba(43,38,32,.08);border-radius:16px;">
+                <p style="margin:0;font-family:'Instrument Serif',serif;font-size:19px;color:#2B2620;">Bathroom Vanity</p>
+                <p style="margin:5px 0 0;font:12.5px 'Karla';color:#9A9186;">1 box · 1 drawer · modified 3 days ago</p>
+              </div>
+              <div onClick="{{goAppC}}" style="cursor:pointer;padding:18px 20px;background:#FFFFFF;border:1.5px solid rgba(43,38,32,.08);border-radius:16px;">
+                <p style="margin:0;font-family:'Instrument Serif',serif;font-size:19px;color:#2B2620;">Workshop Shelving</p>
+                <p style="margin:5px 0 0;font:12.5px 'Karla';color:#9A9186;">6 boxes · modified last week</p>
+              </div>
+            </div>
+          </div>
+          <div style="height:26px;"></div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isAppC}}" hint-placeholder-val="{{true}}">
+        <div>
+          <div style="padding:20px 36px;background:#FBF7F0;display:flex;align-items:center;gap:12px;">
+            <button onClick="{{goProjectsC}}" style="background:none;border:none;color:#C1633B;font:600 13px 'Karla';cursor:pointer;padding:0;">&larr; Projects</button>
+            <div style="width:1px;height:16px;background:rgba(43,38,32,.15);"></div>
+            <h1 style="margin:0;font-family:'Instrument Serif',serif;font-size:22px;color:#2B2620;">Kitchen Renovation — Oak Run</h1>
+          </div>
+
+          <div style="display:flex;background:#FFFFFF;padding:0 24px;border-bottom:1px solid rgba(43,38,32,.08);">
+            <button onClick="{{goBoxesC}}" style="{{tabStyleBoxesC}}">Boxes</button>
+            <button onClick="{{goMaterialsC}}" style="{{tabStyleMaterialsC}}">Materials</button>
+            <button onClick="{{goCutSettingsC}}" style="{{tabStyleCutSettingsC}}">Cut Settings</button>
+            <button onClick="{{goCutListC}}" style="{{tabStyleCutListC}}">Cut List</button>
+            <button onClick="{{goSheetLayoutC}}" style="{{tabStyleSheetLayoutC}}">Sheet Layout</button>
+            <button onClick="{{goOutputC}}" style="{{tabStyleOutputC}}">Output</button>
+          </div>
+
+          <div style="padding:32px 36px 40px;min-height:520px;">
+
+            <sc-if value="{{panelBoxesC}}" hint-placeholder-val="{{false}}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h2 style="margin:0;font-family:'Instrument Serif',serif;font-size:23px;color:#2B2620;">Boxes</h2>
+                <button style="padding:10px 18px;background:#C1633B;color:#FFF9F2;border:none;border-radius:12px;font:600 13px 'Karla';cursor:pointer;">+ Add Box</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <sc-for list="{{boxesC}}" as="box" hint-placeholder-count="4">
+                <div style="border:1.5px solid rgba(43,38,32,.08);background:#FFFFFF;border-radius:16px;">
+                  <div onClick="{{box.onToggle}}" style="cursor:pointer;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="display:flex;align-items:baseline;gap:10px;">
+                      <span style="font-family:'Instrument Serif',serif;font-size:17px;color:#2B2620;">{{box.name}}</span>
+                      <span style="font:12.5px 'Karla';color:#9A9186;">{{box.dims}} · qty {{box.qty}}</span>
+                    </div>
+                    <span style="font:600 11px 'Karla';color:#6E7350;background:#EEF0E6;padding:3px 10px;border-radius:8px;">{{box.group}}</span>
+                  </div>
+                  <sc-if value="{{box.expanded}}" hint-placeholder-val="{{false}}">
+                  <div style="padding:4px 20px 22px;border-top:1px solid rgba(43,38,32,.06);display:flex;flex-direction:column;gap:16px;">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px;">
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Name</span><input defaultValue="{{box.name}}" style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Qty</span><input defaultValue="{{box.qty}}" style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Group</span><select style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"><option>Base Run</option><option>Uppers</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Construction</span><select style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"><option>A — Sides full height</option><option>B — Top/bottom full width</option></select></label>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Width (mm)</span><input defaultValue="600" style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Height (mm)</span><input defaultValue="720" style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Depth (mm)</span><input defaultValue="580" style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Side</span><select style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Top</span><select style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Bottom</span><select style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"><option>18mm Birch</option></select></label>
+                      <label style="display:flex;flex-direction:column;gap:5px;"><span style="font:600 10.5px 'Karla';color:#9A9186;text-transform:uppercase;">Back</span><select style="padding:9px 11px;border:1.5px solid rgba(43,38,32,.12);border-radius:10px;font:13.5px 'Karla';background:#FBF7F0;"><option>12mm Ply</option></select></label>
+                    </div>
+                    <div style="display:flex;gap:26px;font:13px 'Karla';color:#6B6357;">
+                      <span>Edge banding: <b style="color:#2B2620;">0.8mm PVC</b> — Front, Left</span>
+                      <span>Shelves: <b style="color:#2B2620;">2 configured</b></span>
+                      <span>Drawers: <b style="color:#2B2620;">1 configured</b></span>
+                    </div>
+                  </div>
+                  </sc-if>
+                </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelMaterialsC}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 20px;font-family:'Instrument Serif',serif;font-size:23px;color:#2B2620;">Materials</h2>
+              <div style="display:flex;flex-direction:column;gap:22px;max-width:640px;">
+                <div>
+                  <p style="margin:0 0 9px;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Sheet size</p>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{goSheetSize4x8C}}" style="{{sheetChip4x8C}}">1220 &times; 2440 mm (4&times;8 ft)</button>
+                    <button onClick="{{goSheetSize5x10C}}" style="{{sheetChip5x10C}}">1525 &times; 3050 mm (5&times;10 ft)</button>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <label style="display:flex;flex-direction:column;gap:6px;"><span style="font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Default thickness</span><select style="padding:11px;border:1.5px solid rgba(43,38,32,.12);border-radius:12px;font:13.5px 'Karla';background:#FBF7F0;"><option>18mm Birch Ply</option></select></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;"><span style="font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Kerf (mm)</span><input defaultValue="3" style="padding:11px;border:1.5px solid rgba(43,38,32,.12);border-radius:12px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <label style="display:flex;flex-direction:column;gap:6px;"><span style="font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Edge banding</span><input defaultValue="0.8mm PVC" style="padding:11px;border:1.5px solid rgba(43,38,32,.12);border-radius:12px;font:13.5px 'Karla';background:#FBF7F0;"/></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;"><span style="font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Track type</span><select style="padding:11px;border:1.5px solid rgba(43,38,32,.12);border-radius:12px;font:13.5px 'Karla';background:#FBF7F0;"><option>Undermount, soft-close</option></select></label>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelCutSettingsC}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 20px;font-family:'Instrument Serif',serif;font-size:23px;color:#2B2620;">Cut Settings</h2>
+              <div style="display:flex;flex-direction:column;gap:24px;max-width:640px;">
+                <div>
+                  <p style="margin:0 0 9px;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Construction method</p>
+                  <div style="display:flex;gap:20px;">
+                    <label style="display:flex;align-items:center;gap:8px;font:13.5px 'Karla';color:#4A4438;"><input type="radio" name="cmC" defaultChecked/>A — Sides full height</label>
+                    <label style="display:flex;align-items:center;gap:8px;font:13.5px 'Karla';color:#4A4438;"><input type="radio" name="cmC"/>B — Top/bottom full width</label>
+                  </div>
+                </div>
+                <div>
+                  <p style="margin:0 0 9px;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Grain constraint</p>
+                  <div style="display:flex;gap:20px;">
+                    <label style="display:flex;align-items:center;gap:8px;font:13.5px 'Karla';color:#4A4438;"><input type="radio" name="grC" defaultChecked/>Soft — rotate if needed</label>
+                    <label style="display:flex;align-items:center;gap:8px;font:13.5px 'Karla';color:#4A4438;"><input type="radio" name="grC"/>Hard — never rotate</label>
+                  </div>
+                </div>
+                <div>
+                  <p style="margin:0 0 9px;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Cut mode</p>
+                  <div style="display:flex;gap:10px;">
+                    <button onClick="{{goLayoutModeBatchC}}" style="{{modeChipBatchC}}">Batch</button>
+                    <button onClick="{{goLayoutModeBalancedC}}" style="{{modeChipBalancedC}}">Balanced</button>
+                    <button onClick="{{goLayoutModeOptimisedC}}" style="{{modeChipOptimisedC}}">Optimised</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelCutListC}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 18px;font-family:'Instrument Serif',serif;font-size:23px;color:#2B2620;">Cut List</h2>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;padding:18px 20px;background:#FBF3E9;border-radius:16px;">
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">34</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Total pieces</p></div>
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">8</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Unique parts</p></div>
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">2.14</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">m&sup2; total area</p></div>
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">2</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Sheets needed</p></div>
+              </div>
+              <div style="border:1.5px solid rgba(43,38,32,.08);border-radius:16px;overflow:hidden;">
+                <table style="width:100%;border-collapse:collapse;font:13.5px 'Karla';">
+                  <thead><tr style="background:#FBF7F0;">
+                    <sc-for list="{{columnsC}}" as="col" hint-placeholder-count="6">
+                    <th style="text-align:left;padding:10px 16px;border-bottom:1px solid rgba(43,38,32,.08);"><button onClick="{{col.onSort}}" style="background:none;border:none;cursor:pointer;font:600 11px 'Karla';color:#8A8175;padding:0;text-transform:uppercase;">{{col.label}} {{col.indicator}}</button></th>
+                    </sc-for>
+                  </tr></thead>
+                  <tbody>
+                    <sc-for list="{{cutListC}}" as="row" hint-placeholder-count="8">
+                    <tr style="border-bottom:1px solid rgba(43,38,32,.05);">
+                      <td style="padding:10px 16px;color:#2B2620;">{{row.label}}</td>
+                      <td style="padding:10px 16px;color:#9A9186;">{{row.type}}</td>
+                      <td style="padding:10px 16px;font-family:'Space Mono';color:#4A4438;">{{row.lengthDisp}}</td>
+                      <td style="padding:10px 16px;font-family:'Space Mono';color:#4A4438;">{{row.widthDisp}}</td>
+                      <td style="padding:10px 16px;font-family:'Space Mono';color:#4A4438;">{{row.qty}}</td>
+                      <td style="padding:10px 16px;font-family:'Space Mono';color:#4A4438;">{{row.thickness}}</td>
+                    </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelSheetLayoutC}}" hint-placeholder-val="{{true}}">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                <h2 style="margin:0;font-family:'Instrument Serif',serif;font-size:23px;color:#2B2620;">Sheet Layout</h2>
+                <div style="display:flex;gap:10px;">
+                  <button onClick="{{goLayoutModeBatchC}}" style="{{modeChipBatchC}}">Batch</button>
+                  <button onClick="{{goLayoutModeBalancedC}}" style="{{modeChipBalancedC}}">Balanced</button>
+                  <button onClick="{{goLayoutModeOptimisedC}}" style="{{modeChipOptimisedC}}">Optimised</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;padding:18px 20px;background:#FBF3E9;border-radius:16px;">
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">2</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Sheets required</p></div>
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">28</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Parts placed</p></div>
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">75%</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">Avg utilisation</p></div>
+                <div><p style="margin:0;font-family:'Instrument Serif',serif;font-size:26px;color:#C1633B;">0.53</p><p style="margin:3px 0 0;font:600 11px 'Karla';color:#9A9186;text-transform:uppercase;">m&sup2; offcut</p></div>
+              </div>
+              <div style="display:flex;gap:26px;flex-wrap:wrap;">
+                <sc-for list="{{sheets}}" as="sheet" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:9px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font:600 13px 'Karla';color:#2B2620;">Sheet {{sheet.index}}</span>
+                    <span style="font:600 12px 'Karla';color:#C1633B;background:#FBF3E9;padding:3px 10px;border-radius:8px;">{{sheet.utilizationDisp}} used</span>
+                  </div>
+                  <svg width="300" height="600" viewBox="0 0 1220 2440" style="background:#FFFFFF;border-radius:14px;box-shadow:0 1px 4px rgba(43,38,32,.08);">
+                    <rect x="0" y="0" width="1220" height="2440" fill="none" stroke="rgba(43,38,32,.18)" stroke-width="4"/>
+                    <sc-for list="{{sheet.placements}}" as="p" hint-placeholder-count="6">
+                    <rect x="{{p.x}}" y="{{p.y}}" width="{{p.w}}" height="{{p.h}}" fill="rgba(193,99,59,.1)" stroke="#C1633B" stroke-width="3"/>
+                    <text x="{{p.cx}}" y="{{p.cy}}" fill="#8A4C30" font-size="42" font-family="Space Mono" text-anchor="middle" dominant-baseline="middle">{{p.label}}</text>
+                    </sc-for>
+                  </svg>
+                </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{panelOutputC}}" hint-placeholder-val="{{false}}">
+            <div>
+              <h2 style="margin:0 0 20px;font-family:'Instrument Serif',serif;font-size:23px;color:#2B2620;">Output</h2>
+              <div style="display:flex;gap:10px;margin-bottom:22px;">
+                <button style="padding:12px 22px;background:#C1633B;color:#FFF9F2;border:none;border-radius:14px;font:600 13.5px 'Karla';cursor:pointer;">Calculate</button>
+                <button style="padding:12px 22px;background:#F1EBDD;color:#2B2620;border:none;border-radius:14px;font:600 13.5px 'Karla';cursor:pointer;">Export JSON</button>
+                <button style="padding:12px 22px;background:#6E7350;color:#FFF9F2;border:none;border-radius:14px;font:600 13.5px 'Karla';cursor:pointer;">Export PDF</button>
+                <button onClick="{{goSheetLayoutC}}" style="padding:12px 22px;background:transparent;color:#C1633B;border:1.5px solid #C1633B;border-radius:14px;font:600 13.5px 'Karla';cursor:pointer;">View Sheet Layout</button>
+              </div>
+              <div style="padding:18px 20px;background:#EEF0E6;border-radius:14px;color:#4E5439;font:13.5px 'Karla';">Ready to export — 34 pieces across 2 sheets, 75% average utilisation.</div>
+            </div>
+            </sc-if>
+
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="margin-top:28px;font:12px/1.6 system-ui,sans-serif;color:rgba(0,0,0,.5);max-width:900px;">
+    Try next: "make <a href="#1a" style="color:#1a1a1a;font-weight:600;text-decoration:none;">1a</a> the default and apply it everywhere" &middot;
+    "combine the sheet diagram style of <a href="#1b" style="color:#1a1a1a;font-weight:600;text-decoration:none;">1b</a> with the layout of <a href="#1c" style="color:#1a1a1a;font-weight:600;text-decoration:none;">1c</a>" &middot;
+    "show me 2-3 more directions"
+  </p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+const BOXES = [
+  { id: 'b1', name: 'Base Cabinet 600', dims: '600 × 720 × 580 mm', qty: 3, group: 'Base Run' },
+  { id: 'b2', name: 'Sink Base 900', dims: '900 × 720 × 580 mm', qty: 1, group: 'Base Run' },
+  { id: 'b3', name: 'Upper Cabinet 600', dims: '600 × 700 × 320 mm', qty: 4, group: 'Uppers' },
+  { id: 'b4', name: 'Drawer Base 450', dims: '450 × 720 × 580 mm', qty: 2, group: 'Uppers' },
+];
+
+const CUTLIST = [
+  { label: 'Side Panel L', type: 'Side Panel', box: 'Base Cabinet 600', lengthNum: 720, lengthDisp: '720 mm', widthNum: 580, widthDisp: '580 mm', qty: 6, thickness: '18 mm' },
+  { label: 'Side Panel R', type: 'Side Panel', box: 'Base Cabinet 600', lengthNum: 720, lengthDisp: '720 mm', widthNum: 580, widthDisp: '580 mm', qty: 6, thickness: '18 mm' },
+  { label: 'Bottom Panel', type: 'Bottom Panel', box: 'Base Cabinet 600', lengthNum: 564, lengthDisp: '564 mm', widthNum: 580, widthDisp: '580 mm', qty: 3, thickness: '18 mm' },
+  { label: 'Back Panel', type: 'Back Panel', box: 'Base Cabinet 600', lengthNum: 717, lengthDisp: '717 mm', widthNum: 564, widthDisp: '564 mm', qty: 3, thickness: '12 mm' },
+  { label: 'Side Panel', type: 'Side Panel', box: 'Upper Cabinet 600', lengthNum: 700, lengthDisp: '700 mm', widthNum: 320, widthDisp: '320 mm', qty: 8, thickness: '18 mm' },
+  { label: 'Shelf', type: 'Internal Shelf', box: 'Upper Cabinet 600', lengthNum: 564, lengthDisp: '564 mm', widthNum: 300, widthDisp: '300 mm', qty: 4, thickness: '18 mm' },
+  { label: 'Drawer Side', type: 'Drawer Side', box: 'Drawer Base 450', lengthNum: 500, lengthDisp: '500 mm', widthNum: 150, widthDisp: '150 mm', qty: 8, thickness: '12 mm' },
+  { label: 'Drawer Front/Back', type: 'Drawer Front/Back', box: 'Drawer Base 450', lengthNum: 414, lengthDisp: '414 mm', widthNum: 150, widthDisp: '150 mm', qty: 4, thickness: '12 mm' },
+];
+
+const RAW_SHEETS = [
+  { index: 1, utilizationDisp: '87%', placements: [
+    { x: 6, y: 6, w: 580, h: 720, label: 'Side L', dimDisp: '580 × 720' },
+    { x: 592, y: 6, w: 580, h: 720, label: 'Side R', dimDisp: '580 × 720' },
+    { x: 6, y: 732, w: 580, h: 720, label: 'Side L', dimDisp: '580 × 720' },
+    { x: 592, y: 732, w: 580, h: 720, label: 'Side R', dimDisp: '580 × 720' },
+    { x: 6, y: 1458, w: 564, h: 580, label: 'Bottom', dimDisp: '564 × 580' },
+    { x: 576, y: 1458, w: 564, h: 717, label: 'Back', dimDisp: '564 × 717' },
+  ]},
+  { index: 2, utilizationDisp: '63%', placements: [
+    { x: 6, y: 6, w: 564, h: 300, label: 'Shelf', dimDisp: '564 × 300' },
+    { x: 576, y: 6, w: 564, h: 300, label: 'Shelf', dimDisp: '564 × 300' },
+    { x: 6, y: 312, w: 564, h: 300, label: 'Shelf', dimDisp: '564 × 300' },
+    { x: 576, y: 312, w: 564, h: 300, label: 'Shelf', dimDisp: '564 × 300' },
+    { x: 6, y: 618, w: 500, h: 150, label: 'Drawer Side', dimDisp: '500 × 150' },
+    { x: 512, y: 618, w: 500, h: 150, label: 'Drawer Side', dimDisp: '500 × 150' },
+  ]},
+];
+const SHEETS = RAW_SHEETS.map((s) => ({
+  ...s,
+  placements: s.placements.map((p) => {
+    const cx = p.x + p.w / 2;
+    const cy = p.y + p.h / 2;
+    const boxW = Math.min(p.w - 12, Math.max(p.label.length, p.dimDisp.length) * 25 + 36);
+    return {
+      ...p,
+      cx,
+      cy,
+      labelY: cy - 16,
+      dimY: cy + 30,
+      plateX: cx - boxW / 2,
+      plateY: cy - 58,
+      plateW: boxW,
+      plateH: 116,
+    };
+  }),
+}));
+
+const TAB_IDS = ['boxes', 'materials', 'cutSettings', 'cutList', 'sheetLayout', 'output'];
+const TAB_LABELS = { boxes: 'Boxes', materials: 'Materials', cutSettings: 'Cut Settings', cutList: 'Cut List', sheetLayout: 'Sheet Layout', output: 'Output' };
+
+const TAB_STYLE_BASE = { padding: '14px 18px', border: 'none', background: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600, borderBottom: '2px solid transparent' };
+
+const THEME_TAB = {
+  A: {
+    active: { ...TAB_STYLE_BASE, fontFamily: "'Work Sans'", color: '#2C5C82', borderBottomColor: '#2C5C82' },
+    inactive: { ...TAB_STYLE_BASE, fontFamily: "'Work Sans'", color: '#8A9199' },
+  },
+  B: {
+    active: { ...TAB_STYLE_BASE, fontFamily: "'Space Grotesk'", color: '#E8823A', borderBottomColor: '#E8823A' },
+    inactive: { ...TAB_STYLE_BASE, fontFamily: "'Space Grotesk'", color: '#77726A' },
+  },
+  C: {
+    active: { ...TAB_STYLE_BASE, fontFamily: "'Karla'", color: '#C1633B', borderBottomColor: '#C1633B' },
+    inactive: { ...TAB_STYLE_BASE, fontFamily: "'Karla'", color: '#9A9186' },
+  },
+};
+
+const CHIP_BASE = { padding: '9px 16px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer' };
+const THEME_CHIP = {
+  A: {
+    active: { ...CHIP_BASE, fontFamily: "'Work Sans'", background: '#22303D', color: '#F4EFE1', border: '1px solid #22303D' },
+    inactive: { ...CHIP_BASE, fontFamily: "'Work Sans'", background: 'transparent', color: '#4A5964', border: '1px solid #C9BFA8' },
+  },
+  B: {
+    active: { ...CHIP_BASE, fontFamily: "'Space Grotesk'", background: '#E8823A', color: '#1B1A20', border: '1px solid #E8823A', borderRadius: '10px' },
+    inactive: { ...CHIP_BASE, fontFamily: "'Space Grotesk'", background: 'rgba(255,255,255,.05)', color: '#D8D3C8', border: '1px solid rgba(255,255,255,.1)', borderRadius: '10px' },
+  },
+  C: {
+    active: { ...CHIP_BASE, fontFamily: "'Karla'", background: '#C1633B', color: '#FFF9F2', border: '1px solid #C1633B', borderRadius: '12px' },
+    inactive: { ...CHIP_BASE, fontFamily: "'Karla'", background: '#FBF7F0', color: '#4A4438', border: '1px solid rgba(43,38,32,.12)', borderRadius: '12px' },
+  },
+};
+
+class Component extends DCLogic {
+  state = {
+    view: { A: 'app', B: 'app', C: 'app' },
+    tab: { A: 'sheetLayout', B: 'sheetLayout', C: 'sheetLayout' },
+    expandedBox: { A: 'b1', B: 'b1', C: 'b1' },
+    sort: { A: { field: null, dir: 'asc' }, B: { field: null, dir: 'asc' }, C: { field: null, dir: 'asc' } },
+    layoutMode: { A: 'optimised', B: 'optimised', C: 'optimised' },
+    sheetSize: { A: '4x8', B: '4x8', C: '4x8' },
+  };
+
+  setView(opt, v) { this.setState((s) => ({ view: { ...s.view, [opt]: v } })); }
+  setTab(opt, id) { this.setState((s) => ({ tab: { ...s.tab, [opt]: id } })); }
+  toggleBox(opt, id) { this.setState((s) => ({ expandedBox: { ...s.expandedBox, [opt]: s.expandedBox[opt] === id ? null : id } })); }
+  setLayoutMode(opt, m) { this.setState((s) => ({ layoutMode: { ...s.layoutMode, [opt]: m } })); }
+  setSheetSize(opt, v) { this.setState((s) => ({ sheetSize: { ...s.sheetSize, [opt]: v } })); }
+  sortBy(opt, field) {
+    this.setState((s) => {
+      const cur = s.sort[opt];
+      const dir = cur.field === field ? (cur.dir === 'asc' ? 'desc' : 'asc') : 'asc';
+      return { sort: { ...s.sort, [opt]: { field, dir } } };
+    });
+  }
+
+  renderVals() {
+    const vals = {};
+    const opts = ['A', 'B', 'C'];
+
+    for (const opt of opts) {
+      vals['isApp' + opt] = this.state.view[opt] === 'app';
+      vals['isProjects' + opt] = this.state.view[opt] === 'projects';
+      vals['goApp' + opt] = () => this.setView(opt, 'app');
+      vals['goProjects' + opt] = () => this.setView(opt, 'projects');
+
+      for (const id of TAB_IDS) {
+        const isActive = this.state.tab[opt] === id;
+        vals['panel' + cap(id) + opt] = isActive;
+        vals['go' + cap(id) + opt] = () => this.setTab(opt, id);
+        vals['tabStyle' + cap(id) + opt] = isActive ? THEME_TAB[opt].active : THEME_TAB[opt].inactive;
+      }
+
+      vals['boxes' + opt] = BOXES.map((b) => ({
+        ...b,
+        expanded: this.state.expandedBox[opt] === b.id,
+        onToggle: () => this.toggleBox(opt, b.id),
+      }));
+
+      const sort = this.state.sort[opt];
+      let rows = CUTLIST.slice();
+      if (sort.field) {
+        rows.sort((a, b) => {
+          const av = a[sort.field];
+          const bv = b[sort.field];
+          const cmp = typeof av === 'number' ? av - bv : String(av).localeCompare(String(bv));
+          return sort.dir === 'asc' ? cmp : -cmp;
+        });
+      }
+      vals['cutList' + opt] = rows;
+
+      const mkCol = (key, label) => ({
+        key,
+        label,
+        indicator: sort.field === key ? (sort.dir === 'asc' ? '\u2191' : '\u2193') : '\u2195',
+        onSort: () => this.sortBy(opt, key),
+      });
+      vals['columns' + opt] = [
+        mkCol('label', 'Label'),
+        mkCol('type', 'Type'),
+        mkCol('lengthNum', 'Length'),
+        mkCol('widthNum', 'Width'),
+        mkCol('qty', 'Qty'),
+        mkCol('thickness', 'Thickness'),
+      ];
+
+      for (const m of ['batch', 'balanced', 'optimised']) {
+        const isActive = this.state.layoutMode[opt] === m;
+        vals['modeChip' + cap(m) + opt] = isActive ? THEME_CHIP[opt].active : THEME_CHIP[opt].inactive;
+        vals['goLayoutMode' + cap(m) + opt] = () => this.setLayoutMode(opt, m);
+      }
+
+      vals['sheetChip4x8' + opt] = this.state.sheetSize[opt] === '4x8' ? THEME_CHIP[opt].active : THEME_CHIP[opt].inactive;
+      vals['sheetChip5x10' + opt] = this.state.sheetSize[opt] === '5x10' ? THEME_CHIP[opt].active : THEME_CHIP[opt].inactive;
+      vals['goSheetSize4x8' + opt] = () => this.setSheetSize(opt, '4x8');
+      vals['goSheetSize5x10' + opt] = () => this.setSheetSize(opt, '5x10');
+    }
+
+    vals.sheets = SHEETS;
+    return vals;
+  }
+}
+
+</script>
+</body>
+</html>
