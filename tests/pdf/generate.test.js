@@ -20,6 +20,52 @@ import { describe, it, expect } from 'vitest';
 
 // Import the module to verify it loads without error
 import * as pdfModule from '../../src/pdf/index.js';
+import { escapeSvg } from '../../src/pdf/generate.js';
+
+describe('escapeSvg', () => {
+  it('escapes ampersand', () => {
+    expect(escapeSvg('A&B')).toBe('A\u0026amp;B');
+  });
+
+  it('escapes less-than', () => {
+    expect(escapeSvg('<div>')).toBe('\u0026lt;div\u0026gt;');
+  });
+
+  it('escapes greater-than', () => {
+    expect(escapeSvg('a > b')).toBe('a \u0026gt; b');
+  });
+
+  it('escapes double quotes', () => {
+    expect(escapeSvg('say "hi"')).toBe('say \u0026quot;hi\u0026quot;');
+  });
+
+  it('escapes single quotes', () => {
+    expect(escapeSvg("it's")).toBe('it\u0026apos;s');
+  });
+
+  it('escapes all five special characters together', () => {
+    expect(escapeSvg('&<>"\'')).toBe('\u0026amp;\u0026lt;\u0026gt;\u0026quot;\u0026apos;');
+  });
+
+  it('does not double-escape already escaped entities', () => {
+    // Input already contains & — the & is escaped to &, trailing 'amp;' is left alone
+    expect(escapeSvg('\u0026amp;')).toBe('\u0026amp;amp;');
+  });
+
+  it('handles empty string', () => {
+    expect(escapeSvg('')).toBe('');
+  });
+
+  it('handles non-string input', () => {
+    expect(escapeSvg(123)).toBe('123');
+    expect(escapeSvg(null)).toBe('null');
+    expect(escapeSvg(undefined)).toBe('undefined');
+  });
+
+  it('leaves plain text unchanged', () => {
+    expect(escapeSvg('Hello World 123')).toBe('Hello World 123');
+  });
+});
 
 describe('PDF module', () => {
   it('exports generatePdf as a function', () => {

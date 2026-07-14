@@ -458,30 +458,14 @@ async function embedLayoutAsImage(page, pdfDoc, layout, sheet, x, y) {
 
 /**
  * Escape text for safe embedding in SVG.
- * Uses char codes to avoid formatter issues with HTML entities.
  */
-function escapeSvg(text) {
-  const str = String(text);
-  const entities = [
-    [38, 38 + String.fromCharCode(65,109,112,59)],   // & -> &
-    [60, 60 + String.fromCharCode(65,108,116,59)],   // < -> <
-    [62, 62 + String.fromCharCode(65,103,116,59)],   // > -> >
-    [34, 34 + String.fromCharCode(65,113,117,111,116,59)], // " -> "
-    [39, 39 + String.fromCharCode(65,112,111,115,117,115,59)], // ' -> '
-  ];
-  // Simple character-by-character escape
-  let result = '';
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    let replaced = false;
-    if (code === 38) { result += String.fromCharCode(38,97,109,112,59); replaced = true; }
-    if (code === 60) { result += String.fromCharCode(38,108,116,59); replaced = true; }
-    if (code === 62) { result += String.fromCharCode(38,103,116,59); replaced = true; }
-    if (code === 34) { result += String.fromCharCode(38,113,117,111,116,59); replaced = true; }
-    if (code === 39) { result += String.fromCharCode(38,97,112,111,115,117,115,59); replaced = true; }
-    if (!replaced) result += str[i];
-  }
-  return result;
+export function escapeSvg(text) {
+  return String(text)
+    .replace(/&/g, '\u0026amp;')
+    .replace(/</g, '\u0026lt;')
+    .replace(/>/g, '\u0026gt;')
+    .replace(/"/g, '\u0026quot;')
+    .replace(/'/g, '\u0026apos;');
 }
 
 /**

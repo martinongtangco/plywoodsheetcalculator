@@ -1,6 +1,6 @@
 # ADR-020: Simplify `escapeSvg()` in PDF Module
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-14
 **Deciders:** Open Source Maintainers
 **Replaces:** N/A
@@ -82,7 +82,7 @@ The literal replace chain is the standard approach used in virtually every JS co
 
 ## Action Items
 
-- [ ] Replace `escapeSvg()` with the literal replace chain implementation
-- [ ] Remove the dead `entities` array and the obfuscating JSDoc comment
-- [ ] Verify existing PDF tests still pass
-- [ ] Add a targeted test for `escapeSvg` with all 5 special characters
+- [x] Replace `escapeSvg()` with the literal replace chain implementation
+- [x] Remove the dead `entities` array and the obfuscating JSDoc comment
+- [x] Verify existing PDF tests still pass
+- [x] Add a targeted test for `escapeSvg` with all 5 special characters
