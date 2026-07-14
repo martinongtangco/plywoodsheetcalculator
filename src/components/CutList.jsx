@@ -38,20 +38,21 @@ function partTypeLabel(type) {
 }
 
 /**
- * Get a colour swatch for a part type
+ * Get a colour swatch for a part type — Drafting Room blueprint palette.
+ * Muted, blueprint-aligned tints that fit the warm paper aesthetic.
  */
 function partTypeColor(type) {
   const colours = {
-    side: 'bg-blue-200 border-blue-400',
-    top: 'bg-green-200 border-green-400',
-    bottom: 'bg-orange-200 border-orange-400',
-    back: 'bg-purple-200 border-purple-400',
-    shelf: 'bg-red-200 border-red-400',
-    drawer_side: 'bg-emerald-200 border-emerald-400',
-    drawer_front_back: 'bg-yellow-200 border-yellow-400',
-    drawer_base: 'bg-violet-200 border-violet-400',
+    side: 'bg-[#B8CDE0] border-[#7BA3C4]',
+    top: 'bg-[#B8D8C8] border-[#6FA898]',
+    bottom: 'bg-[#E8CDB8] border-[#C49A6F]',
+    back: 'bg-[#D0B8E0] border-[#9A7BB8]',
+    shelf: 'bg-[#E0B8B8] border-[#B86F6F]',
+    drawer_side: 'bg-[#B8E0D0] border-[#6FB89A]',
+    drawer_front_back: 'bg-[#E8E0B8] border-[#C4B06F]',
+    drawer_base: 'bg-[#C8B8E0] border-[#8A6FB8]',
   };
-  return colours[type] || 'bg-surface-200 border-surface-400';
+  return colours[type] || 'bg-paper-200 border-border-300';
 }
 
 /**
@@ -130,17 +131,14 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
       <tr>
         <td
           colSpan={8}
-          className="px-4 py-2 cursor-pointer transition-colors duration-150 select-none"
-          style={{backgroundColor: '#F1EBDA', color: '#22303D'}}
+          className="px-4 py-2 cursor-pointer transition-colors duration-150 select-none bg-paper-200 text-ink-900 hover:bg-[#DCD2B8]"
           onClick={() => setCollapsed(!collapsed)}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#DCD2B8'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#F1EBDA'; }}
         >
-          <span className="text-label-sm font-mono" style={{color: '#8A9199'}}>{collapsed ? '▶' : '▼'}</span>
+          <span className="text-label-sm font-mono text-ink-400">{collapsed ? '▶' : '▼'}</span>
           {boxName || `Box ${boxId}`}
-          <span className="text-label-sm font-mono ml-1" style={{color: '#6B7A87'}}>({parts.length} part{parts.length !== 1 ? 's' : ''})</span>
+          <span className="text-label-sm font-mono ml-1 text-ink-500">({parts.length} part{parts.length !== 1 ? 's' : ''})</span>
           {oversizedParts.length > 0 && (
-            <span className="text-label-sm font-mono ml-2" style={{color: '#D97706'}}>⚠ {oversizedParts.length} oversized</span>
+            <span className="text-label-sm font-mono ml-2 text-[#D97706]">⚠ {oversizedParts.length} oversized</span>
           )}
         </td>
       </tr>
@@ -151,21 +149,21 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
           return (
             <tr
               key={i}
-              className={`border-b border-surface-100 last:border-b-0 hover:bg-surface-50 transition-colors duration-150 ${isOversized ? 'bg-amber-50' : ''}`}
+              className={`border-b border-border-100 last:border-b-0 hover:bg-paper-200 transition-colors duration-150 ${isOversized ? 'bg-[#FEF3C7]' : ''}`}
             >
               <td className="px-4 py-2">
-                <span className={`inline-block w-2 h-2 rounded-full ${partTypeColor(part.type)}`}></span>
+                <span className={`inline-block w-2 h-2 rounded ${partTypeColor(part.type)}`}></span>
               </td>
-              <td className="px-4 py-2 text-surface-600">
+              <td className="px-4 py-2 text-ink-700">
                 {part.label || partTypeLabel(part.type)}
-                {isOversized && <span className="ml-2 text-amber-600 text-label-sm">⚠ too large</span>}
+                {isOversized && <span className="ml-2 text-[#D97706] text-label-sm">⚠ too large</span>}
               </td>
-              <td className="px-4 py-2 text-surface-600">{partTypeLabel(part.type)}</td>
+              <td className="px-4 py-2 text-ink-700">{partTypeLabel(part.type)}</td>
               <td className="px-4 py-2 text-right font-mono">{part.cutLength} mm</td>
               <td className="px-4 py-2 text-right font-mono">{part.cutWidth} mm</td>
               <td className="px-4 py-2 text-right font-mono">{part.quantity}</td>
               <td className="px-4 py-2 text-right font-mono">{part.materialThickness} mm</td>
-              <td className="px-4 py-2 text-body-sm text-surface-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
+              <td className="px-4 py-2 text-body-sm text-ink-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
             </tr>
           );
         })}
@@ -192,29 +190,29 @@ function ValidationBanner({ result }) {
         {!result.boxes && (
           <li>
             Boxes not configured — go to{' '}
-            <button className="text-primary-600 underline hover:text-primary-800" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
+            <button className="text-accent underline hover:text-ink-700" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
               Boxes tab
             </button>
           </li>
-        )}
-        {!result.materials && (
-          <li>
-            Sheet size and kerf not set — go to{' '}
-            <button className="text-primary-600 underline hover:text-primary-800" onClick={() => useUIStore.getState().setActiveTab('materials')}>
-              Materials tab
-            </button>
-          </li>
-        )}
-        {!result.cutSettings && (
-          <li>
-            Grain constraint not selected — go to{' '}
-            <button className="text-primary-600 underline hover:text-primary-800" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
-              Cut Settings tab
-            </button>
+         )}
+         {!result.materials && (
+           <li>
+             Sheet size and kerf not set — go to{' '}
+             <button className="text-accent underline hover:text-ink-700" onClick={() => useUIStore.getState().setActiveTab('materials')}>
+               Materials tab
+             </button>
+           </li>
+         )}
+         {!result.cutSettings && (
+           <li>
+             Grain constraint not selected — go to{' '}
+             <button className="text-accent underline hover:text-ink-700" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
+               Cut Settings tab
+             </button>
           </li>
         )}
         {result.errors.map((err, i) => (
-          <li key={i} className="text-surface-700">{err}</li>
+          <li key={i} className="text-ink-700">{err}</li>
         ))}
       </ul>
     </div>
@@ -346,38 +344,38 @@ export default function CutList() {
 
       {/* Summary — dark stat bar (Drafting Room) */}
       {calculatedParts.length > 0 && (
-        <div className="card-flat mb-4" style={{background: '#22303D', borderRadius: '2px', borderColor: '#22303D'}}>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div className="mb-4 rounded" style={{background: 'rgba(34,48,61,1)', borderColor: 'rgba(34,48,61,1)'}}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center p-5">
             <div>
-              <p className="text-headline-lg font-display font-bold" style={{color: '#F4EFE1'}}>{totalQty}</p>
-              <p className="text-label-sm font-mono uppercase" style={{color: '#9FB0BE'}}>Total Qty</p>
+              <p className="text-headline-lg font-display font-bold text-paper-50">{totalQty}</p>
+              <p className="text-label-sm font-mono uppercase text-[#9FB0BE]">Total Qty</p>
             </div>
             <div>
-              <p className="text-headline-lg font-display font-bold" style={{color: '#F4EFE1'}}>{totalParts}</p>
-              <p className="text-label-sm font-mono uppercase" style={{color: '#9FB0BE'}}>Unique Parts</p>
+              <p className="text-headline-lg font-display font-bold text-paper-50">{totalParts}</p>
+              <p className="text-label-sm font-mono uppercase text-[#9FB0BE]">Unique Parts</p>
             </div>
             <div>
-              <p className="text-headline-lg font-display font-bold" style={{color: '#F4EFE1'}}>{totalAreaM2}</p>
-              <p className="text-label-sm font-mono uppercase" style={{color: '#9FB0BE'}}>m² Total Area</p>
+              <p className="text-headline-lg font-display font-bold text-paper-50">{totalAreaM2}</p>
+              <p className="text-label-sm font-mono uppercase text-[#9FB0BE]">m² Total Area</p>
             </div>
             <div>
-              <p className="text-headline-lg font-display font-bold" style={{color: '#F4EFE1'}}>
+              <p className="text-headline-lg font-display font-bold text-paper-50">
                 {sheetLayouts.length > 0 ? sheetLayouts.length : '—'}
               </p>
-              <p className="text-label-sm font-mono uppercase" style={{color: '#9FB0BE'}}>Sheets Needed</p>
+              <p className="text-label-sm font-mono uppercase text-[#9FB0BE]">Sheets Needed</p>
             </div>
           </div>
 
           {/* Warnings */}
           {(oversizedCount > 0 || unplacedCount > 0) && (
-            <div className="mt-3 pt-3 border-t" style={{borderColor: 'rgba(255,255,255,.15)'}}>
+            <div className="mt-3 pt-3 border-t border-white/15">
               {oversizedCount > 0 && (
-                <p className="text-body-sm" style={{color: '#FCD34D'}}>
+                <p className="text-body-sm px-5 text-[#FCD34D]">
                   ⚠ {oversizedCount} part{oversizedCount !== 1 ? 's' : ''} too large to fit on the selected sheet size.
                 </p>
               )}
               {unplacedCount > 0 && (
-                <p className="text-body-sm" style={{color: '#FCA5A5'}}>
+                <p className="text-body-sm px-5 text-[#FCA5A5]">
                   ⚠ {unplacedCount} part{unplacedCount !== 1 ? 's' : ''} could not be placed by the layout algorithm.
                 </p>
               )}
@@ -388,10 +386,10 @@ export default function CutList() {
 
       {/* Parts table grouped by Box */}
       {calculatedParts.length > 0 ? (
-        <div className="overflow-x-auto border" style={{borderColor: '#DCD2B8', borderRadius: '2px'}}>
+        <div className="overflow-x-auto border border-border-100 rounded">
           <table className="w-full text-body-sm">
-            <thead style={{backgroundColor: '#F1EBDA'}}>
-              <tr style={{borderBottom: '1px solid #DCD2B8'}}>
+            <thead className="bg-paper-200">
+              <tr className="border-b border-border-100">
                 <th className="text-left px-4 py-2"></th>
                 <th className="text-left px-4 py-2">
                   <button
@@ -456,7 +454,7 @@ export default function CutList() {
               ))}
               {/* Summary row */}
               <tr>
-                <td colSpan={8} className="px-4 py-2 text-label-md font-mono" style={{backgroundColor: '#F1EBDA', color: '#4A5964'}}>
+                <td colSpan={8} className="px-4 py-2 text-label-md font-mono bg-paper-200 text-ink-600">
                   <div className="flex justify-between">
                     <span>Summary</span>
                     <span>{totalQty} total pieces · {totalAreaM2} m² · {groupedByBox.length} box{groupedByBox.length !== 1 ? 'es' : ''}</span>
@@ -468,13 +466,13 @@ export default function CutList() {
         </div>
       ) : (
         <div className="flex flex-col items-center text-center py-16 px-6">
-          <div className="w-14 h-14 flex items-center justify-center mb-4" style={{borderRadius: '2px', backgroundColor: '#F1EBDA'}}>
-            <svg className="w-7 h-7" style={{color: '#8A9199'}} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-14 h-14 flex items-center justify-center mb-4 rounded bg-paper-200">
+            <svg className="w-7 h-7 text-ink-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
           </div>
-          <p className="text-title-lg" style={{color: '#4A5964'}}>No parts calculated yet</p>
-          <p className="text-body-sm mt-1" style={{color: '#8A9199'}}>Configure boxes, then click "Calculate" to generate the cut list.</p>
+          <p className="text-title-lg text-ink-600">No parts calculated yet</p>
+          <p className="text-body-sm mt-1 text-ink-400">Configure boxes, then click "Calculate" to generate the cut list.</p>
         </div>
       )}
     </div>

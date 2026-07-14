@@ -170,6 +170,9 @@ export function SheetLayoutDiagram({
   const arrowHeight = Math.min(40, viewBoxHeight * 0.05);
   const arrowWidth = 8;
 
+  // Scaled stroke width for SVG elements
+  const strokeW = Math.max(1, 2 / (viewBoxWidth / sheet.width));
+
   return (
     <div
       className={`sheet-layout-diagram ${className}`}
@@ -269,7 +272,7 @@ export function SheetLayoutDiagram({
         {/* Part placements */}
         {layout.placements.map((placement, idx) => {
           const part = placement.part;
-          const placedLength = placement.rotated ? part.cutWidth : part.cutLength;
+          const placedLength = placement.rotated ? part.cutWidth : part.cutWidth;
           const placedWidth = placement.rotated ? part.cutLength : part.cutWidth;
 
           const px = toSvgX(placement.x);
@@ -278,7 +281,6 @@ export function SheetLayoutDiagram({
           const ph = toSvgH(placedWidth);
 
           const fs = labelFontSize(pw, ph);
-          const strokeW = Math.max(1, 2 / (viewBoxWidth / sheet.width));
 
           return (
             <g key={`part-${idx}`}>

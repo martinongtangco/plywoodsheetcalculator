@@ -25,6 +25,7 @@ An ADR documents a significant architectural decision: what was decided, why, an
 | [ADR-015](ADR-015-ui-integration-architecture.md) | UI Integration Architecture | Accepted |
 | [ADR-016](ADR-016-box-configuration-ui.md) | Box Configuration UI | Accepted |
 | [ADR-017](ADR-017-output-display-ui.md) | Output Display UI | Accepted |
+| [ADR-018](ADR-018-design-direction.md) | Design Direction — "Drafting Room" Theme | Accepted |
 
 ## How to propose a new ADR
 
