@@ -630,6 +630,70 @@ describe('calculateAllParts (ADR-017)', () => {
   });
 });
 
+describe('validateProjectForCalculation (ADR-021)', () => {
+  beforeEach(() => {
+    useProjectStore.setState({ projects: [], activeProjectId: null, calculatedParts: [], sheetLayouts: [] });
+  });
+
+  it('returns errors when no active project', () => {
+    const result = useProjectStore.getState().validateProjectForCalculation();
+    expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it('returns error about missing boxes when project has no boxes', () => {
+    useProjectStore.getState().createProject({ name: 'Empty' });
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+    const result = useProjectStore.getState().validateProjectForCalculation();
+    expect(result.boxes).toBe(false);
+  });
+
+  it('returns error about missing materials when sheet size not set', () => {
+    useProjectStore.getState().createProject({ name: 'No Materials' });
+    const box = defaultBox(0);
+    useProjectStore.getState().addBox(box);
+    // Override defaults: set invalid sheet size and kerf
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 0, length: 0 },
+      kerf: -1,
+    });
+    const result = useProjectStore.getState().validateProjectForCalculation();
+    expect(result.materials).toBe(false);
+  });
+
+  it('returns error about missing cut settings when grain constraint not set', () => {
+    useProjectStore.getState().createProject({ name: 'No Cut Settings' });
+    const box = defaultBox(0);
+    useProjectStore.getState().addBox(box);
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: null,
+    });
+    const result = useProjectStore.getState().validateProjectForCalculation();
+    expect(result.cutSettings).toBe(false);
+  });
+
+  it('returns no errors when project is fully configured', () => {
+    useProjectStore.getState().createProject({ name: 'Complete' });
+    const box = defaultBox(0);
+    useProjectStore.getState().addBox(box);
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+    const result = useProjectStore.getState().validateProjectForCalculation();
+    expect(result.errors).toEqual([]);
+    expect(result.boxes).toBe(true);
+    expect(result.materials).toBe(true);
+    expect(result.cutSettings).toBe(true);
+  });
+});
+
 describe('runLayout (ADR-017)', () => {
   beforeEach(() => {
     useProjectStore.setState({ projects: [], activeProjectId: null, calculatedParts: [], sheetLayouts: [] });

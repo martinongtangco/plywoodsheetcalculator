@@ -267,11 +267,13 @@ function OutputActions() {
 
   const [outputSubTab, setOutputSubTab] = useState('cut-list');
   const [validationResult, setValidationResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleExport = () => {
+    setError(null);
     const json = exportProjectJSON();
     if (!json) {
-      alert('No active project to export.');
+      setError('No active project to export.');
       return;
     }
     const project = projects.find((p) => p.id === activeProjectId);
@@ -287,7 +289,7 @@ function OutputActions() {
     const currentLayouts = useProjectStore.getState().sheetLayouts;
 
     if (!activeProject || currentParts.length === 0) {
-      alert('Nothing to export. Click "Calculate" first.');
+      setError('Nothing to export. Click "Calculate" first.');
       return;
     }
 
@@ -308,7 +310,7 @@ function OutputActions() {
       );
     } catch (err) {
       console.error('PDF generation failed:', err);
-      alert('PDF generation failed. Check console for details.');
+      setError(`PDF generation failed: ${err.message}`);
     }
   }, [projects, activeProjectId]);
 
@@ -327,6 +329,25 @@ function OutputActions() {
 
   return (
     <div>
+      {/* Inline error banner */}
+      {error && (
+        <div className="alert-danger mb-4 flex items-start gap-3">
+          <svg className="w-5 h-5 flex-shrink-0 text-danger-600 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+          <span className="flex-1 text-body-sm text-danger-700">{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="flex-shrink-0 p-1 -m-1 rounded text-danger-500 hover:text-danger-700 hover:bg-danger-100 transition-colors duration-150 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Dismiss error"
+          >
+            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-4">
         <h2 className="section-title">Output</h2>
         <div className="flex flex-wrap gap-2">

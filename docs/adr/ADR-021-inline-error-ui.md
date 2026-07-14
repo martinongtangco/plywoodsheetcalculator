@@ -1,6 +1,6 @@
 # ADR-021: Replace `alert()` with Inline Error UI
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-14
 **Deciders:** Open Source Maintainers
 **Replaces:** N/A
@@ -97,10 +97,10 @@ A toast/notification system (Option 2) would be the "ideal" solution for a large
 
 ## Action Items
 
-- [ ] Add `error` state to `OutputActions` component in `src/App.jsx`
-- [ ] Replace `alert('No active project')` with `setError(...)`
-- [ ] Replace validation failure `alert()` with `setError(...)`
-- [ ] Replace PDF export error `alert()` with `setError(...)`
-- [ ] Render inline error banner with dismiss button
-- [ ] Grep entire `src/` for remaining `alert(` calls and apply same pattern
-- [ ] Add a test verifying error banner appears on validation failure
+- [x] Add `error` state to `OutputActions` component in `src/App.jsx`
+- [x] Replace `alert('No active project')` with `setError(...)`
+- [x] Replace validation failure `alert()` with `setError(...)`
+- [x] Replace PDF export error `alert()` with `setError(...)`
+- [x] Render inline error banner with dismiss button
+- [x] Grep entire `src/` for remaining `alert(` calls and apply same pattern (also applied to `ProjectList.jsx`)
+- [x] Add a test verifying error banner appears on validation failure
