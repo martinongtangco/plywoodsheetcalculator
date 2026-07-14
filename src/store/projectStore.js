@@ -522,11 +522,13 @@ export const useProjectStore = create(
           const project = get().getActiveProject();
           if (!project) return [];
 
-          const parts = get().calculatedParts;
+          let parts = get().calculatedParts;
           if (parts.length === 0) {
-            // Auto-calculate if no parts yet
-            get().calculateAllParts();
-            return get().runLayout(mode);
+            // Auto-calculate if no parts yet (ADR-023: no recursive call)
+            const calculated = get().calculateAllParts();
+            if (calculated.length === 0) return [];
+            // calculatedParts is now populated; re-read for layout logic
+            parts = calculated;
           }
 
           const useMode = mode || project.cutMode || 'balanced';

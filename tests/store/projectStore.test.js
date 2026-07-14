@@ -794,6 +794,35 @@ describe('runLayout (ADR-017)', () => {
     expect(useProjectStore.getState().sheetLayouts.length).toBeGreaterThan(0);
   });
 
+  it('returns empty array on empty project without crashing (ADR-023)', () => {
+    useProjectStore.getState().createProject({ name: 'Empty' });
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+    });
+    // No boxes added — runLayout should return [] and NOT recurse infinitely
+    const layouts = useProjectStore.getState().runLayout();
+    expect(layouts).toEqual([]);
+  });
+
+  it('auto-calculates and lays out when boxes exist but parts are stale (ADR-023)', () => {
+    useProjectStore.getState().createProject({ name: 'Stale' });
+    useProjectStore.getState().addBox();
+    useProjectStore.getState().updateProject({
+      sheetSize: { width: 1220, length: 2440 },
+      kerf: 3,
+      grainConstraint: 'soft',
+      cutMode: 'balanced',
+    });
+    // Do NOT call calculateAllParts first — parts are stale (empty)
+    // runLayout should auto-calculate and then lay out in a single call
+    const layouts = useProjectStore.getState().runLayout();
+    expect(layouts.length).toBeGreaterThan(0);
+    // Verify calculatedParts was populated
+    expect(useProjectStore.getState().calculatedParts.length).toBeGreaterThan(0);
+  });
+
   it('layout placements have required fields', () => {
     useProjectStore.getState().createProject({ name: 'Fields' });
     useProjectStore.getState().addBox();

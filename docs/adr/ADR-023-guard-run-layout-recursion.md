@@ -1,6 +1,6 @@
 # ADR-023: Guard `runLayout` Against Infinite Recursion
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-14
 **Deciders:** Open Source Maintainers
 **Replaces:** N/A
@@ -89,6 +89,6 @@ Removing auto-calculate entirely (Option 4) would be a UX regression — the aut
 
 ## Action Items
 
-- [ ] Update `runLayout` in `src/store/projectStore.js` to eliminate recursive call
-- [ ] Add a test case: `runLayout` on empty project returns `[]` without crashing
-- [ ] Add a test case: `runLayout` auto-calculates and lays out when boxes exist but parts are stale
+- [x] Update `runLayout` in `src/store/projectStore.js` to eliminate recursive call
+- [x] Add a test case: `runLayout` on empty project returns `[]` without crashing
+- [x] Add a test case: `runLayout` auto-calculates and lays out when boxes exist but parts are stale
