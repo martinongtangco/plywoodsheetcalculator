@@ -1,6 +1,6 @@
 # ADR-024: Explicit `cutMode` Default and Edge Naming Mapping
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-14
 **Deciders:** Open Source Maintainers
 **Replaces:** N/A
@@ -138,10 +138,10 @@ The mapping function is a small investment (one file, ~50 lines including tests)
 
 ## Action Items
 
-- [ ] Add `cutMode: 'balanced'` to `defaultProject()` in `src/utils/validate.js`
-- [ ] Create `src/utils/edgeNames.js` with mapping functions
-- [ ] Verify current engine edge name expectations in `src/engine/parts.js`
-- [ ] Update `calculateAllParts()` to map UI edges to engine edges
-- [ ] Update cut list display to map engine edges back to UI names
-- [ ] Create `tests/utils/edgeNames.test.js`
+- [x] Add `cutMode: 'balanced'` to `defaultProject()` in `src/utils/validate.js`
+- [x] Create `src/utils/edgeNames.js` with mapping functions
+- [x] Verify current engine edge name expectations in `src/engine/parts.js`
+- [x] Update `calculateAllParts()` to map UI edges to engine edges
+- [x] Update cut list display to map engine edges back to UI names
+- [x] Create `tests/utils/edgeNames.test.js`
 - [ ] Update ADR-014 data model to include `cutMode` field

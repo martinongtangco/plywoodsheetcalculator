@@ -19,6 +19,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
 import { useUIStore } from '../store/uiStore.js';
 import { downloadFile } from '../utils/fileIO.js';
+import { engineEdgeToUiEdge } from '../utils/edgeNames.js';
 
 /**
  * Get a human-readable label for a part type
@@ -56,17 +57,25 @@ function partTypeColor(type) {
 }
 
 /**
- * Format edge banding edges for display
+ * Format edge banding edges for display.
+ * Maps engine edge names back to user-facing labels using the part type.
  */
-function formatEdgeBanding(edges) {
+function formatEdgeBanding(edges, partType) {
   if (!edges || edges.length === 0) return '—';
-  const edgeLabels = {
-    'length+': 'L+',
-    'length-': 'L−',
-    'width+': 'W+',
-    'width-': 'W−',
-  };
-  return edges.map((e) => edgeLabels[e] || e).join(', ');
+  // Try to map engine names back to UI names for readability
+  const mapped = edges.map((e) => {
+    const uiName = engineEdgeToUiEdge(partType, e);
+    if (uiName) return uiName.charAt(0).toUpperCase() + uiName.slice(1);
+    // Fallback: show engine name with friendly abbreviation
+    const fallbackLabels = {
+      'length+': 'L+',
+      'length-': 'L−',
+      'width+': 'W+',
+      'width-': 'W−',
+    };
+    return fallbackLabels[e] || e;
+  });
+  return mapped.join(', ');
 }
 
 /**
@@ -84,7 +93,7 @@ function partsToCSV(parts, sheetWidth, sheetLength) {
       p.cutWidth,
       p.quantity,
       p.materialThickness,
-      formatEdgeBanding(p.edgeBandingEdges),
+      formatEdgeBanding(p.edgeBandingEdges, p.type),
       `"${p.boxName || '—'}"`,
       isOversized ? 'Too large for sheet' : '',
     ].join(',');
@@ -163,7 +172,7 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
               <td className="px-4 py-2 text-right font-mono">{part.cutWidth} mm</td>
               <td className="px-4 py-2 text-right font-mono">{part.quantity}</td>
               <td className="px-4 py-2 text-right font-mono">{part.materialThickness} mm</td>
-              <td className="px-4 py-2 text-body-sm text-ink-500">{formatEdgeBanding(part.edgeBandingEdges)}</td>
+              <td className="px-4 py-2 text-body-sm text-ink-500">{formatEdgeBanding(part.edgeBandingEdges, part.type)}</td>
             </tr>
           );
         })}

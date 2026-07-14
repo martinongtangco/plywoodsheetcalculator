@@ -16,6 +16,7 @@ import {
   calculateDrawerParts,
   calculateInternalDimensions,
 } from '../engine/parts.js';
+import { convertEdgeBandingToEngine } from '../utils/edgeNames.js';
 import { batchLayout } from '../engine/batch.js';
 import { balancedLayout } from '../engine/balanced.js';
 import { optimisedLayout } from '../engine/optimised.js';
@@ -457,7 +458,7 @@ export const useProjectStore = create(
               box.edgeBanding,
               6, // backPanelOverlap default
               box.internalShelves ?? [],
-              box.edgeBanding?.edges ?? {}
+              convertEdgeBandingToEngine(box.edgeBanding?.edges ?? {})
             );
 
             // Tag each part with box info

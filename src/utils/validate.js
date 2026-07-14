@@ -60,6 +60,7 @@ export function defaultProject() {
     updatedAt: now,
     sheetSize: { width: 1220, length: 2440, id: 'standard_18mm' },
     kerf: 3,
+    cutMode: 'balanced',
     grainConstraint: 'soft',
     boxes: [],
     drawers: [],
