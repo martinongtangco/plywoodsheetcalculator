@@ -1,6 +1,6 @@
 # ADR-022: Conditional Devtools Middleware
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-14
 **Deciders:** Open Source Maintainers
 **Replaces:** N/A
@@ -113,8 +113,9 @@ The helper file adds ~8 lines of code but cleanly centralises the conditional lo
 
 ## Action Items
 
-- [ ] Create `src/store/devtools.js` with `maybeDevtools` export
-- [ ] Update `src/store/projectStore.js` to use `maybeDevtools`
-- [ ] Update `src/store/uiStore.js` to use `maybeDevtools`
-- [ ] Verify devtools still work in `npm run dev`
-- [ ] Verify production build (`npm run build`) excludes devtools code
+- [x] Create `src/store/devtools.js` with `maybeDevtools` export
+- [x] Update `src/store/projectStore.js` to use `maybeDevtools`
+- [x] Update `src/store/uiStore.js` to use `maybeDevtools`
+- [x] Add tests for `maybeDevtools` in `tests/store/devtools.test.js`
+- [x] Verify devtools still work in `npm run dev`
+- [x] Verify production build (`npm run build`) excludes devtools code

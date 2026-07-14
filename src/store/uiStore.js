@@ -1,12 +1,12 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { maybeDevtools } from './devtools.js';
 
 /**
  * uiStore — transient UI state. Not persisted.
- * Wrapped with devtools for debugging.
+ * Wrapped with devtools for debugging (dev only).
  */
 export const useUIStore = create(
-  devtools(
+  maybeDevtools(
     (set) => ({
       activeTab: 'boxes', // 'boxes' | 'materials' | 'cut-settings' | 'cut-list' | 'sheet-layout' | 'output'
       selectedBoxId: null,

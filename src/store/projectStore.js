@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { devtools } from 'zustand/middleware';
+import { maybeDevtools } from './devtools.js';
 import { uid } from '../utils/id.js';
 import {
   defaultProject,
@@ -33,7 +33,7 @@ import { optimisedLayout } from '../engine/optimised.js';
  * See ADR-014 for the data model definition.
  */
 export const useProjectStore = create(
-  devtools(
+  maybeDevtools(
     persist(
       (set, get) => ({
         projects: [],
