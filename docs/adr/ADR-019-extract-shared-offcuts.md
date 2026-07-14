@@ -1,6 +1,6 @@
 # ADR-019: Extract Shared Offcuts Computation
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-14
 **Deciders:** Open Source Maintainers
 **Replaces:** N/A
@@ -77,9 +77,9 @@ The extraction is a straightforward refactor with no behavioural change. The onl
 
 ## Action Items
 
-- [ ] Create `src/engine/offcuts.js` with `computeOffcuts()` exported
-- [ ] Update `src/engine/batch.js` — import and remove local function
-- [ ] Update `src/engine/balanced.js` — import and remove local function
-- [ ] Update `src/engine/optimised.js` — import and remove local function
-- [ ] Create `tests/engine/offcuts.test.js`
-- [ ] Verify existing layout tests still pass
+- [x] Create `src/engine/offcuts.js` with `computeOffcuts()` exported
+- [x] Update `src/engine/batch.js` — import and remove local function
+- [x] Update `src/engine/balanced.js` — import and remove local function
+- [x] Update `src/engine/optimised.js` — import and remove local function
+- [x] Create `tests/engine/offcuts.test.js`
+- [x] Verify existing layout tests still pass

@@ -272,7 +272,7 @@ export function SheetLayoutDiagram({
         {/* Part placements */}
         {layout.placements.map((placement, idx) => {
           const part = placement.part;
-          const placedLength = placement.rotated ? part.cutWidth : part.cutWidth;
+          const placedLength = placement.rotated ? part.cutWidth : part.cutLength;
           const placedWidth = placement.rotated ? part.cutLength : part.cutWidth;
 
           const px = toSvgX(placement.x);
