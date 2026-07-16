@@ -309,8 +309,8 @@ function OutputActions() {
         `${safeName}.pdf`
       );
     } catch (err) {
-      console.error('PDF generation failed:', err);
-      setError(`PDF generation failed: ${err.message}`);
+      if (import.meta.env.DEV) console.error('PDF generation failed:', err);
+      setError('PDF generation failed. Please try again.');
     }
   }, [projects, activeProjectId]);
 

@@ -160,7 +160,7 @@ export const useProjectStore = create(
           const box = { ...defaultBox(boxCount), ...overrides };
           const errors = validateBox(box);
           if (errors.length > 0) {
-            console.warn('Box validation warnings:', errors);
+            import.meta.env.DEV && console.warn('Box validation warnings:', errors);
           }
           set((state) => ({
             projects: state.projects.map((p) =>
@@ -319,7 +319,7 @@ export const useProjectStore = create(
           const drawer = { ...defaultDrawerConfig(boxId), ...overrides };
           const errors = validateDrawerConfig(drawer);
           if (errors.length > 0) {
-            console.warn('DrawerConfig validation warnings:', errors);
+            import.meta.env.DEV && console.warn('DrawerConfig validation warnings:', errors);
           }
           set((state) => ({
             projects: state.projects.map((p) =>
@@ -614,9 +614,9 @@ export const useProjectStore = create(
               activeProjectId: importId,
             }));
             return { success: true, projectId: importId };
-          } catch (e) {
-            return { success: false, errors: [`Invalid JSON: ${e.message}`] };
-          }
+           } catch (e) {
+             return { success: false, errors: ['Invalid JSON file. Please ensure the file is a valid ply-calc export.'] };
+           }
         },
       }),
       {

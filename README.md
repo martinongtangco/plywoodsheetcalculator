@@ -61,6 +61,21 @@ See [docs/adr/](docs/adr/) for all Architecture Decision Records.
 
 The full V1 feature specification lives in [docs/spec/V1_FEATURE_SPEC.md](docs/spec/V1_FEATURE_SPEC.md).
 
+## Privacy & Security
+
+**ply-calc runs entirely in your browser.** No data is sent to any server. All
+project data is stored in your browser's `localStorage` as unencrypted JSON
+(via Zustand's `persist` middleware). This means:
+
+- Your data is only accessible on the device and browser you use
+- Any script running on the same origin can read `localStorage`
+- Clearing your browser data will delete all projects (export JSON backups
+  regularly)
+
+The application uses a Content-Security-Policy (`default-src 'self'`) and
+self-hosted fonts to minimise third-party attack surface. A full security
+audit is available in [`docs/security-audit-2026-07-16.md`](docs/security-audit-2026-07-16.md).
+
 ## License
 
 MIT

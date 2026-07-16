@@ -15,6 +15,11 @@
 
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { svgToPng } from '../utils/rasterize.js';
+import { escapeSvg } from '../utils/escape.js';
+
+// Re-export for existing consumers (tests) — will be removed when tests
+// are updated to import directly from the shared utility.
+export { escapeSvg };
 
 // -- Constants --
 
@@ -456,17 +461,6 @@ async function embedLayoutAsImage(page, pdfDoc, layout, sheet, x, y) {
   }
 }
 
-/**
- * Escape text for safe embedding in SVG.
- */
-export function escapeSvg(text) {
-  return String(text)
-    .replace(/&/g, '\u0026amp;')
-    .replace(/</g, '\u0026lt;')
-    .replace(/>/g, '\u0026gt;')
-    .replace(/"/g, '\u0026quot;')
-    .replace(/'/g, '\u0026apos;');
-}
 
 /**
  * Build an SVG string from layout data (headless — no DOM needed).

@@ -18,7 +18,12 @@ export function validateProjectName(name, existingNames = [], excludeName = null
     return { valid: false, errors: ['Project name must be a string'] };
   }
 
-  // Strip HTML tags and script tags to prevent XSS
+  // XSS mitigation: React auto-escapes text nodes, so user-controlled values
+  // rendered in <input> and <p> elements are safe even without stripping.
+  // The regex below provides defense-in-depth by removing HTML tag constructs
+  // before they reach storage. Nested constructs like `on<break>focus=...` may
+  // survive the strip, but they are harmless because React never interpolates
+  // these values into dynamic attributes.
   const sanitized = name.replace(/<[^>]*>/g, '').trim();
 
   if (sanitized.length === 0) {

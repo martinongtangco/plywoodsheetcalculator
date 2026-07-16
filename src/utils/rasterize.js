@@ -13,6 +13,8 @@
  * All functions are pure utilities — no React, no Zustand, no store coupling.
  */
 
+import { escapeSvg } from './escape.js';
+
 /**
  * Serialize an SVG DOM element to a string.
  *
@@ -245,11 +247,11 @@ export function layoutToCanvas(layout, sheet, options = {}) {
 
       svg += `<rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="${fill}" stroke="${stroke}" stroke-width="${1 / scale}"/>`;
 
-      // Label
-      const fontSize = Math.max(6, Math.min(pw, ph) * 0.15);
-      if (pw > fontSize * 3 && ph > fontSize * 1.4) {
-        const label = (part.label || `${part.type}`).replace(/</g, '&lt;');
-        svg += `<text x="${px + pw / 2}" y="${py + ph / 2}" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}" fill="rgba(0,0,0,0.7)" font-family="sans-serif">${label}</text>`;
+       // Label
+       const fontSize = Math.max(6, Math.min(pw, ph) * 0.15);
+       if (pw > fontSize * 3 && ph > fontSize * 1.4) {
+         const label = escapeSvg(part.label || part.type);
+         svg += `<text x="${px + pw / 2}" y="${py + ph / 2}" text-anchor="middle" dominant-baseline="middle" font-size="${fontSize}" fill="rgba(0,0,0,0.7)" font-family="sans-serif">${label}</text>`;
       }
     }
   }
