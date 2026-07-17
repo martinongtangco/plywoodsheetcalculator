@@ -270,13 +270,12 @@ function addCutListPages(pdfDoc, font, boldFont, parts) {
 }
 
 /**
- * Draw a single table row. Returns the y position for the next row.
- *
- * Drawing order matters: the separator line is drawn FIRST so that the text
- * renders on top of it. In PDF coordinates y increases upward and the text
- * baseline sits at `y` with the glyph body extending upward. By drawing the
- * line before the text we avoid the visual overlap seen when the line is
- * rendered after (on top of) the glyphs.
+ * Draw a single table row. `rowTopY` is the top edge of the row's box; the
+ * text baseline is computed from font ascent/descent so the glyphs sit
+ * vertically centered within the row instead of flush with the top, and the
+ * separator line is drawn at the row's bottom edge (`rowTopY - rowHeight`)
+ * where it can't intersect either this row's or the next row's glyphs.
+ * Returns the y position (bottom edge) for the next row.
  *
  * Cell alignment:
  *   - Column 0 (#):       center
@@ -287,17 +286,23 @@ function addCutListPages(pdfDoc, font, boldFont, parts) {
  *   - Column 5 (Qty):     center (numeric)
  *   - Column 6 (Thickness): right (numeric)
  */
-function drawTableRow(page, font, boldFont, cells, colWidths, y, isHeader) {
+function drawTableRow(page, font, boldFont, cells, colWidths, rowTopY, isHeader) {
   const rowFont = isHeader ? boldFont : font;
   const rowFontSize = isHeader ? FONT_SIZE_TABLE_HEADER : FONT_SIZE_TABLE_CELL;
   const textColor = isHeader ? rgb(0, 0, 0) : rgb(0.2, 0.2, 0.2);
   const rowHeight = isHeader ? TABLE_HEADER_HEIGHT : TABLE_ROW_HEIGHT;
+  const rowBottomY = rowTopY - rowHeight;
 
-  // Draw the separator line FIRST so text renders on top of it.
-  const lineY = y - rowHeight + 1;
+  // Helvetica metrics: ascent/descent as a fraction of font size.
+  const ascent = rowFontSize * 0.718;
+  const descent = rowFontSize * 0.212;
+  const y = rowBottomY + descent + (rowHeight - ascent - descent) / 2;
+
+  // Separator line at the row's bottom edge — clear of this row's descenders
+  // and the next row's ascenders.
   page.drawLine({
-    start: { x: MARGIN_LEFT, y: lineY },
-    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: lineY },
+    start: { x: MARGIN_LEFT, y: rowBottomY },
+    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: rowBottomY },
     thickness: isHeader ? 1.5 : 0.5,
     color: isHeader ? rgb(0.3, 0.3, 0.3) : rgb(0.8, 0.8, 0.8),
   });
@@ -336,9 +341,7 @@ function drawTableRow(page, font, boldFont, cells, colWidths, y, isHeader) {
     x += cellWidth;
   }
 
-  y -= rowHeight;
-
-  return y;
+  return rowBottomY;
 }
 
 /**
