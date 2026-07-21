@@ -182,7 +182,7 @@ export function balancedLayout(parts, sheet, kerf, grainConstraint = 'hard') {
     sheetIndex: i,
     placements: s.placements,
     utilisationPercent: Math.round((s.usedArea / sheetArea) * 10000) / 100,
-    offcuts: computeOffcuts(sheet, s.placements),
+    offcuts: computeOffcuts(sheet, s.placements, kerf),
   }));
 }
 

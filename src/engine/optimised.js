@@ -148,7 +148,7 @@ export function optimisedLayout(parts, sheet, kerf, grainConstraint = 'hard') {
     sheetIndex: i,
     placements: s.placements,
     utilisationPercent: Math.round((s.usedArea / sheetArea) * 10000) / 100,
-    offcuts: computeOffcuts(sheet, s.placements),
+    offcuts: computeOffcuts(sheet, s.placements, kerf),
   }));
 }
 
@@ -251,6 +251,9 @@ function remainingAfterCut(rect, itemW, itemH) {
  * The placed part sits at the top-left of the free rectangle.
  * Kerf is removed from the adjacent free space.
  *
+ * Uses epsilon-based coordinate matching to handle floating-point drift
+ * from kerf arithmetic (e.g. 2.5mm kerf values).
+ *
  * @param {object[]} freeRects - array of { x, y, width, height }
  * @param {number} partX - absolute x of placed part
  * @param {number} partY - absolute y of placed part
@@ -259,9 +262,12 @@ function remainingAfterCut(rect, itemW, itemH) {
  * @param {number} kerf
  */
 function splitFreeRect(freeRects, partX, partY, partW, partH, kerf) {
-  // Find the free rect that contains this placement
+  // Epsilon for floating-point coordinate comparison.
+  // Kerf values like 2.5mm can accumulate tiny floating-point errors.
+  const EPSILON = 1e-9;
+  // Find the free rect that contains this placement (using epsilon tolerance)
   const idx = freeRects.findIndex(r =>
-    r.x === partX && r.y === partY
+    Math.abs(r.x - partX) < EPSILON && Math.abs(r.y - partY) < EPSILON
   );
 
   if (idx === -1) return;

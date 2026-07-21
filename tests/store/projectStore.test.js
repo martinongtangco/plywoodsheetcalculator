@@ -213,7 +213,8 @@ describe('projectStore', () => {
       expect(drawer.thicknesses.side).toBe(15);
       expect(drawer.thicknesses.frontBack).toBe(18);
       expect(drawer.thicknesses.base).toBe(5);
-      expect(drawer.backSetback).toBe(0);
+      // Fixed: backSetback default changed from 0 to 20 to match engine default (calculateDrawerParts)
+    expect(drawer.backSetback).toBe(20);
     });
   });
 
@@ -453,7 +454,8 @@ describe('defaultDrawerConfig', () => {
     expect(drawer.thicknesses.side).toBe(15);
     expect(drawer.thicknesses.frontBack).toBe(18);
     expect(drawer.thicknesses.base).toBe(5);
-    expect(drawer.backSetback).toBe(0);
+    // Fixed: backSetback default changed from 0 to 20 to match engine default (calculateDrawerParts)
+    expect(drawer.backSetback).toBe(20);
     expect(drawer.baseInsetFromSide).toBe(1);
     expect(drawer.baseInsetFromFront).toBe(1);
     expect(drawer.boxId).toBe('test-box-id');

@@ -7,6 +7,7 @@ import MaterialConfig from './components/MaterialConfig.jsx';
 import CutSettings from './components/CutSettings.jsx';
 import CutList from './components/CutList.jsx';
 import SheetLayoutView from './components/SheetLayoutView.jsx';
+import { ValidationBanner } from './components/ValidationBanner.jsx';
 import { downloadFile } from './utils/fileIO.js';
 import { downloadPdf } from './pdf/generate.js';
 
@@ -284,19 +285,20 @@ function OutputActions() {
   };
 
   const handleExportPdf = useCallback(async () => {
-    const activeProject = useProjectStore.getState().getActiveProject();
-    const currentParts = useProjectStore.getState().calculatedParts;
-    const currentLayouts = useProjectStore.getState().sheetLayouts;
+    // Use a single getState() call to get a consistent snapshot of all data.
+    // Avoids mixing closure values (projects, activeProjectId) with fresh state,
+    // which could produce inconsistent snapshots.
+    const state = useProjectStore.getState();
+    const activeProject = state.getActiveProject();
+    const currentParts = state.calculatedParts;
+    const currentLayouts = state.sheetLayouts;
 
     if (!activeProject || currentParts.length === 0) {
       setError('Nothing to export. Click "Calculate" first.');
       return;
     }
 
-    const project = projects.find((p) => p.id === activeProjectId);
-    const safeName = project
-      ? project.name.replace(/[^a-z0-9]+/gi, '_').toLowerCase()
-      : 'project';
+    const safeName = activeProject.name.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
 
     try {
       await downloadPdf(
@@ -312,7 +314,7 @@ function OutputActions() {
       if (import.meta.env.DEV) console.error('PDF generation failed:', err);
       setError('PDF generation failed. Please try again.');
     }
-  }, [projects, activeProjectId]);
+  }, []);
 
   const handleCalculate = useCallback(() => {
     const result = validateProjectForCalculation();
@@ -373,40 +375,7 @@ function OutputActions() {
       </div>
 
       {/* Validation banner */}
-      {validationResult && validationResult.errors.length > 0 && (
-        <div className="alert-danger mb-4">
-          <h3 className="text-title-md text-danger-800 mb-2">Cannot calculate — missing required fields</h3>
-          <ul className="list-disc list-inside text-body-sm text-danger-700 space-y-1">
-            {!validationResult.boxes && (
-              <li>
-                Boxes not configured — go to{' '}
-                <button className="text-accent underline font-medium" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
-                  Boxes tab
-                </button>
-              </li>
-            )}
-            {!validationResult.materials && (
-              <li>
-                Sheet size and kerf not set — go to{' '}
-                <button className="text-accent underline font-medium" onClick={() => useUIStore.getState().setActiveTab('materials')}>
-                  Materials tab
-                </button>
-              </li>
-            )}
-            {!validationResult.cutSettings && (
-              <li>
-                Grain constraint not selected — go to{' '}
-                <button className="text-accent underline font-medium" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
-                  Cut Settings tab
-                </button>
-              </li>
-            )}
-            {validationResult.errors.map((err, i) => (
-              <li key={i} className="text-ink-700">{err}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <ValidationBanner result={validationResult} />
 
       {/* Sub-tab toggle */}
       <div className="flex gap-1 mb-6 -mb-px border-b border-border-100">

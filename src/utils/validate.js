@@ -128,7 +128,9 @@ export function defaultDrawerConfig(boxId) {
       frontBack: 18,
       base: 5,
     },
-    backSetback: 0,
+    // Default 20mm back setback matches the engine default in calculateDrawerParts().
+    // This is the gap between the drawer back and the cabinet back wall.
+    backSetback: 20,
     baseInsetFromSide: 1,
     baseInsetFromFront: 1,
   };

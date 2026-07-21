@@ -22,6 +22,13 @@ import { balancedLayout } from '../engine/balanced.js';
 import { optimisedLayout } from '../engine/optimised.js';
 
 /**
+ * Back panel overlap for recessed back panels (V1 fixed value).
+ * 6mm total = 3mm recess per side. Not user-configurable in V1.
+ * @see docs/decisions/DEFERRED.md for V2 configurability tracking
+ */
+const BACK_PANEL_OVERLAP = 6;
+
+/**
  * projectStore — owns all project data.
  * Persisted to localStorage via zustand/middleware persist.
  * Wrapped with devtools for debugging.
@@ -456,7 +463,7 @@ export const useProjectStore = create(
               },
               box.thicknesses,
               box.edgeBanding,
-              6, // backPanelOverlap default
+              BACK_PANEL_OVERLAP,
               box.internalShelves ?? [],
               convertEdgeBandingToEngine(box.edgeBanding?.edges ?? {})
             );
@@ -483,16 +490,16 @@ export const useProjectStore = create(
                 box.thicknesses
               );
 
-              const drawerParts = calculateDrawerParts(
-                {
-                  quantity: drawer.quantity,
-                  drawer_height: drawer.drawerHeight,
-                  track_clearance_per_side: drawer.trackClearancePerSide,
-                  drawer_back_setback: drawer.backSetback,
-                  base_inset_from_side: drawer.baseInsetFromSide,
-                  base_inset_from_front: drawer.baseInsetFromFront,
-                  side_edge_banding: ['length+'],
-                },
+               const drawerParts = calculateDrawerParts(
+                 {
+                   quantity: drawer.quantity,
+                   drawer_height: drawer.drawerHeight,
+                   track_clearance_per_side: drawer.trackClearancePerSide,
+                   drawer_back_setback: drawer.backSetback,
+                   base_inset_from_side: drawer.baseInsetFromSide,
+                   base_inset_from_front: drawer.baseInsetFromFront,
+                   side_edge_banding: box.edgeBanding?.thickness ? ['length+'] : [],
+                 },
                 { width: internalDims.width, depth: internalDims.depth },
                 drawer.thicknesses,
                 box.edgeBanding

@@ -17,9 +17,9 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useProjectStore } from '../store/projectStore.js';
-import { useUIStore } from '../store/uiStore.js';
 import { downloadFile } from '../utils/fileIO.js';
 import { engineEdgeToUiEdge } from '../utils/edgeNames.js';
+import { ValidationBanner } from './ValidationBanner.jsx';
 
 /**
  * Get a human-readable label for a part type
@@ -152,12 +152,12 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
         </td>
       </tr>
       {!collapsed &&
-        sortedParts.map((part, i) => {
+        sortedParts.map((part) => {
           const isOversized = (part.cutLength > sheetLength && part.cutWidth > sheetWidth) ||
             (part.cutLength > sheetWidth && part.cutWidth > sheetLength);
           return (
             <tr
-              key={i}
+              key={part.id}
               className={`border-b border-border-100 last:border-b-0 hover:bg-paper-200 transition-colors duration-150 ${isOversized ? 'bg-[#FEF3C7]' : ''}`}
             >
               <td className="px-4 py-2">
@@ -177,54 +177,6 @@ function BoxGroup({ boxId, boxName, parts, sortField, sortDirection, sheetWidth,
           );
         })}
     </>
-  );
-}
-
-/**
- * Validation banner — shown when validation fails
- */
-function ValidationBanner({ result }) {
-  if (!result || result.errors.length === 0) return null;
-
-  const tabLinks = {
-    boxes: { label: 'Boxes', tabId: 'boxes' },
-    materials: { label: 'Materials', tabId: 'materials' },
-    cutSettings: { label: 'Cut Settings', tabId: 'cut-settings' },
-  };
-
-  return (
-    <div className="alert-danger mb-4">
-      <h3 className="text-title-md text-danger-800 mb-2">Cannot calculate — missing required fields</h3>
-      <ul className="list-disc list-inside text-body-sm text-danger-700 space-y-1">
-        {!result.boxes && (
-          <li>
-            Boxes not configured — go to{' '}
-            <button className="text-accent underline hover:text-ink-700" onClick={() => useUIStore.getState().setActiveTab('boxes')}>
-              Boxes tab
-            </button>
-          </li>
-         )}
-         {!result.materials && (
-           <li>
-             Sheet size and kerf not set — go to{' '}
-             <button className="text-accent underline hover:text-ink-700" onClick={() => useUIStore.getState().setActiveTab('materials')}>
-               Materials tab
-             </button>
-           </li>
-         )}
-         {!result.cutSettings && (
-           <li>
-             Grain constraint not selected — go to{' '}
-             <button className="text-accent underline hover:text-ink-700" onClick={() => useUIStore.getState().setActiveTab('cut-settings')}>
-               Cut Settings tab
-             </button>
-          </li>
-        )}
-        {result.errors.map((err, i) => (
-          <li key={i} className="text-ink-700">{err}</li>
-        ))}
-      </ul>
-    </div>
   );
 }
 

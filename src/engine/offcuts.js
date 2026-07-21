@@ -8,20 +8,33 @@
  * Uses a horizontal sweep-line approach: sorts placements by Y, then by X,
  * and walks across each row to find gaps between placements.
  *
+ * Kerf-aware: each occupied rectangle is inflated by the kerf width so that
+ * kerf gaps (material consumed by the saw blade) are excluded from the
+ * reported offcut regions. Without this, kerf gaps between adjacent parts
+ * would be reported as usable offcut space.
+ *
  * @param {object} sheet - { width, length } in mm
  * @param {object[]} placements - array of { part, x, y, rotated }
+ * @param {number} [kerf=0] - blade kerf width in mm
  * @returns {{ x: number, y: number, width: number, height: number }[]}
  */
-export function computeOffcuts(sheet, placements) {
+export function computeOffcuts(sheet, placements, kerf = 0) {
   if (placements.length === 0) {
     return [{ x: 0, y: 0, width: sheet.width, height: sheet.length }];
   }
 
-  // Build occupied rectangles
+  // Build occupied rectangles, inflated by kerf so kerf gaps are excluded
+  // from offcut regions. Each rectangle is expanded by kerf on all four sides
+  // and clamped to the sheet boundaries.
   const occupied = placements.map(p => {
     const w = p.rotated ? p.part.cutWidth : p.part.cutLength;
     const h = p.rotated ? p.part.cutLength : p.part.cutWidth;
-    return { x: p.x, y: p.y, w, h };
+    return {
+      x: Math.max(0, p.x - kerf),
+      y: Math.max(0, p.y - kerf),
+      w: Math.min(sheet.width, p.x + w + kerf) - Math.max(0, p.x - kerf),
+      h: Math.min(sheet.length, p.y + h + kerf) - Math.max(0, p.y - kerf),
+    };
   });
 
   // Collect all unique y-coordinates where bands start/end

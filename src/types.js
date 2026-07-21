@@ -47,7 +47,6 @@
  * @typedef {Object} InternalShelf
  * @property {string} id - Unique identifier
  * @property {number} [heightFromBottom] - Position from box bottom in mm (ADR-014 schema)
- * @property {number} [positionFromTop] - Alternative position from box top in mm
  * @property {number} [quantity] - Number of identical shelves (default 1)
  * @property {number} [thickness] - Shelf material thickness in mm (defaults to Box top thickness)
  */
